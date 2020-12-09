@@ -74,7 +74,6 @@
   (setq-local split-width-threshold 0))
 
 (use-package! ess
-  :ensure t
   :hook (ess-mode-hook . forbid-vertical-split)
   :init
   (require 'ess-site)
