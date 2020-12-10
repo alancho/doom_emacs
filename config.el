@@ -105,3 +105,9 @@
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
+
+(use-package! deft
+  :bind ("<f8>" . deft)
+  :commands (deft)
+  :config (setq deft-directory "~/Dropbox/gtd/deft"
+                deft-extensions '("md" "org")))
