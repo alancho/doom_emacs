@@ -25,7 +25,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-dark+)
+(setq doom-theme 'doom-vibrant)
 
 (set-face-attribute 'default nil :height 105 :family "monospace" :weight 'normal :width 'normal)
 
@@ -38,7 +38,6 @@
 (setq display-line-numbers-type t)
 
 (blink-cursor-mode 1)
-
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
