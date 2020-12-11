@@ -39,6 +39,9 @@
 
 (blink-cursor-mode 1)
 
+(setq tab-always-indent 'complete)
+
+
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
@@ -88,7 +91,7 @@
 	comint-scroll-to-bottom-on-input t
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
-	;; ess-eval-visibly-p t
+	ess-eval-visibly-p nil
         ess-use-flymake nil
         ess-eval-visibly 'nowait
 	ess-default-style 'RStudio
