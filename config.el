@@ -41,7 +41,6 @@
 
 (setq tab-always-indent 'complete)
 
-
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
@@ -110,7 +109,6 @@
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
 (use-package! deft
-  :bind ("<f8>" . deft)
   :commands (deft)
   :config (setq deft-directory "~/Dropbox/gtd/deft"
-                deft-extensions '("md" "org")))
+                deft-extensions '("org")))
