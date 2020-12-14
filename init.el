@@ -150,6 +150,7 @@
             +roam
             +pretty
             +pandoc
+            +present
             +dragndrop
             +pomodoro
             +jupyter)      ; organize your plain life in plain text

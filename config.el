@@ -112,3 +112,7 @@
   :commands (deft)
   :config (setq deft-directory "~/Dropbox/gtd/deft"
                 deft-extensions '("org")))
+
+(use-package! org-roam-bibtex
+  :after org-roam
+  :hook (org-roam-mode . org-roam-bibtex-mode))
