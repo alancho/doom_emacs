@@ -38,6 +38,8 @@
 (setq display-line-numbers-type t)
 
 (blink-cursor-mode 1)
+(display-time-mode 1)
+(display-battery-mode 1)
 
 (setq tab-always-indent 'complete)
 
@@ -114,5 +116,46 @@
                 deft-extensions '("org")))
 
 (use-package! org-roam-bibtex
-  :after org-roam
-  :hook (org-roam-mode . org-roam-bibtex-mode))
+  :load-path "~/Dropbox/org/references/library.bib" ;Modify with your own path
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :bind (:map org-mode-map
+         (("C-c n a" . orb-note-actions))))
+
+(setq orb-templates
+      '(("r" "ref" plain (function org-roam-capture--get-point) ""
+         :file-name "${citekey}"
+         :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}\n" ; <--
+         :unnarrowed t)))
+(setq orb-preformat-keywords   '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
+
+(setq orb-templates
+      '(("n" "ref+noter" plain (function org-roam-capture--get-point)
+         ""
+         :file-name "${slug}"
+         :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}\n#+ROAM_TAGS:
+
+- tags ::
+- keywords :: ${keywords}
+\* ${title}
+:PROPERTIES:
+:Custom_ID: ${citekey}
+:URL: ${url}
+:AUTHOR: ${author-or-editor}
+:NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")
+:NOTER_PAGE:
+:END:")))
+
+(use-package! org-ref
+  :after org
+  :init
+  :config
+  (setq org-ref-notes-directory "~/Dropbox/org/references/notes"
+      org-ref-default-bibliography '("~/Dropbox/org/references/library.bib")
+      org-ref-pdf-directory "~/Dropbox/Papers/"))
+
+(use-package! ivy-bibtex
+  :after org
+  :init
+  :config
+  (setq bibtex-completion-pdf-field "file"
+        bibtex-completion-bibliography '("~/Dropbox/org/references/library.bib")))
