@@ -54,3 +54,7 @@
 
 ;; When using org-roam via the `+roam` flag
 (unpin! org-roam company-org-roam)
+
+(package! org-ref)
+(package! ivy-bibtex)
+(package! academic-phrases)
