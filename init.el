@@ -146,7 +146,8 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +roam
+       (org +journal
+            +roam
             +pretty
             +pandoc
             +pomodoro)      ; organize your plain life in plain text

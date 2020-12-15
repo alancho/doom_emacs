@@ -110,52 +110,27 @@
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
-(use-package! deft
-  :commands (deft)
-  :config (setq deft-directory "~/Dropbox/gtd/deft"
-                deft-extensions '("org")))
+(defun org-journal-file-header-func (time)
+  "Custom function to create journal header."
+  (concat
+    (pcase org-journal-file-type
+      (`daily "#+TITLE: Daily Journal\n#+STARTUP: showeverything")
+      (`weekly "#+TITLE: Weekly Journal\n#+STARTUP: folded")
+      (`monthly "#+TITLE: Monthly Journal\n#+STARTUP: folded")
+      (`yearly "#+TITLE: Yearly Journal\n#+STARTUP: folded"))))
 
-(use-package! org-roam-bibtex
-  :load-path "~/Dropbox/org/references/library.bib" ;Modify with your own path
-  :hook (org-roam-mode . org-roam-bibtex-mode)
-  :bind (:map org-mode-map
-         (("C-c n a" . orb-note-actions))))
+(setq org-journal-file-header 'org-journal-file-header-func)
 
-(setq orb-templates
-      '(("r" "ref" plain (function org-roam-capture--get-point) ""
-         :file-name "${citekey}"
-         :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}\n" ; <--
-         :unnarrowed t)))
-(setq orb-preformat-keywords   '(("citekey" . "=key=") "title" "url" "file" "author-or-editor" "keywords"))
+(setq org-journal-dir "~/Dropbox/org/journal/"
+      org-journal-date-format "%A, %d %B %Y"
+      org-journal-file-type 'weekly
+      org-journal-enable-agenda-integration t)
 
-(setq orb-templates
-      '(("n" "ref+noter" plain (function org-roam-capture--get-point)
-         ""
-         :file-name "${slug}"
-         :head "#+TITLE: ${citekey}: ${title}\n#+ROAM_KEY: ${ref}\n#+ROAM_TAGS:
-
-- tags ::
-- keywords :: ${keywords}
-\* ${title}
-:PROPERTIES:
-:Custom_ID: ${citekey}
-:URL: ${url}
-:AUTHOR: ${author-or-editor}
-:NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")
-:NOTER_PAGE:
-:END:")))
-
-(use-package! org-ref
-  :after org
-  :init
-  :config
-  (setq org-ref-notes-directory "~/Dropbox/org/references/notes"
-      org-ref-default-bibliography '("~/Dropbox/org/references/library.bib")
-      org-ref-pdf-directory "~/Dropbox/Papers/"))
-
-(use-package! ivy-bibtex
-  :after org
-  :init
-  :config
-  (setq bibtex-completion-pdf-field "file"
-        bibtex-completion-bibliography '("~/Dropbox/org/references/library.bib")))
+(defun org-journal-save-entry-and-exit()
+  "Simple convenience function.
+  Saves the buffer of the current day's entry and kills the window
+  Similar to org-capture like behavior"
+  (interactive)
+  (save-buffer)
+  (kill-buffer-and-window))
+(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
