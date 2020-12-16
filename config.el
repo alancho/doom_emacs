@@ -119,20 +119,10 @@
       (`monthly "#+TITLE: Monthly Journal\n#+STARTUP: folded")
       (`yearly "#+TITLE: Yearly Journal\n#+STARTUP: folded"))))
 
-(defun org-journal-save-entry-and-exit()
-  "Simple convenience function.
-  Saves the buffer of the current day's entry and kills the window
-  Similar to org-capture like behavior"
-  (interactive)
-  (save-buffer)
-  (kill-buffer-and-window))
-
 (use-package! org-journal
   :config
   (setq org-journal-dir "~/Dropbox/org/journal/"
         org-journal-date-format "%A, %d %B %Y"
         org-journal-file-type 'weekly
         org-journal-enable-agenda-integration t
-        org-journal-file-header 'org-journal-file-header-func)
-  :bind (:map org-journal-mode-map
-	 ("C-x C-s" . 'org-journal-save-entry-and-exit)))
+        org-journal-file-header 'org-journal-file-header-func))
