@@ -126,3 +126,5 @@
         org-journal-file-type 'weekly
         org-journal-enable-agenda-integration t
         org-journal-file-header 'org-journal-file-header-func))
+
+(setq org-pandoc-options-for-docx '((reference-doc . "/home/alancho/Dropbox/templates/cic.docx")))
