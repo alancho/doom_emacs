@@ -123,7 +123,8 @@
   :config
   (setq org-journal-dir "~/Dropbox/org/journal/"
         org-journal-date-format "%A, %d %B %Y"
-        org-journal-file-type 'weekly
+        org-journal-file-format "%Y%m%d.org"
+        org-journal-file-type 'daily
         org-journal-enable-agenda-integration t
         org-journal-file-header 'org-journal-file-header-func))
 
