@@ -225,3 +225,5 @@ Time-stamp: <>
    org-noter-notes-search-path alancho/bibliography-notes
    )
   )
+
+(setq org-pandoc-options '((bibliography . "~/Dropbox/org/roam/literature/library.bib")))
