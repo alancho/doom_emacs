@@ -92,9 +92,10 @@
 	comint-scroll-to-bottom-on-input t
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
-	ess-eval-visibly-p t
+	ess-eval-visibly-p nil
         ess-use-flymake nil
         ;; ess-eval-visibly 'nowait
+	ess-eval-visibly nil
 	ess-default-style 'RStudio
 	fill-column 72
 	comment-auto-fill-only-comments t)
