@@ -32,6 +32,9 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Dropbox/org/")
+(setq org-roam-directory "~/Dropbox/org/roam")
+(add-hook 'after-init-hook 'org-roam-mode)
+(setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -110,3 +113,7 @@
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
+
+(setq bibtex-completion-bibliography
+      '("/home/alancho/Dropbox/org/roam/literature/library.bib"
+	))
