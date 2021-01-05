@@ -31,7 +31,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/org/")
+(setq org-directory "~/Dropbox/org")
 (setq org-roam-directory "~/Dropbox/org/roam")
 (add-hook 'after-init-hook 'org-roam-mode)
 (setq org-support-shift-select t)
@@ -114,6 +114,24 @@
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
+(use-package! org-journal
+  :config
+  (setq org-journal-dir "~/Dropbox/org/journal/"
+        org-journal-date-format "%A, %d %B %Y"
+        org-journal-file-format "%Y%m%d.org"
+        org-journal-file-type 'monthly))
+
 (setq bibtex-completion-bibliography
       '("/home/alancho/Dropbox/org/roam/literature/library.bib"
 	))
+
+(use-package! org-pomodoro
+  :config
+  (setq org-pomodoro-start-sound-p t
+        org-pomodoro-start-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-10.wav")
+        org-pomodoro-finished-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-28.wav")
+        org-pomodoro-short-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-12.wav")
+        org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")))
+
+(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
+                                           ;; (file-expand-wildcards "~/projects/orgmode/gtd/*/*.org"))))
