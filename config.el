@@ -128,10 +128,15 @@
 (use-package! org-pomodoro
   :config
   (setq org-pomodoro-start-sound-p t
+        org-pomodoro-killed-sound-p t
+        org-pomodoro-ask-upon-killing t
+        org-pomodoro-keep-killed-pomodoro-time t
         org-pomodoro-start-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-10.wav")
         org-pomodoro-finished-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-28.wav")
         org-pomodoro-short-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-12.wav")
-        org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")))
+        org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")
+        org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")
+        ))
 
 (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
                                            ;; (file-expand-wildcards "~/projects/orgmode/gtd/*/*.org"))))
