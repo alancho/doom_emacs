@@ -125,6 +125,8 @@
       '("/home/alancho/Dropbox/org/library.bib"
 	))
 
+(setq ivy-bibtex-default-action 'ivy-bibtex-insert-citation)
+
 (use-package! org-pomodoro
   :config
   (setq org-pomodoro-start-sound-p t
