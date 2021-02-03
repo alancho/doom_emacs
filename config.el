@@ -46,6 +46,9 @@
 
 (setq tab-always-indent 'complete)
 
+;; Disable overwrite-mode for ever!
+(define-key global-map [(insert)] nil)
+
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
