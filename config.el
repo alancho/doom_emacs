@@ -122,7 +122,7 @@
         org-journal-file-type 'monthly))
 
 (setq bibtex-completion-bibliography
-      '("/home/alancho/Dropbox/org/roam/literature/library.bib"
+      '("/home/alancho/Dropbox/org/library.bib"
 	))
 
 (use-package! org-pomodoro
