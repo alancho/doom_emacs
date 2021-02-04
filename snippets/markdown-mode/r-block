@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: r-block
+# uuid: r-block
+# key: rb
+# condition: t
+# --
+\`\`\`{r}
+
+$0
+
+\`\`\`

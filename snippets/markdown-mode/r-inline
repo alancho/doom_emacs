@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: r-inline
+# uuid: r-inline
+# key: ri
+# condition: t
+# --
+\`r $0 \`
