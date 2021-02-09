@@ -125,7 +125,9 @@
         org-journal-file-type 'monthly))
 
 (setq bibtex-completion-bibliography
-      '("/home/alancho/Dropbox/org/library.bib"
+      '(
+        "/home/alancho/Dropbox/org/library.bib"
+        "/home/alancho/Dropbox/cannabis/menelik/hemp.bib"
 	))
 
 (setq ivy-bibtex-default-action 'ivy-bibtex-insert-citation)
