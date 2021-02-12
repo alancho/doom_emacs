@@ -147,3 +147,5 @@
 
 (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
                                            ;; (file-expand-wildcards "~/projects/orgmode/gtd/*/*.org"))))
+(after! ivy
+  (setq ivy-use-virtual-buffers t))
