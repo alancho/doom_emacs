@@ -149,3 +149,9 @@
                                            ;; (file-expand-wildcards "~/projects/orgmode/gtd/*/*.org"))))
 (after! ivy
   (setq ivy-use-virtual-buffers t))
+
+(use-package! org-super-agenda
+  :after org-agenda
+  :config
+  (setq org-super-agenda-groups '((:auto-dir-name t)))
+  (org-super-agenda-mode))
