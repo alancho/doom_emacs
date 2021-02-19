@@ -150,8 +150,52 @@
 (after! ivy
   (setq ivy-use-virtual-buffers t))
 
+(after! org
+  (setq org-todo-keywords
+        '((sequence
+           "TODO(t)"  ; A task that needs doing & is ready to do
+           "PROJ(p)"  ; A project, which usually contains other tasks
+           "STRT(s)"  ; A task that is in progress
+           "WAIT(w)"  ; Something external is holding up this task
+           "HOLD(h)"  ; This task is paused/on hold because of me
+           "|"
+           "DONE(d)"  ; Task successfully completed
+           "KILL(k)") ; Task was cancelled, aborted or is no longer applicable
+          ))
+  (setq org-capture-templates
+        '(("t" "Personal todo" entry
+           (file+headline +org-capture-todo-file "Inbox")
+           "* TODO %?\n%i\n%a" :prepend t)
+          ("n" "Personal notes" entry
+           (file+headline +org-capture-notes-file "Inbox")
+           "* %u %?\n%i\n%a" :prepend t)
+          ("j" "Journal" entry
+           (file+olp+datetree +org-capture-journal-file)
+           "* %U %?\n%i\n%a" :prepend t))))
+
+;; (after! org
+;;   (add-to-list 'org-capture-templates
+;;              '(("d" "Dream" entry
+;;                (file+headline +org-capture-todo-file "Dream")
+;;                "* TODO %?\n :PROPERTIES:\n :CATEGORY: dream\n :END:\n %i\n"
+;;                :prepend t :kill-buffer t))))
+
 (use-package! org-super-agenda
   :after org-agenda
   :config
-  (setq org-super-agenda-groups '((:auto-dir-name t)))
+  (setq org-super-agenda-groups
+        '((:name "Hoy"
+           :time-grid t
+           :date today
+           :todo "TODAY"
+           :scheduled today)
+          (:name "Esperando"
+           :tag "WAIT")
+          (:name "Important"
+           :priority "A")
+          (:name "Quick Picks"
+           :effort< "0:30")
+          (:priority<= "B"
+           :scheduled future
+           :order 1)))
   (org-super-agenda-mode))
