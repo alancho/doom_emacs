@@ -130,7 +130,8 @@
         org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")
         ))
 
-(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
+(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org")
+                                           (file-expand-wildcards "~/Dropbox/org/roam/daily/*.org"))))
                                            ;; (file-expand-wildcards "~/projects/orgmode/gtd/*/*.org"))))
 (after! ivy
   (setq ivy-use-virtual-buffers t))
