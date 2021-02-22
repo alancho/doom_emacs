@@ -180,22 +180,22 @@
 ;;                "* TODO %?\n :PROPERTIES:\n :CATEGORY: dream\n :END:\n %i\n"
 ;;                :prepend t :kill-buffer t))))
 
-(use-package! org-super-agenda
-  :after org-agenda
-  :config
-  (setq org-super-agenda-groups
-        '((:name "Hoy"
-           :time-grid t
-           :date today
-           :todo "TODAY"
-           :scheduled today)
-          (:name "Esperando"
-           :tag "WAIT")
-          (:name "Important"
-           :priority "A")
-          (:name "Quick Picks"
-           :effort< "0:30")
-          (:priority<= "B"
-           :scheduled future
-           :order 1)))
-  (org-super-agenda-mode))
+;; (use-package! org-super-agenda
+;;   :after org-agenda
+;;   :config
+;;   (setq org-super-agenda-groups
+;;         '((:name "Hoy"
+;;            :time-grid t
+;;            :date today
+;;            :todo "TODAY"
+;;            :scheduled today)
+;;           (:name "Esperando"
+;;            :tag "WAIT")
+;;           (:name "Important"
+;;            :priority "A")
+;;           (:name "Quick Picks"
+;;            :effort< "0:30")
+;;           (:priority<= "B"
+;;            :scheduled future
+;;            :order 1)))
+;;   (org-super-agenda-mode))
