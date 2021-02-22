@@ -117,21 +117,6 @@
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
-(use-package! org-journal
-  :config
-  (setq org-journal-dir "~/Dropbox/org/journal/"
-        org-journal-date-format "%A, %d %B %Y"
-        org-journal-file-format "%Y%m%d.org"
-        org-journal-file-type 'monthly))
-
-(setq bibtex-completion-bibliography
-      '(
-        "/home/alancho/Dropbox/org/library.bib"
-        "/home/alancho/Dropbox/cannabis/menelik/hemp.bib"
-	))
-
-(setq ivy-bibtex-default-action 'ivy-bibtex-insert-citation)
-
 (use-package! org-pomodoro
   :config
   (setq org-pomodoro-start-sound-p t
@@ -173,29 +158,168 @@
            (file+olp+datetree +org-capture-journal-file)
            "* %U %?\n%i\n%a" :prepend t))))
 
-;; (after! org
-;;   (add-to-list 'org-capture-templates
-;;              '(("d" "Dream" entry
-;;                (file+headline +org-capture-todo-file "Dream")
-;;                "* TODO %?\n :PROPERTIES:\n :CATEGORY: dream\n :END:\n %i\n"
-;;                :prepend t :kill-buffer t))))
-
-;; (use-package! org-super-agenda
-;;   :after org-agenda
+;; (use-package! org-ref
+;;   :after org-roam
+;;   ;; :init
+;;   ;; (setq org-ref-completion-library 'org-ref-ivy-cite)
 ;;   :config
-;;   (setq org-super-agenda-groups
-;;         '((:name "Hoy"
-;;            :time-grid t
-;;            :date today
-;;            :todo "TODAY"
-;;            :scheduled today)
-;;           (:name "Esperando"
-;;            :tag "WAIT")
-;;           (:name "Important"
-;;            :priority "A")
-;;           (:name "Quick Picks"
-;;            :effort< "0:30")
-;;           (:priority<= "B"
-;;            :scheduled future
-;;            :order 1)))
-;;   (org-super-agenda-mode))
+;;   (setq org-ref-default-bibliography "/home/alancho/Dropbox/org/library.bib"
+;;         reftex-default-bibliography '("/home/alancho/Dropbox/org/library.bib")
+;;         org-ref-bibliography-notes "/home/alancho/Dropbox/org/roam/bibnotes.org"
+;;         org-ref-notes-directory "/home/alancho/Dropbox/org/roam/" ;; org-ref also knows where the notes are stored, so there must be some direct way to open them from a cite-link!
+;;         org-ref-notes-function 'orb-edit-notes
+;;         org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex))
+
+(after! org-ref
+  (setq org-ref-default-bibliography "/home/alancho/Dropbox/org/library.bib"))
+
+;; (use-package! ivy-bibtex
+;;   :after org-ref
+;;   :config
+;;   (setq bibtex-completion-notes-path "/home/alancho/Dropbox/org/roam/"
+;;         bibtex-completion-bibliography "/home/alancho/Dropbox/org/library.bib"
+;;         bibtex-completion-pdf-field "file"
+;;         ;; ivy-bibtex-default-action 'ivy-bibtex-insert-citation
+;;         ))
+
+;; (use-package! org-roam-bibtex
+;;   :after org-roam
+;;   :hook (org-roam-mode . org-roam-bibtex-mode)
+;;   :bind (:map org-mode-map
+;;          (("<f8>" . orb-note-actions)))
+;;   :config
+;;   (setq orb-preformat-keywords
+;;         '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+;;   (setq orb-templates
+;;         '(("r" "ref" plain (function org-roam-capture--get-point)
+;;            ""
+;;            :file-name "${slug}"
+;;            :head "#+TITLE: ${title}
+;; #+ROAM_KEY: ${ref}
+;; - tags ::
+;; - keywords :: ${keywords}
+;; * ${title}
+;; :PROPERTIES:
+;; :Custom_ID: ${citekey}
+;; :URL: ${url}
+;; :AUTHOR: ${author-or-editor}
+;; :NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")
+;; :NOTER_PAGE:
+;; :END:
+;; "
+;;            :unnarrowed t))))
+
+;; (use-package! org-noter
+;;   :after (:any org pdf-view)
+;;   :config
+;;   (setq
+;;    org-noter-notes-window-location 'other-frame ;; The WM can handle splits
+;;    org-noter-always-create-frame nil ;; Please stop opening frames
+;;    org-noter-hide-other nil ;; I want to see the whole file
+;;    org-noter-notes-search-path (list org-roam-directory))) ;; Everything is relative to the main notes file
+
+;; (use-package! org-roam
+;;   :hook ((after-init . org-roam-mode))
+;;   :custom
+;;   (setq org-roam-directory "/home/alancho/Dropbox/org/roam/"))
+
+
+(use-package! org-roam
+  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
+  :hook
+  (after-init . org-roam-mode)
+  :init
+  (map! :leader
+        :prefix "n"
+        :desc "org-roam" "l" #'org-roam
+        :desc "org-roam-insert" "i" #'org-roam-insert
+        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
+        :desc "org-roam-find-file" "f" #'org-roam-find-file
+        :desc "org-roam-show-graph" "g" #'org-roam-graph-show
+        :desc "org-roam-capture" "c" #'org-roam-capture
+        :desc "org-roam-dailies-capture-today" "j" #'org-roam-dailies-capture-today)
+  (setq org-roam-directory "/home/alancho/Dropbox/org/roam/"
+        ;; org-roam-db-gc-threshold most-positive-fixnum
+        ;; org-roam-graph-exclude-matcher "private"
+        org-roam-tag-sources '(prop last-directory)
+        org-id-link-to-org-use-id t)
+  :config
+  (setq org-roam-capture-templates
+        '(("d" "default" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "${slug}"
+           :head "#+title: ${title}\n"
+           :immediate-finish t
+           :unnarrowed t)
+          ("p" "private" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "private/${slug}"
+           :head "#+title: ${title}\n"
+           :immediate-finish t
+           :unnarrowed t)))
+  (setq org-roam-capture-ref-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "${slug}"
+           :head "#+roam_key: ${ref}
+#+roam_tags: website
+#+title: ${title}
+- source :: ${ref}"
+           :unnarrowed t)))
+  (setq org-roam-dailies-directory "daily/")
+  (setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         #'org-roam-capture--get-point
+         "* %?"
+         :file-name "daily/%<%Y-%m-%d>"
+         :head "#+title: %<%Y-%m-%d>\n\n"))))
+
+(after! org-noter
+  org-noter-doc-split-fraction '(0.57 0.43))
+
+(use-package! org-roam-server)
+
+(use-package! org-roam-bibtex
+  :after (org-roam)
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :config
+  (setq org-roam-bibtex-preformat-keywords
+   '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  (setq orb-templates
+        `(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "lit/${slug}"
+           :head ,(concat
+                   "#+title: ${=key=}: ${title}\n"
+                   "#+roam_key: ${ref}\n\n"
+                   "* ${title}\n"
+                   "  :PROPERTIES:\n"
+                   "  :Custom_ID: ${=key=}\n"
+                   "  :URL: ${url}\n"
+                   "  :AUTHOR: ${author-or-editor}\n"
+                   "  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+                   "  :NOTER_PAGE: \n"
+                   "  :END:\n")
+           :unnarrowed t))))
+
+(use-package! bibtex-completion
+  :config
+  (setq bibtex-completion-notes-path "~/Dropbox/org/roam/lit/"
+        bibtex-completion-bibliography "~/Dropbox/org/library.bib"
+        bibtex-completion-pdf-field "file"
+        bibtex-completion-notes-template-multiple-files
+         (concat
+          "#+title: ${title}\n"
+          "#+roam_key: cite:${=key=}\n"
+          "* TODO Notes\n"
+          ":PROPERTIES:\n"
+          ":Custom_ID: ${=key=}\n"
+          ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+          ":AUTHOR: ${author-abbrev}\n"
+          ":JOURNAL: ${journaltitle}\n"
+          ":DATE: ${date}\n"
+          ":YEAR: ${year}\n"
+          ":DOI: ${doi}\n"
+          ":URL: ${url}\n"
+          ":END:\n\n"
+          )))

@@ -85,7 +85,7 @@
 
        :tools
        ;;ansible
-       biblio
+       ;; biblio
        ;;debugger          ; FIXME stepping through code, to help you add bugs
        ;;direnv
        ;;docker
@@ -149,7 +149,7 @@
        ;;ocaml             ; an objective camel
        (org +roam
             +pretty
-            +journal
+            +noter
             +pomodoro)         ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
