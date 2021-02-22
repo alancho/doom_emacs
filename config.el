@@ -224,56 +224,55 @@
 ;;   :custom
 ;;   (setq org-roam-directory "/home/alancho/Dropbox/org/roam/"))
 
-
-(use-package! org-roam
-  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-  :hook
-  (after-init . org-roam-mode)
-  :init
-  (map! :leader
-        :prefix "n"
-        :desc "org-roam" "l" #'org-roam
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
-        :desc "org-roam-find-file" "f" #'org-roam-find-file
-        :desc "org-roam-show-graph" "g" #'org-roam-graph-show
-        :desc "org-roam-capture" "c" #'org-roam-capture
-        :desc "org-roam-dailies-capture-today" "j" #'org-roam-dailies-capture-today)
-  (setq org-roam-directory "/home/alancho/Dropbox/org/roam/"
-        ;; org-roam-db-gc-threshold most-positive-fixnum
-        ;; org-roam-graph-exclude-matcher "private"
-        org-roam-tag-sources '(prop last-directory)
-        org-id-link-to-org-use-id t)
-  :config
-  (setq org-roam-capture-templates
-        '(("d" "default" plain (function org-roam--capture-get-point)
-           "%?"
-           :file-name "${slug}"
-           :head "#+title: ${title}\n"
-           :immediate-finish t
-           :unnarrowed t)
-          ("p" "private" plain (function org-roam-capture--get-point)
-           "%?"
-           :file-name "private/${slug}"
-           :head "#+title: ${title}\n"
-           :immediate-finish t
-           :unnarrowed t)))
-  (setq org-roam-capture-ref-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
-           "%?"
-           :file-name "${slug}"
-           :head "#+roam_key: ${ref}
-#+roam_tags: website
-#+title: ${title}
-- source :: ${ref}"
-           :unnarrowed t)))
-  (setq org-roam-dailies-directory "daily/")
-  (setq org-roam-dailies-capture-templates
-      '(("d" "default" entry
-         #'org-roam-capture--get-point
-         "* %?"
-         :file-name "daily/%<%Y-%m-%d>"
-         :head "#+title: %<%Y-%m-%d>\n\n"))))
+;; (use-package! org-roam
+;;   :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
+;;   :hook
+;;   (after-init . org-roam-mode)
+;;   :init
+;;   (map! :leader
+;;         :prefix "n"
+;;         :desc "org-roam" "l" #'org-roam
+;;         :desc "org-roam-insert" "i" #'org-roam-insert
+;;         :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
+;;         :desc "org-roam-find-file" "f" #'org-roam-find-file
+;;         :desc "org-roam-show-graph" "g" #'org-roam-graph-show
+;;         :desc "org-roam-capture" "c" #'org-roam-capture
+;;         :desc "org-roam-dailies-capture-today" "j" #'org-roam-dailies-capture-today)
+;;   (setq org-roam-directory "/home/alancho/Dropbox/org/roam/"
+;;         ;; org-roam-db-gc-threshold most-positive-fixnum
+;;         ;; org-roam-graph-exclude-matcher "private"
+;;         org-roam-tag-sources '(prop last-directory)
+;;         org-id-link-to-org-use-id t)
+;;   :config
+;;   (setq org-roam-capture-templates
+;;         '(("d" "default" plain (function org-roam--capture-get-point)
+;;            "%?"
+;;            :file-name "${slug}"
+;;            :head "#+title: ${title}\n"
+;;            :immediate-finish t
+;;            :unnarrowed t)
+;;           ("p" "private" plain (function org-roam-capture--get-point)
+;;            "%?"
+;;            :file-name "private/${slug}"
+;;            :head "#+title: ${title}\n"
+;;            :immediate-finish t
+;;            :unnarrowed t)))
+;;   (setq org-roam-capture-ref-templates
+;;         '(("r" "ref" plain (function org-roam-capture--get-point)
+;;            "%?"
+;;            :file-name "${slug}"
+;;            :head "#+roam_key: ${ref}
+;; #+roam_tags: website
+;; #+title: ${title}
+;; - source :: ${ref}"
+;;            :unnarrowed t)))
+;;   (setq org-roam-dailies-directory "daily/")
+;;   (setq org-roam-dailies-capture-templates
+;;       '(("d" "default" entry
+;;          #'org-roam-capture--get-point
+;;          "* %?"
+;;          :file-name "daily/%<%Y-%m-%d>"
+;;          :head "#+title: %<%Y-%m-%d>\n\n"))))
 
 (after! org-noter
   org-noter-doc-split-fraction '(0.57 0.43))
