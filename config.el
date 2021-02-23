@@ -172,7 +172,7 @@
 ;;         org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex))
 
 (after! org-ref
-  (setq org-ref-default-bibliography "/home/alancho/Dropbox/org/library.bib"))
+  (setq org-ref-default-bibliography (list "/home/alancho/Dropbox/org/library.bib")))
 
 ;; (use-package! ivy-bibtex
 ;;   :after org-ref
