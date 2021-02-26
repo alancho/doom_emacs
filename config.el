@@ -136,4 +136,4 @@
 (use-package! bibtex-completion
   :config
   (setq bibtex-completion-bibliography "~/Dropbox/org/library.bib"
-        bibtex-completion-pdf-field "file"))
+        ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
