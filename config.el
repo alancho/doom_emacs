@@ -32,8 +32,6 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Dropbox/org")
-(setq org-roam-directory "~/Dropbox/org/roam")
-(add-hook 'after-init-hook 'org-roam-mode)
 (setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -130,32 +128,12 @@
         org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")
         ))
 
-(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org")
-                                           ;; (file-expand-wildcards "~/Dropbox/org/roam/daily/*.org"))))
-                                           ;; (file-expand-wildcards "~/projects/orgmode/gtd/*/*.org"))))
-                                           )))
+(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
+
 (after! ivy
   (setq ivy-use-virtual-buffers t))
 
 (use-package! bibtex-completion
   :config
-  (setq bibtex-completion-notes-path "~/Dropbox/org/roam/lit/"
-        bibtex-completion-bibliography "~/Dropbox/org/library.bib"
+  (setq bibtex-completion-bibliography "~/Dropbox/org/library.bib"
         bibtex-completion-pdf-field "file"))
-
-(use-package! org-roam-server
-  :config
-  (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8080
-        org-roam-server-export-inline-images t
-        org-roam-server-authenticate nil
-        org-roam-server-network-poll t
-        org-roam-server-network-arrows nil
-        org-roam-server-network-label-truncate t
-        org-roam-server-network-label-truncate-length 60
-        org-roam-server-network-label-wrap-length 20))
-
-(use-package! md-roam ; load immediately, before org-roam
-  :config
-  (setq md-roam-file-extension-single "Rmd"))
-    ;you can omit this if md, which is the default.
