@@ -137,3 +137,13 @@
   :config
   (setq bibtex-completion-bibliography "~/Dropbox/org/library.bib"
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
+
+(use-package! deft
+  :after org
+  :bind
+  ("C-c r d" . deft)
+  :custom
+  (deft-recursive t)
+  (deft-use-filter-string-for-filename t)
+  (deft-default-extension "org")
+  (deft-directory "~/Dropbox/org/roam/" ))
