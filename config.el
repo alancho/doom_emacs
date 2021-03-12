@@ -64,24 +64,6 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(defun then_R_operator ()
-  "R - %>% operator or 'then' pipe operator"
-  (interactive)
-  (just-one-space 1)
-  (insert "%>%")
-  (reindent-then-newline-and-indent))
-
-(defun then_ggplot_plus ()
-  (interactive)
-  (just-one-space 1)
-  (insert "+")
-  (reindent-then-newline-and-indent))
-
-(defun forbid-vertical-split ()
-  "Only permit horizontal window splits."
-  (setq-local split-height-threshold nil)
-  (setq-local split-width-threshold 0))
-
 (use-package! ess
   :hook (ess-mode-hook . forbid-vertical-split)
   :init
@@ -90,20 +72,32 @@
   (require 'ess-r-mode)
   (setq ess-indent-with-fancy-comments nil)
   :config
+  (defun then_R_operator ()
+    "R - %>% operator or 'then' pipe operator"
+    (interactive)
+    (just-one-space 1)
+    (insert "%>%")
+    (reindent-then-newline-and-indent))
+  (defun then_ggplot_plus ()
+    (interactive)
+    (just-one-space 1)
+    (insert "+")
+    (reindent-then-newline-and-indent))
+  (defun forbid-vertical-split ()
+    "Only permit horizontal window splits."
+    (setq-local split-height-threshold nil)
+    (setq-local split-width-threshold 0))
   (setq ess-ask-for-ess-directory nil
 	ess-local-process-name "R"
 	ansi-color-for-comint-mode 'filter
 	comint-scroll-to-bottom-on-input t
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
-	;; ess-eval-visibly-p nil
         ess-use-flymake nil
-        ess-eval-visibly 'nowait
-	;; ess-eval-visibly t
+        ess-eval-visibly nil
 	ess-default-style 'RStudio
 	fill-column 72
 	comment-auto-fill-only-comments t)
-  ;; (auto-fill-mode t)
   :bind (:map ess-mode-map
 	 ("C-<return>" . 'then_R_operator)
 	 ("M-<return>" . 'then_ggplot_plus)
@@ -114,19 +108,6 @@
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
-
-(use-package! org-pomodoro
-  :config
-  (setq org-pomodoro-start-sound-p t
-        org-pomodoro-killed-sound-p t
-        org-pomodoro-ask-upon-killing t
-        org-pomodoro-keep-killed-pomodoro-time t
-        org-pomodoro-start-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-10.wav")
-        org-pomodoro-finished-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-28.wav")
-        org-pomodoro-short-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-12.wav")
-        org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")
-        org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")
-        ))
 
 (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
 
@@ -140,10 +121,8 @@
 
 (use-package! deft
   :after org
-  :bind
-  ("C-c r d" . deft)
   :custom
   (deft-recursive t)
   (deft-use-filter-string-for-filename t)
-  (deft-default-extension "org")
+  (deft-default-extension "org" "md" "Rmd")
   (deft-directory "~/Dropbox/org/roam/" ))
