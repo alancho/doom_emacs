@@ -63,24 +63,20 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+;;
+;;
 
-(defun then_R_operator ()
-  "R - %>% operator or 'then' pipe operator"
-  (interactive)
-  (just-one-space 1)
-  (insert "%>%")
-  (reindent-then-newline-and-indent))
+(autoload 'helm-bibtex "helm-bibtex" "" t)
 
-(defun then_ggplot_plus ()
-  (interactive)
-  (just-one-space 1)
-  (insert "+")
-  (reindent-then-newline-and-indent))
 
-(defun forbid-vertical-split ()
-  "Only permit horizontal window splits."
-  (setq-local split-height-threshold nil)
-  (setq-local split-width-threshold 0))
+(setq
+ org_notes "~/Dropbox/org/roam"
+ zot_bib "~/Dropbox/org/library.bib"
+ ;; org-directory org_notes
+ deft-directory org_notes
+ org-roam-directory org_notes
+ org-default-notes-file (concat org_notes "/bibnotes.org")
+ )
 
 (use-package! ess
   :hook (ess-mode-hook . forbid-vertical-split)
@@ -90,20 +86,32 @@
   (require 'ess-r-mode)
   (setq ess-indent-with-fancy-comments nil)
   :config
+  (defun then_R_operator ()
+    "R - %>% operator or 'then' pipe operator"
+    (interactive)
+    (just-one-space 1)
+    (insert "%>%")
+    (reindent-then-newline-and-indent))
+  (defun then_ggplot_plus ()
+    (interactive)
+    (just-one-space 1)
+    (insert "+")
+    (reindent-then-newline-and-indent))
+  (defun forbid-vertical-split ()
+    "Only permit horizontal window splits."
+    (setq-local split-height-threshold nil)
+    (setq-local split-width-threshold 0))
   (setq ess-ask-for-ess-directory nil
 	ess-local-process-name "R"
 	ansi-color-for-comint-mode 'filter
 	comint-scroll-to-bottom-on-input t
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
-	;; ess-eval-visibly-p nil
         ess-use-flymake nil
-        ;; ess-eval-visibly 'nowait
-	ess-eval-visibly t
+        ess-eval-visibly nil
 	ess-default-style 'RStudio
 	fill-column 72
 	comment-auto-fill-only-comments t)
-  ;; (auto-fill-mode t)
   :bind (:map ess-mode-map
 	 ("C-<return>" . 'then_R_operator)
 	 ("M-<return>" . 'then_ggplot_plus)
@@ -115,39 +123,143 @@
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
-(use-package! org-pomodoro
-  :config
-  (setq org-pomodoro-start-sound-p t
-        org-pomodoro-killed-sound-p t
-        org-pomodoro-ask-upon-killing t
-        org-pomodoro-keep-killed-pomodoro-time t
-        org-pomodoro-start-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-10.wav")
-        org-pomodoro-finished-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-28.wav")
-        org-pomodoro-short-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-12.wav")
-        org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")
-        org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")
-        ))
-
 (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
 
 (after! ivy
   (setq ivy-use-virtual-buffers t))
 
-(use-package! bibtex-completion
-  :config
-  (setq bibtex-completion-bibliography "~/Dropbox/org/library.bib"
-        ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
+;; (use-package! bibtex-completion
+;;   :config
+;;   (setq bibtex-completion-bibliography "~/Dropbox/org/library.bib"
+;;         bibtex-completion-pdf-field "file"
+;;         ;; ivy-bibtex-default-action 'ivy-bibtex-insert-citation
+;;         ))
 
 (use-package! deft
   :after org
   :bind
-  ("C-c r d" . deft)
+  ("<f6>" . deft)
   :custom
   (deft-recursive t)
   (deft-use-filter-string-for-filename t)
   (deft-default-extension "org")
+<<<<<<< HEAD
   (deft-directory "~/Dropbox/org/roam/" ))
 
 (use-package! zetteldeft
   :after deft
   :config (zetteldeft-set-classic-keybindings))
+=======
+  (deft-directory "~/Dropbox/org/roam/"))
+
+;; (use-package! org-roam-bibtex
+;;   :after org-roam
+;;   :load-path "~/projects/org-roam-bibtex/"
+;;   :hook (org-roam-mode . org-roam-bibtex-mode))
+
+;; (setq org-ref-completion-library 'org-ref-ivy-cite)
+
+;; (use-package! org-ref
+;;   :after org
+;;   :config
+;;   (setq org-ref-notes-directory "~/Dropbox/org"
+;;         org-ref-default-bibliography '("~/Dropbox/org/library.bib")
+;;         org-ref-pdf-directory "~/Dropbox/Papers/"))
+
+(use-package! org-ref
+    :config
+    (setq
+         org-ref-completion-library 'org-ref-ivy-cite
+         org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
+         org-ref-default-bibliography (list "/home/alancho/Dropbox/org/library.bib")
+         org-ref-bibliography-notes "/home/alancho/Dropbox/org/bibnotes.org"
+         org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
+         org-ref-notes-directory "/home/alancho/Dropbox/org/"
+         org-ref-notes-function 'orb-edit-notes
+    ))
+
+;; (use-package! org-journal
+;;       ;; :bind
+;;       ;; ("C-c n j" . org-journal-new-entry)
+;;       :custom
+;;       (org-journal-dir "~/Dropbox/org/roam/")
+;;       (org-journal-date-prefix "#+TITLE: ")
+;;       (org-journal-file-format "%Y-%m-%d.org")
+;;       (org-journal-date-format "%A, %d %B %Y"))
+;; (setq org-journal-enable-agenda-integration t)
+
+;; org-journal the DOOM way
+(use-package! org-journal
+  :bind
+  ("<f7>" . org-journal-new-entry)
+  :init
+  (setq org-journal-dir "~/Dropbox/org/roam/"
+        org-journal-date-prefix "#+TITLE: "
+        org-journal-file-format "%Y-%m-%d.org"
+        org-journal-date-format "%A, %d %B %Y")
+  :config
+  (setq org-journal-find-file #'find-file-other-window )
+  )
+
+(setq org-journal-enable-agenda-integration t)
+
+;; (after! org-roam
+;;       (setq org-roam-capture-ref-templates
+;;             '(("r" "ref" plain (function org-roam-capture--get-point)
+;;                "%?"
+;;                :file-name "websites/${slug}"
+;;                :head "#+TITLE: ${title}
+;;     #+ROAM_KEY: ${ref}
+;;     - source :: ${ref}"
+;;                :unnarrowed t))))
+
+(setq
+ bibtex-completion-notes-path org_notes
+ bibtex-completion-bibliography zot_bib
+ bibtex-completion-pdf-field "file"
+ bibtex-completion-notes-template-multiple-files
+ (concat
+  "#+TITLE: ${title}\n"
+  "#+ROAM_KEY: cite:${=key=}\n"
+  "* TODO Notes\n"
+  ":PROPERTIES:\n"
+  ":Custom_ID: ${=key=}\n"
+  ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+  ":AUTHOR: ${author-abbrev}\n"
+  ":JOURNAL: ${journaltitle}\n"
+  ":DATE: ${date}\n"
+  ":YEAR: ${year}\n"
+  ":DOI: ${doi}\n"
+  ":URL: ${url}\n"
+  ":END:\n\n"
+  )
+ )
+
+;; (use-package! org-ref
+;;   :config
+;;   (setq
+;;    org-ref-completion-library 'org-ref-ivy-cite
+;;    org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
+;;    org-ref-default-bibliography (list zot_bib)
+;;    org-ref-bibliography-notes (concat org_notes "/bibnotes.org")
+;;    org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
+;;    org-ref-notes-directory org_notes
+;;    org-ref-notes-function 'orb-edit-notes
+;;    ))
+
+;; (use-package! org-roam-bibtex
+;;   :after (org-roam)
+;;   :hook (org-roam-mode . org-roam-bibtex-mode)
+;;   :config
+;;   (setq orb-preformat-keywords
+;;         '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+;;   (setq orb-templates
+;;         '(("r" "ref" plain (function org-roam-capture--get-point)
+;;            ""
+;;            :file-name "${slug}"
+;;            :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
+;; - tags ::
+;; - keywords :: ${keywords}
+;; \n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
+;;            :unnarrowed t))))
+>>>>>>> a9c508cb07a3dd2deb34921b312a4cf1aed7b3ba
