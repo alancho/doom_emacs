@@ -147,3 +147,7 @@
   (deft-use-filter-string-for-filename t)
   (deft-default-extension "org")
   (deft-directory "~/Dropbox/org/roam/" ))
+
+(use-package! zetteldeft
+  :after deft
+  :config (zetteldeft-set-classic-keybindings))
