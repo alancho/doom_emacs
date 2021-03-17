@@ -49,9 +49,6 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-<<<<<<< HEAD
-(package! zetteldeft)
-=======
 (package! org-ref)
 
 (package! org-roam-bibtex
@@ -62,4 +59,3 @@
 
 ;; When using bibtex-completion via the `biblio` module
 (unpin! bibtex-completion helm-bibtex ivy-bibtex)
->>>>>>> a9c508cb07a3dd2deb34921b312a4cf1aed7b3ba

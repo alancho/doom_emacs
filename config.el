@@ -66,18 +66,6 @@
 ;;
 ;;
 
-(autoload 'helm-bibtex "helm-bibtex" "" t)
-
-
-(setq
- org_notes "~/Dropbox/org/roam"
- zot_bib "~/Dropbox/org/library.bib"
- ;; org-directory org_notes
- deft-directory org_notes
- org-roam-directory org_notes
- org-default-notes-file (concat org_notes "/bibnotes.org")
- )
-
 (use-package! ess
   :hook (ess-mode-hook . forbid-vertical-split)
   :init
@@ -108,7 +96,7 @@
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
         ess-use-flymake nil
-        ess-eval-visibly nil
+        ess-eval-visibly t
 	ess-default-style 'RStudio
 	fill-column 72
 	comment-auto-fill-only-comments t)
@@ -125,141 +113,18 @@
 
 (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
 
-(after! ivy
-  (setq ivy-use-virtual-buffers t))
+;; (after! ivy
+;;   (setq ivy-use-virtual-buffers t))
 
-;; (use-package! bibtex-completion
-;;   :config
-;;   (setq bibtex-completion-bibliography "~/Dropbox/org/library.bib"
-;;         bibtex-completion-pdf-field "file"
-;;         ;; ivy-bibtex-default-action 'ivy-bibtex-insert-citation
-;;         ))
-
-(use-package! deft
-  :after org
-  :bind
-  ("<f6>" . deft)
-  :custom
-  (deft-recursive t)
-  (deft-use-filter-string-for-filename t)
-  (deft-default-extension "org")
-<<<<<<< HEAD
-  (deft-directory "~/Dropbox/org/roam/" ))
-
-(use-package! zetteldeft
-  :after deft
-  :config (zetteldeft-set-classic-keybindings))
-=======
-  (deft-directory "~/Dropbox/org/roam/"))
-
-;; (use-package! org-roam-bibtex
-;;   :after org-roam
-;;   :load-path "~/projects/org-roam-bibtex/"
-;;   :hook (org-roam-mode . org-roam-bibtex-mode))
-
-;; (setq org-ref-completion-library 'org-ref-ivy-cite)
-
-;; (use-package! org-ref
-;;   :after org
-;;   :config
-;;   (setq org-ref-notes-directory "~/Dropbox/org"
-;;         org-ref-default-bibliography '("~/Dropbox/org/library.bib")
-;;         org-ref-pdf-directory "~/Dropbox/Papers/"))
-
-(use-package! org-ref
-    :config
-    (setq
-         org-ref-completion-library 'org-ref-ivy-cite
-         org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
-         org-ref-default-bibliography (list "/home/alancho/Dropbox/org/library.bib")
-         org-ref-bibliography-notes "/home/alancho/Dropbox/org/bibnotes.org"
-         org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
-         org-ref-notes-directory "/home/alancho/Dropbox/org/"
-         org-ref-notes-function 'orb-edit-notes
-    ))
-
-;; (use-package! org-journal
-;;       ;; :bind
-;;       ;; ("C-c n j" . org-journal-new-entry)
-;;       :custom
-;;       (org-journal-dir "~/Dropbox/org/roam/")
-;;       (org-journal-date-prefix "#+TITLE: ")
-;;       (org-journal-file-format "%Y-%m-%d.org")
-;;       (org-journal-date-format "%A, %d %B %Y"))
-;; (setq org-journal-enable-agenda-integration t)
-
-;; org-journal the DOOM way
-(use-package! org-journal
-  :bind
-  ("<f7>" . org-journal-new-entry)
-  :init
-  (setq org-journal-dir "~/Dropbox/org/roam/"
-        org-journal-date-prefix "#+TITLE: "
-        org-journal-file-format "%Y-%m-%d.org"
-        org-journal-date-format "%A, %d %B %Y")
+(use-package! bibtex-completion
   :config
-  (setq org-journal-find-file #'find-file-other-window )
-  )
+  (setq bibtex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
+        reftex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
+        bibtex-completion-pdf-field "file"
+        ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
 
-(setq org-journal-enable-agenda-integration t)
+ (use-package! org-ref
+    :custom
+    (org-ref-default-bibliography "~/Dropbox/org/roam/literature/library.bib"))
 
-;; (after! org-roam
-;;       (setq org-roam-capture-ref-templates
-;;             '(("r" "ref" plain (function org-roam-capture--get-point)
-;;                "%?"
-;;                :file-name "websites/${slug}"
-;;                :head "#+TITLE: ${title}
-;;     #+ROAM_KEY: ${ref}
-;;     - source :: ${ref}"
-;;                :unnarrowed t))))
-
-(setq
- bibtex-completion-notes-path org_notes
- bibtex-completion-bibliography zot_bib
- bibtex-completion-pdf-field "file"
- bibtex-completion-notes-template-multiple-files
- (concat
-  "#+TITLE: ${title}\n"
-  "#+ROAM_KEY: cite:${=key=}\n"
-  "* TODO Notes\n"
-  ":PROPERTIES:\n"
-  ":Custom_ID: ${=key=}\n"
-  ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
-  ":AUTHOR: ${author-abbrev}\n"
-  ":JOURNAL: ${journaltitle}\n"
-  ":DATE: ${date}\n"
-  ":YEAR: ${year}\n"
-  ":DOI: ${doi}\n"
-  ":URL: ${url}\n"
-  ":END:\n\n"
-  )
- )
-
-;; (use-package! org-ref
-;;   :config
-;;   (setq
-;;    org-ref-completion-library 'org-ref-ivy-cite
-;;    org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
-;;    org-ref-default-bibliography (list zot_bib)
-;;    org-ref-bibliography-notes (concat org_notes "/bibnotes.org")
-;;    org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
-;;    org-ref-notes-directory org_notes
-;;    org-ref-notes-function 'orb-edit-notes
-;;    ))
-
-;; (use-package! org-roam-bibtex
-;;   :after (org-roam)
-;;   :hook (org-roam-mode . org-roam-bibtex-mode)
-;;   :config
-;;   (setq orb-preformat-keywords
-;;         '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
-;;   (setq orb-templates
-;;         '(("r" "ref" plain (function org-roam-capture--get-point)
-;;            ""
-;;            :file-name "${slug}"
-;;            :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
-;; - tags ::
-;; - keywords :: ${keywords}
-;; \n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
-;;            :unnarrowed t))))
->>>>>>> a9c508cb07a3dd2deb34921b312a4cf1aed7b3ba
+(global-set-key (kbd "<f6>") #'org-ref-helm-insert-cite-link)
