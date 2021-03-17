@@ -122,9 +122,3 @@
         reftex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
         bibtex-completion-pdf-field "file"
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
-
- (use-package! org-ref
-    :custom
-    (org-ref-default-bibliography "~/Dropbox/org/roam/literature/library.bib"))
-
-(global-set-key (kbd "<f6>") #'org-ref-helm-insert-cite-link)
