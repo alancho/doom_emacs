@@ -122,3 +122,8 @@
         reftex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
         bibtex-completion-pdf-field "file"
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
+
+
+(global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
+;; (global-set-key (kbd "<f5>") #'org-edit-special)
+(global-set-key (kbd "<f6>") #'ivy-bibtex)
