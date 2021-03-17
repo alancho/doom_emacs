@@ -122,17 +122,3 @@
         reftex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
         bibtex-completion-pdf-field "file"
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
-
- (use-package! org-ref
-    :custom
-    (org-ref-default-bibliography (list "~/Dropbox/org/roam/literature/library.bib")))
-
-(global-set-key (kbd "<f6>") #'org-ref-helm-insert-cite-link)
-
-(setq org-pandoc-options-for-docx '((standalone . nil)))
-;; (setq org-pandoc-options-for-docx '((reference_docx . "~/Dropbox/templates/cic.docx")))
-
-(setq org-latex-pdf-process
-    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
-
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown+r-mode))
