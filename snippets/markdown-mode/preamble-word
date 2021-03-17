@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: preamble-word
+# uuid: preamble-word
+# key: word
+# condition: t
+# --
+---
+title: ${1:title}
+author: Alan Severini
+institute: "Ecofisiología, INTA Pergamino"
+date: "\`r Sys.Date()\`"
+bibliography: /home/alancho/Dropbox/org/roam/literature/library.bib
+csl: /home/alancho/Dropbox/templates/csl/field-crops-research.csl
+output:
+  bookdown::word_document2:
+    number_sections: false
+    reference_docx: /home/alancho/Dropbox/templates/cic.docx
+---

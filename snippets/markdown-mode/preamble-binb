@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: preamble-binb
+# uuid: preamble-binb
+# key: binb
+# condition: t
+# --
+---
+title: ${1:title}
+author: Alan Severini
+institute: "Ecofisiología, INTA Pergamino"
+date: "\`r Sys.Date()\`"
+always_allow_html: true
+bibliography: /home/alancho/Dropbox/org/roam/literature/library.bib
+csl: /home/alancho/Dropbox/templates/csl/field-crops-research.csl
+output:
+  binb::metropolis:
+    slide_level: 2
+---
