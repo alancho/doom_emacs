@@ -31,8 +31,8 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/org")
-(setq org-support-shift-select t)
+;; (setq org-directory "~/Dropbox/org")
+;; (setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -111,7 +111,7 @@
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
-(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
+;; (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
 
 ;; (after! ivy
 ;;   (setq ivy-use-virtual-buffers t))
