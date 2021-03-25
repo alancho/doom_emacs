@@ -130,3 +130,4 @@
 
 (setq projectile-track-known-projects-automatically nil)
 (setq projectile-project-search-path '("~/Dropbox/"))
+(setq projectile-project-root-files-bottom-up #'(".projectile"))
