@@ -127,6 +127,7 @@
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 ;; (global-set-key (kbd "<f5>") #'org-edit-special)
 (global-set-key (kbd "<f6>") #'ivy-bibtex)
+(global-set-key (kbd "<f7>") #'unfill-toggle)
 
 (setq projectile-track-known-projects-automatically nil)
 (setq projectile-project-search-path '("~/Dropbox/"))
