@@ -111,7 +111,7 @@
 	 ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
 
-;; (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
+(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
 
 ;; (after! ivy
 ;;   (setq ivy-use-virtual-buffers t))
