@@ -80,6 +80,11 @@
     (just-one-space 1)
     (insert "%>%")
     (reindent-then-newline-and-indent))
+  (defun then_R_operator_inline ()
+    (interactive)
+    (just-one-space 1)
+    (insert "%>%")
+    (just-one-space 1))
   (defun then_ggplot_plus ()
     (interactive)
     (just-one-space 1)
@@ -101,11 +106,13 @@
 	fill-column 72
 	comment-auto-fill-only-comments t)
   :bind (:map ess-mode-map
+	 ("C-S-<return>" . 'then_R_operator_inline)
 	 ("C-<return>" . 'then_R_operator)
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
 	 ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          :map inferior-ess-r-mode-map
+	 ("C-S-<return>" . 'then_R_operator_inline)
 	 ("C-<return>" . 'then_R_operator)
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
