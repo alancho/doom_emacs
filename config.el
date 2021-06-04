@@ -101,7 +101,7 @@
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
         ess-use-flymake nil
-        ess-eval-visibly nil
+        ess-eval-visibly t
 	ess-default-style 'RStudio
 	fill-column 72
 	comment-auto-fill-only-comments t)
