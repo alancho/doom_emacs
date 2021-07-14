@@ -101,7 +101,7 @@
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
         ess-use-flymake nil
-        ess-eval-visibly nil
+        ess-eval-visibly t
 	ess-default-style 'RStudio
 	fill-column 72
 	comment-auto-fill-only-comments t)
@@ -138,7 +138,7 @@
 
 (setq projectile-track-known-projects-automatically nil)
 (setq projectile-project-search-path '("~/Dropbox/"))
-(setq projectile-project-root-files-bottom-up #'(".projectile"))
+;; (setq projectile-project-root-files-bottom-up #'(".projectile"))
 
 (use-package! org-pomodoro
   :config
@@ -151,3 +151,9 @@
         org-pomodoro-short-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-12.wav")
         org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")
         org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")))
+
+;; Para abrir nautilus desde dired con "e"
+(defun dired-open-nautilus ()
+  (interactive)
+  (call-process "nautilus" nil 0 nil (dired-current-directory)))
+(define-key dired-mode-map "e" 'dired-open-nautilus)
