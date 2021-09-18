@@ -27,7 +27,7 @@
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-vibrant)
 
-(set-face-attribute 'default nil :height 105 :family "monospace" :weight 'normal :width 'normal)
+(set-face-attribute 'default nil :height 110 :family "monospace" :weight 'normal :width 'normal)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -140,8 +140,25 @@
 (setq projectile-project-search-path '("~/Dropbox/"))
 ;; (setq projectile-project-root-files-bottom-up #'(".projectile"))
 
+;; (use-package! org-pomodoro
+;;   :config
+;;   (setq org-pomodoro-start-sound-p t
+;;         org-pomodoro-killed-sound-p t
+;;         org-pomodoro-ask-upon-killing t
+;;         org-pomodoro-keep-killed-pomodoro-time t
+;;         org-pomodoro-start-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-10.wav")
+;;         org-pomodoro-finished-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-28.wav")
+;;         org-pomodoro-short-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-12.wav")
+;;         org-pomodoro-long-break-sound (expand-file-name "~/Dropbox/templates/sonidos/percussion-50.wav")
+;;         org-pomodoro-killed-sound (expand-file-name"~/Dropbox/templates/sonidos/percussion-10.wav")))
+
 ;; Para abrir nautilus desde dired con "e"
 (defun dired-open-nautilus ()
   (interactive)
   (call-process "nautilus" nil 0 nil (dired-current-directory)))
 (define-key dired-mode-map "e" 'dired-open-nautilus)
+
+(setq python-shell-interpreter "python3"
+      flycheck-python-pycompile-executable "python3")
+
+(conda-env-activate "/home/alancho/anaconda3/envs/ee")
