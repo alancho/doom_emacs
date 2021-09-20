@@ -161,4 +161,8 @@
 (setq python-shell-interpreter "python3"
       flycheck-python-pycompile-executable "python3")
 
-(conda-env-activate "/home/alancho/anaconda3/envs/ee")
+(conda-env-activate "/home/alancho/anaconda3/envs/ml")
+
+;; No quiero company en ess-mode
+(setq company-global-modes
+      '(not ess-mode))
