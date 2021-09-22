@@ -153,4 +153,5 @@
 
 ;; No quiero company en ess-mode
 (setq company-global-modes
-      '(not ess-r-mode))
+      '(not ess-r-mode
+            inferior-ess-r-mode))
