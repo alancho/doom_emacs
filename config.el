@@ -154,4 +154,7 @@
 ;; No quiero company en ess-mode
 (setq company-global-modes
       '(not ess-r-mode
-            inferior-ess-r-mode))
+            inferior-ess-r-mode
+            emacs-lisp-mode
+            markdown-mode
+            text-mode))
