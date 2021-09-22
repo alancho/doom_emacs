@@ -27,7 +27,7 @@
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-vibrant)
 
-(set-face-attribute 'default nil :height 110 :family "monospace" :weight 'normal :width 'normal)
+(set-face-attribute 'default nil :height 105 :family "monospace" :weight 'normal :width 'normal)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
