@@ -125,8 +125,8 @@
 
 (use-package! bibtex-completion
   :config
-  (setq bibtex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
-        reftex-completion-bibliography "~/Dropbox/org/roam/literature/library.bib"
+  (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
+        reftex-completion-bibliography "~/Dropbox/Papers/library.bib"
         bibtex-completion-pdf-field "file"
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
 
