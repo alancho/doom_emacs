@@ -50,3 +50,6 @@
 ;(unpin! t)
 
 (package! unfill)
+
+;; Sólo para que coloree las citas cuando escribo en Rmarkdown
+(package! pandoc-mode)
