@@ -158,3 +158,5 @@
             emacs-lisp-mode
             markdown-mode
             text-mode))
+
+(add-hook 'markdown-mode-hook 'pandoc-mode)
