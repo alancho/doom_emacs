@@ -90,6 +90,9 @@
     (just-one-space 1)
     (insert "+")
     (reindent-then-newline-and-indent))
+  (defun then_reticulate_dollar ()
+    (interactive)
+    (insert "$"))
   (defun forbid-vertical-split ()
     "Only permit horizontal window splits."
     (setq-local split-height-threshold nil)
@@ -111,12 +114,14 @@
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
 	 ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
+	 ("s-<return>" . 'then_reticulate_dollar)
          :map inferior-ess-r-mode-map
 	 ("C-S-<return>" . 'then_R_operator_inline)
 	 ("C-<return>" . 'then_R_operator)
 	 ("M-<return>" . 'then_ggplot_plus)
 	 ("_" . 'ess-insert-assign)
-         ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)))
+         ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
+         ("s-<return>" . 'then_reticulate_dollar)))
 
 (after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
 
