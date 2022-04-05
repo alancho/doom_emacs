@@ -157,6 +157,7 @@
             inferior-ess-r-mode
             emacs-lisp-mode
             markdown-mode
-            text-mode))
+            text-mode
+            latex-mode))
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
