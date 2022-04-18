@@ -31,7 +31,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/org")
+(setq org-directory "~/brain2")
 (setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -123,33 +123,28 @@
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)))
 
-(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
-
-;; (after! ivy
-;;   (setq ivy-use-virtual-buffers t))
-
-(use-package! bibtex-completion
-  :config
-  (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
-        reftex-completion-bibliography "~/Dropbox/Papers/library.bib"
-        bibtex-completion-pdf-field "file"
-        ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
+;; (use-package! bibtex-completion
+;;   :config
+;;   (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
+;;         reftex-completion-bibliography "~/Dropbox/Papers/library.bib"
+;;         bibtex-completion-pdf-field "file"
+;;         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
 
 
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
-(global-set-key (kbd "<f12>") #'ivy-bibtex)
+;; (global-set-key (kbd "<f12>") #'ivy-bibtex)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
-(setq projectile-track-known-projects-automatically nil)
-(setq projectile-project-search-path '("~/Dropbox/"))
-;; (setq projectile-project-root-files-bottom-up #'(".projectile"))
+;; (setq projectile-track-known-projects-automatically nil)
+;; (setq projectile-project-search-path '("~/Dropbox/"))
+;; ;; (setq projectile-project-root-files-bottom-up #'(".projectile"))
 
-;; Para abrir nautilus desde dired con "e"
-(defun dired-open-nautilus ()
-  (interactive)
-  (call-process "nautilus" nil 0 nil (dired-current-directory)))
-(define-key dired-mode-map "e" 'dired-open-nautilus)
+;; ;; Para abrir nautilus desde dired con "e"
+;; (defun dired-open-nautilus ()
+;;   (interactive)
+;;   (call-process "nautilus" nil 0 nil (dired-current-directory)))
+;; (define-key dired-mode-map "e" 'dired-open-nautilus)
 
 (setq python-shell-interpreter "python3"
       flycheck-python-pycompile-executable "python3")
@@ -162,7 +157,20 @@
             inferior-ess-r-mode
             emacs-lisp-mode
             markdown-mode
+            org-mode
             text-mode
             latex-mode))
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
+
+(after! citar
+  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
+  (setq ;;citar-library-paths '("/path/to/library/files/")
+   citar-notes-paths '("~/brain2"))
+  (setq citar-symbols
+        `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+          (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+          (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
+  (setq citar-symbol-separator "  ")
+  (map! :leader :prefix "n"
+        "b" #'citar-insert-citation))
