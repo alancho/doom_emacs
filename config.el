@@ -31,7 +31,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/brain2")
+(setq org-directory "~/Dropbox/org")
 (setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -123,11 +123,6 @@
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)))
 
-(after! org (setq org-agenda-files (append (file-expand-wildcards "~/Dropbox/org/*.org"))))
-
-;; (after! ivy
-;;   (setq ivy-use-virtual-buffers t))
-
 (use-package! bibtex-completion
   :config
   (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
@@ -140,19 +135,13 @@
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
 (setq projectile-track-known-projects-automatically nil)
-(setq projectile-project-search-path '("~/Dropbox/"))
-;; (setq projectile-project-root-files-bottom-up #'(".projectile"))
 
-;; Para abrir nautilus desde dired con "e"
-(defun dired-open-nautilus ()
-  (interactive)
-  (call-process "nautilus" nil 0 nil (dired-current-directory)))
-(define-key dired-mode-map "e" 'dired-open-nautilus)
+;; ;; Para abrir nautilus desde dired con "e"
+;; (defun dired-open-nautilus ()
+;;   (interactive)
+;;   (call-process "nautilus" nil 0 nil (dired-current-directory)))
+;; (define-key dired-mode-map "e" 'dired-open-nautilus)
 
-(setq python-shell-interpreter "python3"
-      flycheck-python-pycompile-executable "python3")
-
-;; (conda-env-activate "/home/alancho/anaconda3/envs/gee")
 
 ;; No quiero company en ess-mode
 (setq company-global-modes
