@@ -3,6 +3,20 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+(map! :map doom-leader-notes-map
+      "b" #'citar-open-notes)
+
+(after! citar
+  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
+  (setq! citar-notes-paths '("~/Dropbox/org/roam"))
+  (setq! citar-at-point-function 'embark-act)
+  (defun citar-file-open (file)  ;; open pdf in extenral viewer
+    "Open FILE."
+    (if (member (file-name-extension file) '("html" "pdf"))
+        (citar-file-open-external (expand-file-name file))
+      (funcall citar-file-open-function (expand-file-name file))))
+  (citar-filenotify-setup '(LaTeX-mode-hook org-mode-hook)) ;; autosync .bib file
+  )
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -63,8 +77,6 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-;;
-;;
 
 (use-package! ess
   :hook (ess-mode-hook . forbid-vertical-split)
@@ -123,14 +135,14 @@
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)))
 
-(use-package! bibtex-completion
-  :config
-  (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
-        bibtex-completion-notes-path "~/Dropbox/brain2/roam/"
-        ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
+;; (use-package! bibtex-completion
+;;   :config
+;;   (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
+;;         bibtex-completion-notes-path "~/Dropbox/org/roam/"
+;;         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
 
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
-(global-set-key (kbd "<f12>") #'ivy-bibtex)
+;; (global-set-key (kbd "<f12>") #'ivy-bibtex)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
@@ -154,3 +166,13 @@
             latex-mode))
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
+
+
+(setq org-return-follows-link t)
+
+;; (org-cite-register-processor 'my-bibtex-org-cite-follow
+;;   :follow (lambda (_ _) (ivy-bibtex)))
+
+;; (setq org-cite-follow-processor 'my-bibtex-org-cite-follow)
+
+;; (setq citar-open-note-function 'orb-citar-edit-note)
