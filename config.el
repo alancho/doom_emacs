@@ -31,7 +31,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/org")
+(setq org-directory "~/Dropbox/brain2")
 (setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -131,10 +131,8 @@
 (use-package! bibtex-completion
   :config
   (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
-        reftex-completion-bibliography "~/Dropbox/Papers/library.bib"
-        bibtex-completion-pdf-field "file"
+        bibtex-completion-notes-path "~/Dropbox/brain2/roam/"
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
-
 
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f12>") #'ivy-bibtex)
@@ -162,6 +160,7 @@
             inferior-ess-r-mode
             emacs-lisp-mode
             markdown-mode
+            org-mode
             text-mode
             latex-mode))
 
