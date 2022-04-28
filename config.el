@@ -10,12 +10,11 @@
   (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
   (setq! citar-notes-paths '("~/Dropbox/org/roam"))
   (setq! citar-at-point-function 'embark-act)
-  (defun citar-file-open (file)  ;; open pdf in extenral viewer
-    "Open FILE."
-    (if (member (file-name-extension file) '("html" "pdf"))
-        (citar-file-open-external (expand-file-name file))
-      (funcall citar-file-open-function (expand-file-name file))))
-  (citar-filenotify-setup '(LaTeX-mode-hook org-mode-hook)) ;; autosync .bib file
+  (setq citar-templates
+      '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
+        (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+        (note . "${title}")))
   )
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
