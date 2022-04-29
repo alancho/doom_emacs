@@ -175,3 +175,6 @@
 ;; (setq org-cite-follow-processor 'my-bibtex-org-cite-follow)
 
 ;; (setq citar-open-note-function 'orb-citar-edit-note)
+
+(setq org-roam-link-auto-replace nil
+      +org-roam-open-buffer-on-find-file nil)
