@@ -3,20 +3,6 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
-(map! :map doom-leader-notes-map
-      "b" #'citar-open-notes)
-
-(after! citar
-  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
-  (setq! citar-notes-paths '("~/Dropbox/org/roam"))
-  (setq! citar-at-point-function 'embark-act)
-  (setq citar-templates
-      '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
-        (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "${title}")))
-  )
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Alan Severini"
@@ -134,27 +120,13 @@
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)))
 
-;; (use-package! bibtex-completion
-;;   :config
-;;   (setq bibtex-completion-bibliography "~/Dropbox/Papers/library.bib"
-;;         bibtex-completion-notes-path "~/Dropbox/org/roam/"
-;;         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
-
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
-;; (global-set-key (kbd "<f12>") #'ivy-bibtex)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
 (setq projectile-track-known-projects-automatically nil)
 
-;; ;; Para abrir nautilus desde dired con "e"
-;; (defun dired-open-nautilus ()
-;;   (interactive)
-;;   (call-process "nautilus" nil 0 nil (dired-current-directory)))
-;; (define-key dired-mode-map "e" 'dired-open-nautilus)
 
-
-;; No quiero company en ess-mode
 (setq company-global-modes
       '(not ess-r-mode
             inferior-ess-r-mode
@@ -166,15 +138,32 @@
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 
-
 (setq org-return-follows-link t)
 
-;; (org-cite-register-processor 'my-bibtex-org-cite-follow
-;;   :follow (lambda (_ _) (ivy-bibtex)))
+(after! org-roam
+  (setq +org-roam-open-buffer-on-find-file nil
+        org-id-link-to-org-use-id t
+        org-roam-mode-section-functions (list #'org-roam-backlinks-section
+                                              #'org-roam-reflinks-section
+                                              #'org-roam-unlinked-references-section)))
+(map! :map doom-leader-notes-map
+      "b" #'citar-open-notes)
 
-;; (setq org-cite-follow-processor 'my-bibtex-org-cite-follow)
+(after! citar
+  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
+  (setq! citar-notes-paths '("~/Dropbox/org/roam"))
+  (setq! citar-at-point-function 'embark-act)
+  (setq citar-templates
+      '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
+        (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+        (note . "${title}")))
+  )
 
-;; (setq citar-open-note-function 'orb-citar-edit-note)
-
-(setq org-roam-link-auto-replace nil
-      +org-roam-open-buffer-on-find-file nil)
+(after! org-roam-dailies
+  (setq org-roam-dailies-directory "daily/")
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
