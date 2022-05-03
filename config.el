@@ -123,9 +123,9 @@
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
+(global-set-key (kbd "<f12>") #'citar-insert-citation)
 
 (setq projectile-track-known-projects-automatically nil)
-
 
 (setq company-global-modes
       '(not ess-r-mode
@@ -146,6 +146,8 @@
         org-roam-mode-section-functions (list #'org-roam-backlinks-section
                                               #'org-roam-reflinks-section
                                               #'org-roam-unlinked-references-section)))
+        ;; ))
+
 (map! :map doom-leader-notes-map
       "b" #'citar-open-notes)
 
@@ -157,7 +159,7 @@
       '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
         (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
         (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "${title}")))
+        (note . "${author} (${year}) ${title}")))
   )
 
 (after! org-roam-dailies
@@ -183,3 +185,19 @@
 ;;   ;; optional: org-cite-insert is also bound to C-c C-x C-@
 ;;   :bind
 ;;   (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+
+(use-package! websocket
+  :after org-roam)
+
+(use-package! org-roam-ui
+  :after org-roam ;; or :after org
+  ;; :hook
+  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;;         a hookable mode anymore, you're advised to pick something yourself
+  ;;         if you don't care about startup time, use
+  :hook (after-init . org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
