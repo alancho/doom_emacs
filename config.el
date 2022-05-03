@@ -167,3 +167,19 @@
            "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
+(after! oc
+  (setq!
+   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+   org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
+
+;; (use-package citar
+;;   :no-require
+;;   :custom
+;;   (org-cite-global-bibliography '("~/bib/references.bib"))
+;;   (org-cite-insert-processor 'citar)
+;;   (org-cite-follow-processor 'citar)
+;;   (org-cite-activate-processor 'citar)
+;;   (citar-bibliography org-cite-global-bibliography)
+;;   ;; optional: org-cite-insert is also bound to C-c C-x C-@
+;;   :bind
+;;   (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
