@@ -123,9 +123,9 @@
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
+(global-set-key (kbd "<f12>") #'citar-insert-citation)
 
 (setq projectile-track-known-projects-automatically nil)
-
 
 (setq company-global-modes
       '(not ess-r-mode
@@ -146,6 +146,8 @@
         org-roam-mode-section-functions (list #'org-roam-backlinks-section
                                               #'org-roam-reflinks-section
                                               #'org-roam-unlinked-references-section)))
+        ;; ))
+
 (map! :map doom-leader-notes-map
       "b" #'citar-open-notes)
 
@@ -157,7 +159,7 @@
       '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
         (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
         (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "${title}")))
+        (note . "${author} (${year}) ${title}")))
   )
 
 (after! org-roam-dailies
