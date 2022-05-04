@@ -165,10 +165,9 @@
 (after! org-roam-dailies
   (setq org-roam-dailies-directory "daily/")
   (setq org-roam-dailies-capture-templates
-        '(("d" "default" entry
-           "* %?"
-           :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: daily")))))
+        '(("d" "default" entry "* %<%I:%M %p>: %?"
+           :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
+
 (after! oc
   (setq!
    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
