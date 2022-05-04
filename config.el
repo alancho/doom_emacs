@@ -31,7 +31,6 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Dropbox/org")
-(setq org-support-shift-select t)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -138,40 +137,62 @@
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 
-(setq org-return-follows-link t)
-
-(after! org-roam
-  (setq +org-roam-open-buffer-on-find-file nil
-        org-id-link-to-org-use-id t
-        org-roam-mode-section-functions (list #'org-roam-backlinks-section
-                                              #'org-roam-reflinks-section
-                                              #'org-roam-unlinked-references-section)))
-        ;; ))
-
-(map! :map doom-leader-notes-map
-      "b" #'citar-open-notes)
-
-(after! citar
-  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
-  (setq! citar-notes-paths '("~/Dropbox/org/roam"))
-  (setq! citar-at-point-function 'embark-act)
-  (setq citar-templates
-      '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
-        (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "${author} (${year}) ${title}")))
+(use-package! org
+  :config
+  (setq org-support-shift-select t
+        org-return-follows-link t)
   )
 
-(after! org-roam-dailies
-  (setq org-roam-dailies-directory "daily/")
-  (setq org-roam-dailies-capture-templates
+(use-package! org-roam
+  :config
+  (setq org-support-shift-select t
+        org-return-follows-link t
+        org-roam-dailies-directory "fleeting"
+        org-roam-dailies-capture-templates
         '(("d" "default" entry "* %<%I:%M %p>: %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
 
-(after! oc
-  (setq!
-   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
+(setq org-roam-capture-templates
+      '(("p" "evergreen" plain "%?"
+         :if-new
+         (file+head "permanent/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("l" "literature" plain "%?"
+         :if-new
+         (file+head "literature/${title}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)))
+
+;; (after! org-roam
+;;   (setq +org-roam-open-buffer-on-find-file nil
+;;         org-id-link-to-org-use-id t
+;;         org-roam-mode-section-functions (list #'org-roam-backlinks-section
+;;                                               #'org-roam-reflinks-section
+;;                                               #'org-roam-unlinked-references-section)
+;;         org-roam-dailies-directory "daily/"
+;;         org-roam-dailies-capture-templates
+;;               '(("d" "default" entry "* %<%I:%M %p>: %?"
+;;                  :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
+
+;; (map! :map doom-leader-notes-map
+;;       "b" #'citar-open-notes)
+
+(use-package! citar
+  :config
+  (setq citar-bibliography '("~/Dropbox/Papers/library.bib")
+        citar-notes-paths '("~/Dropbox/org/roam")
+        citar-at-point-function 'embark-act
+        org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+        org-cite-csl-styles-dir "~/Dropbox/templates/csl")
+  (setq citar-templates
+        '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
+          (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+          (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+          (note . "Notas de ${=key= id}")))
+  :bind (:map doom-leader-notes-map
+         ;; "b" #'citar-open-notes))
+         ("b" . 'org-cite-insert)))
 
 ;; (use-package citar
 ;;   :no-require
@@ -189,14 +210,12 @@
   :after org-roam)
 
 (use-package! org-roam-ui
-  :after org-roam ;; or :after org
-  ;; :hook
-  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-  ;;         a hookable mode anymore, you're advised to pick something yourself
-  ;;         if you don't care about startup time, use
-  :hook (after-init . org-roam-ui-mode)
+  :after org-roam
+  ;; :hook (after-init . org-roam-ui-mode)
   :config
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
+
+;; (map! :leader)
