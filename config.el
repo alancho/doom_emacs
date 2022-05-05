@@ -148,26 +148,27 @@
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
 
 ;; (map! :map doom-leader-notes-map
-;;       "b" #'citar-open-notes)
+;;       ;; "b" #'citar-insert-citation)
+;;       "b" #'org-cite-insert)
 
 (use-package! citar
   :config
   (setq
    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   ;; org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
    org-cite-insert-processor 'citar
    org-cite-follow-processor 'citar
    org-cite-activate-processor 'citar
    citar-bibliography org-cite-global-bibliography
    citar-notes-paths '("~/Dropbox/org/roam")
    citar-at-point-function 'embark-act
-   (setq citar-templates
-         '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
-           (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-           (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-           (note . "Notas de ${=key= id}")))
-   :bind (:map doom-leader-notes-map
-          "b" #'citar-insert-citation))
+   citar-templates
+   '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+     (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+     ;; (note . "Notas de ${=key= id}")))
+     (note . "${=key=}")))
+  )
 
 (use-package! websocket
   :after org-roam)
