@@ -160,7 +160,7 @@
    org-cite-follow-processor 'citar
    org-cite-activate-processor 'citar
    citar-bibliography org-cite-global-bibliography
-   citar-notes-paths '("~/Dropbox/org/roam")
+   citar-notes-paths '("~/Dropbox/org/roam/literature")
    citar-at-point-function 'embark-act
    citar-templates
    '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
