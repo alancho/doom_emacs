@@ -119,11 +119,6 @@
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)))
 
-(global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
-(global-set-key (kbd "<f7>") #'unfill-toggle)
-(global-set-key (kbd "<f8>") #'org-edit-special)
-(global-set-key (kbd "<f12>") #'citar-insert-citation)
-
 (setq projectile-track-known-projects-automatically nil)
 
 (setq company-global-modes
@@ -149,7 +144,8 @@
         org-return-follows-link t
         org-roam-dailies-directory "fleeting"
         org-roam-dailies-capture-templates
-        '(("d" "default" entry "* %<%I:%M %p>: %?"
+        ;; '(("d" "default" entry "* %<%I:%M %p>: %?"
+        '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
 
 (setq org-roam-capture-templates
@@ -218,4 +214,7 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
-;; (map! :leader)
+(global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
+(global-set-key (kbd "<f7>") #'unfill-toggle)
+(global-set-key (kbd "<f8>") #'org-edit-special)
+(global-set-key (kbd "<f12>") #'org-roam-dailies-capture-today)
