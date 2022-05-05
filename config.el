@@ -142,65 +142,32 @@
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
-        org-roam-dailies-directory "fleeting"
         org-roam-dailies-capture-templates
         ;; '(("d" "default" entry "* %<%I:%M %p>: %?"
         '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
-
-(setq org-roam-capture-templates
-      '(("p" "evergreen" plain "%?"
-         :if-new
-         (file+head "permanent/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("l" "literature" plain "%?"
-         :if-new
-         (file+head "literature/${title}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)))
-
-;; (after! org-roam
-;;   (setq +org-roam-open-buffer-on-find-file nil
-;;         org-id-link-to-org-use-id t
-;;         org-roam-mode-section-functions (list #'org-roam-backlinks-section
-;;                                               #'org-roam-reflinks-section
-;;                                               #'org-roam-unlinked-references-section)
-;;         org-roam-dailies-directory "daily/"
-;;         org-roam-dailies-capture-templates
-;;               '(("d" "default" entry "* %<%I:%M %p>: %?"
-;;                  :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
 
 ;; (map! :map doom-leader-notes-map
 ;;       "b" #'citar-open-notes)
 
 (use-package! citar
   :config
-  (setq citar-bibliography '("~/Dropbox/Papers/library.bib")
-        citar-notes-paths '("~/Dropbox/org/roam")
-        citar-at-point-function 'embark-act
-        org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-        org-cite-csl-styles-dir "~/Dropbox/templates/csl")
-  (setq citar-templates
-        '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
-          (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-          (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-          (note . "Notas de ${=key= id}")))
-  :bind (:map doom-leader-notes-map
-         ;; "b" #'citar-open-notes))
-         ("b" . 'org-cite-insert)))
-
-;; (use-package citar
-;;   :no-require
-;;   :custom
-;;   (org-cite-global-bibliography '("~/bib/references.bib"))
-;;   (org-cite-insert-processor 'citar)
-;;   (org-cite-follow-processor 'citar)
-;;   (org-cite-activate-processor 'citar)
-;;   (citar-bibliography org-cite-global-bibliography)
-;;   ;; optional: org-cite-insert is also bound to C-c C-x C-@
-;;   :bind
-;;   (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+  (setq
+   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+   ;; org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+   org-cite-insert-processor 'citar
+   org-cite-follow-processor 'citar
+   org-cite-activate-processor 'citar
+   citar-bibliography org-cite-global-bibliography
+   citar-notes-paths '("~/Dropbox/org/roam")
+   citar-at-point-function 'embark-act
+   (setq citar-templates
+         '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
+           (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+           (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+           (note . "Notas de ${=key= id}")))
+   :bind (:map doom-leader-notes-map
+          "b" #'citar-insert-citation))
 
 (use-package! websocket
   :after org-roam)
