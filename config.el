@@ -147,9 +147,10 @@
         '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
 
-;; (map! :map doom-leader-notes-map
-;;       ;; "b" #'citar-insert-citation)
-;;       "b" #'org-cite-insert)
+(map! :map doom-leader-notes-map
+      "b" #'citar-insert-citation)
+      ;; "b" #'org-cite-insert)
+      ;; "b" #'citar-open-notes)
 
 (use-package! citar
   :config
@@ -163,8 +164,8 @@
    citar-notes-paths '("~/Dropbox/org/roam/literature")
    citar-at-point-function 'embark-act
    citar-templates
-   '((main . "${author editor:30}     ${date year issued:4}     ${title:48}")
-     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+   '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
+     (suffix . "   ${=key= id:40}   ${=type=:12}")
      (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
      ;; (note . "Notas de ${=key= id}")))
      (note . "${=key=}")))
