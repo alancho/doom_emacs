@@ -125,6 +125,7 @@
       '(not ess-r-mode
             inferior-ess-r-mode
             emacs-lisp-mode
+            eshell-mode
             markdown-mode
             org-mode
             text-mode
@@ -187,3 +188,11 @@
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 (global-set-key (kbd "<f12>") #'org-roam-dailies-capture-today)
+
+;; Aliases
+(set-eshell-alias! "us" "sudo apt-get update && sudo apt-get upgrade && sudo apt-get clean"
+                   "up" "conda update conda && conda update --all"
+                   "ll" "ls -lha"
+                   "ur" "r update-r-packages.R"
+                   "un" "unison sandisco"
+                   "ud" "doom sync && doom upgrade")
