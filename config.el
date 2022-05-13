@@ -144,8 +144,8 @@
   (setq org-support-shift-select t
         org-return-follows-link t
         org-roam-dailies-capture-templates
-        ;; '(("d" "default" entry "* %<%I:%M %p>: %?"
-        '(("d" "default" entry "* %?"
+        '(("d" "default" entry "* %<%I:%M %p>: \n%?"
+        ;; '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A,%e %B %Y>\n")))))
 
 (map! :map doom-leader-notes-map
