@@ -139,6 +139,9 @@
         org-return-follows-link t)
   )
 
+;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
+(setq font-latex-fontify-script nil)
+
 (use-package! org-roam
   :config
   (setq org-support-shift-select t
