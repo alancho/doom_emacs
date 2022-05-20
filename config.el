@@ -128,6 +128,7 @@
             eshell-mode
             markdown-mode
             org-mode
+            shell-mode
             text-mode
             latex-mode))
 
