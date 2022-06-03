@@ -137,7 +137,8 @@
 (use-package! org
   :config
   (setq org-support-shift-select t
-        org-return-follows-link t)
+        org-return-follows-link t
+        org-image-actual-width '(800))
   )
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
