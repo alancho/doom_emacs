@@ -200,4 +200,5 @@
                    "ll" "ls -lha"
                    "ur" "r update-r-packages.R"
                    "un" "unison sandisco"
-                   "ud" "doom sync && doom upgrade")
+                   "ud" "doom sync && doom upgrade"
+                   "ds" "dropbox status")
