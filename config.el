@@ -173,8 +173,7 @@
    '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
      (suffix . "   ${=key= id:40}   ${=type=:12}")
      (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-     ;; (note . "Notas de ${=key= id}")))
-     (note . "${=key=}")))
+     (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
   )
 
 (use-package! websocket
