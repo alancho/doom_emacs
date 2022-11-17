@@ -176,6 +176,18 @@
      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
   )
 
+;; (setq!
+;;    citar-bibliography '("~/Dropbox/Papers/library.bib")
+;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+;;    ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
+;;    )
+;;    ;; citar-templates
+;;    ;; '(;; (main . "${author editor:25}   ${date year issued:4}   ${title:40}")
+;;    ;;   ;; (suffix . "   ${=key= id:40}   ${=type=:12}")
+;;    ;;   ;; (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+;;    ;;   (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n"))
+;;    ;; )
+
 (use-package! websocket
   :after org-roam)
 
@@ -201,3 +213,22 @@
                    "un" "unison sandisco"
                    "ud" "doom sync && doom upgrade"
                    "ds" "dropbox status")
+(after! ispell
+  ;; Don't spellcheck org blocks
+  (pushnew! ispell-skip-region-alist
+            '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
+            '("#\\+BEGIN_SRC" . "#\\+END_SRC")
+            '("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")
+            '("#\\+BEGIN_QUOTE" . "#\\+END_QUOTE")
+            )
+  )
+
+(use-package! flyspell ; built-in
+    :defer t
+    :preface
+    ;; `flyspell' is loaded at startup. In order to lazy load its config we need
+    ;; to pretend it isn't loaded.
+    (defer-feature! flyspell flyspell-mode flyspell-prog-mode)
+    :init
+    (add-hook! '(org-mode-hook) ;; Solamente quiero usarlo en org-mode
+               #'flyspell-mode))
