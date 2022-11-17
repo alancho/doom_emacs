@@ -220,15 +220,20 @@
             '("#\\+BEGIN_SRC" . "#\\+END_SRC")
             '("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")
             '("#\\+BEGIN_QUOTE" . "#\\+END_QUOTE")
+            '("#\\+begin_src" . "#\\+end_src")
+            '("#\\+begin_example" . "#\\+end_example")
+            '("#\\+begin_quote" . "#\\+end_quote")
             )
   )
 
-(use-package! flyspell ; built-in
-    :defer t
-    :preface
-    ;; `flyspell' is loaded at startup. In order to lazy load its config we need
-    ;; to pretend it isn't loaded.
-    (defer-feature! flyspell flyspell-mode flyspell-prog-mode)
-    :init
-    (add-hook! '(org-mode-hook) ;; Solamente quiero usarlo en org-mode
-               #'flyspell-mode))
+;; Solamente quiero que se active en org-mode-hook
+(remove-hook! '(markdown-mode-hook
+                TeX-mode-hook
+                rst-mode-hook
+                mu4e-compose-mode-hook
+                message-mode-hook
+                git-commit-mode-hook)
+  #'flyspell-mode)
+
+(ispell-change-dictionary "british" t)
+(setq ispell-check-comments nil)
