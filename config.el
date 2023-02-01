@@ -241,5 +241,5 @@
 (setq ispell-check-comments nil)
 
 (use-package! quarto-mode
-  :mode (("\\.Rmd" . poly-quarto-mode))
+  :mode (("\\.qmd" . poly-quarto-mode))
   )
