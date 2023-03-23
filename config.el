@@ -239,3 +239,8 @@
 
 (ispell-change-dictionary "british" t)
 (setq ispell-check-comments nil)
+
+;; Probemos usar avy
+(map! :leader
+      (:prefix-map ("a" . "avy")
+       :desc "Go to char timer" "t" #'avy-goto-char-timer))
