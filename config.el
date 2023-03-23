@@ -244,3 +244,6 @@
 (map! :leader
       (:prefix-map ("a" . "avy")
        :desc "Go to char timer" "t" #'avy-goto-char-timer))
+
+;; Mejor manera de usar locate con consult
+(setq consult-locate-args "locate --ignore-case --regex")
