@@ -249,4 +249,5 @@
 (setq consult-locate-args "locate --ignore-case --regex")
 
 ;; No más ir a una website para generar ASCII comments!
-(setq figlet-default-font "roman")
+(setq figlet-default-font "georgia11")
+(setq figlet-options '("-w 200"))
