@@ -247,3 +247,6 @@
 
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
+
+;; No más ir a una website para generar ASCII comments!
+(setq figlet-default-font "roman")
