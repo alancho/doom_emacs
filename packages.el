@@ -59,3 +59,7 @@
 
 ;; A ver si funciona esto para ASCII art
 (package! figlet)
+
+;; Vamos a empezar a usar denote
+(package! denote :recipe (:host github :repo "protesilaos/denote" :branch "signature"))
+(package! citar-denote)

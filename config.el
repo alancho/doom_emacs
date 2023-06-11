@@ -146,36 +146,34 @@
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
 (setq font-latex-fontify-script nil)
 
-(use-package! org-roam
-  :config
-  (setq org-support-shift-select t
-        org-return-follows-link t
-        org-roam-dailies-capture-templates
-        '(("d" "default" entry "* %<%I:%M %p>\n%?"
-        ;; '(("d" "default" entry "* %?"
-           :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A, %e %B %Y>\n")))))
+;; (map! :map doom-leader-notes-map
+;;       "b" #'citar-insert-citation)
+;;       ;; "b" #'org-cite-insert)
+;;       ;; "b" #'citar-open-notes)
 
-(map! :map doom-leader-notes-map
-      "b" #'citar-insert-citation)
-      ;; "b" #'org-cite-insert)
-      ;; "b" #'citar-open-notes)
+;; (use-package! citar
+;;   :config
+;;   (setq
+;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+;;    org-cite-insert-processor 'citar
+;;    org-cite-follow-processor 'citar
+;;    org-cite-activate-processor 'citar
+;;    citar-bibliography org-cite-global-bibliography
+;;    citar-notes-paths '("~/Dropbox/org/roam/literature")
+;;    citar-at-point-function 'embark-act
+;;    citar-templates
+;;    '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
+;;      (suffix . "   ${=key= id:40}   ${=type=:12}")
+;;      (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+;;      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
+;;   )
 
-(use-package! citar
-  :config
-  (setq
-   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-   org-cite-insert-processor 'citar
-   org-cite-follow-processor 'citar
-   org-cite-activate-processor 'citar
-   citar-bibliography org-cite-global-bibliography
-   citar-notes-paths '("~/Dropbox/org/roam/literature")
-   citar-at-point-function 'embark-act
-   citar-templates
-   '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
-     (suffix . "   ${=key= id:40}   ${=type=:12}")
-     (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-     (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
+;; biblio
+(after! citar
+  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
+  (setq! citar-library-paths '("~/Dropbox/Papers"))
+  (setq! citar-notes-paths '("~/Dropbox/notes"))
   )
 
 ;; (setq!
@@ -190,22 +188,9 @@
 ;;    ;;   (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n"))
 ;;    ;; )
 
-(use-package! websocket
-  :after org-roam)
-
-(use-package! org-roam-ui
-  :after org-roam
-  ;; :hook (after-init . org-roam-ui-mode)
-  :config
-  (setq org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
-
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
-(global-set-key (kbd "<f12>") #'org-roam-dailies-capture-today)
 
 ;; Aliases
 (set-eshell-alias! "us" "sudo apt-get update && sudo apt-get upgrade && sudo apt-get clean"
@@ -251,3 +236,19 @@
 ;; No más ir a una website para generar ASCII comments!
 (setq figlet-default-font "georgia11")
 (setq figlet-options '("-w 200"))
+
+(use-package! denote
+  :config
+  (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
+  (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
+  (setq denote-infer-keywords t)
+  (setq denote-sort-keywords t)
+  (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
+  (setq denote-prompts '(title keywords))
+  (setq denote-excluded-directories-regexp nil)
+  (setq denote-excluded-keywords-regexp nil)
+  (setq denote-date-prompt-use-org-read-date t)
+  (setq denote-backlinks-show-context t)
+  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+  (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
+)
