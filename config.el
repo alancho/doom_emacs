@@ -18,7 +18,7 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "Ubuntu Mono" :size 14 :weight 'normal)
+(setq doom-font (font-spec :family "DejaVuSansMono" :size 14 :weight 'normal)
       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
@@ -236,17 +236,26 @@
 (setq figlet-options '("-w 200"))
 
 (use-package! denote
+  :hook
+  ((find-file-hook . denote-link-buttonize-buffer)
+   (dired-mode-hook . denote-dired-mode))
+  ;; :init
+  ;; (require 'citar-denote)
+  ;; (citar-denote-mode)
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
   (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
-  (setq denote-prompts '(title keywords))
+  (setq denote-prompts '(title keywords signature))
   (setq denote-excluded-directories-regexp nil)
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
-  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-  (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
-)
+  )
+
+(use-package! citar-denote
+  :init
+  (citar-denote-mode)
+  )
