@@ -18,8 +18,8 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "Fira Code" :size 14 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "sans" :size 13))
+(setq doom-font (font-spec :family "DejaVuSansMono" :size 14 :weight 'normal)
+      doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -150,6 +150,7 @@
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
+        org-roam-db-autosync-mode t
         org-roam-dailies-capture-templates
         '(("d" "default" entry "* %<%I:%M %p>\n%?"
         ;; '(("d" "default" entry "* %?"
@@ -160,35 +161,29 @@
       ;; "b" #'org-cite-insert)
       ;; "b" #'citar-open-notes)
 
-(use-package! citar
-  :config
-  (setq
-   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-   org-cite-insert-processor 'citar
-   org-cite-follow-processor 'citar
-   org-cite-activate-processor 'citar
-   citar-bibliography org-cite-global-bibliography
-   citar-notes-paths '("~/Dropbox/org/roam/literature")
-   citar-at-point-function 'embark-act
-   citar-templates
-   '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
-     (suffix . "   ${=key= id:40}   ${=type=:12}")
-     (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-     (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
-  )
-
-;; (setq!
-;;    citar-bibliography '("~/Dropbox/Papers/library.bib")
+;; (use-package! citar
+;;   :config
+;;   (setq
+;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
 ;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-;;    ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
-;;    )
-;;    ;; citar-templates
-;;    ;; '(;; (main . "${author editor:25}   ${date year issued:4}   ${title:40}")
-;;    ;;   ;; (suffix . "   ${=key= id:40}   ${=type=:12}")
-;;    ;;   ;; (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-;;    ;;   (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n"))
-;;    ;; )
+;;    org-cite-insert-processor 'citar
+;;    org-cite-follow-processor 'citar
+;;    org-cite-activate-processor 'citar
+;;    citar-bibliography org-cite-global-bibliography
+;;    citar-notes-paths '("~/Dropbox/org/roam/literature")
+;;    citar-at-point-function 'embark-act
+;;    citar-templates
+;;    '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
+;;      (suffix . "   ${=key= id:40}   ${=type=:12}")
+;;      (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+;;      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
+;;   )
+
+(setq!
+   citar-bibliography '("~/Dropbox/Papers/library.bib")
+   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+   citar-notes-paths '("~/Dropbox/org/roam/literature")
+   )
 
 (use-package! websocket
   :after org-roam)
@@ -228,13 +223,13 @@
             )
   )
 
-;; Solamente quiero que se active en org-mode-hook
 (remove-hook! '(markdown-mode-hook
                 TeX-mode-hook
                 rst-mode-hook
                 mu4e-compose-mode-hook
                 message-mode-hook
-                git-commit-mode-hook)
+                git-commit-mode-hook
+                org-mode-hook)
   #'flyspell-mode)
 
 (ispell-change-dictionary "british" t)
