@@ -58,8 +58,10 @@
 (package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 
 ;; A ver si funciona esto para ASCII art
-(package! figlet)
+;; (package! figlet)
+(package! figlet :recipe (:host github :repo "jpkotta/figlet"))
 
 ;; Vamos a empezar a usar denote
-(package! denote :recipe (:host github :repo "protesilaos/denote" :branch "signature"))
+;; (package! denote :recipe (:host github :repo "protesilaos/denote" :branch "signature"))
+(package! denote)
 (package! citar-denote)

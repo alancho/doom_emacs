@@ -18,6 +18,7 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
+;; Otras fuentes que me gustan: Ubuntu Mono, Iosevka, Fira Code
 (setq doom-font (font-spec :family "DejaVuSansMono" :size 14 :weight 'normal)
       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 
@@ -236,12 +237,6 @@
 (setq figlet-options '("-w 200"))
 
 (use-package! denote
-  :hook
-  ((find-file-hook . denote-link-buttonize-buffer)
-   (dired-mode-hook . denote-dired-mode))
-  ;; :init
-  ;; (require 'citar-denote)
-  ;; (citar-denote-mode)
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
   (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
@@ -254,6 +249,10 @@
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
   )
+
+(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+(add-hook 'dired-mode-hook #'denote-dired-mode)
+
 
 (use-package! citar-denote
   :init
