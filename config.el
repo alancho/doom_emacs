@@ -140,7 +140,8 @@
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
-        org-image-actual-width '(800))
+        org-replace-disputed-keys t
+        org-image-actual-width '(400))
   )
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
@@ -151,15 +152,32 @@
   (setq org-support-shift-select t
         org-return-follows-link t
         org-roam-db-autosync-mode t
+        org-replace-disputed-keys t
         org-roam-dailies-capture-templates
         '(("d" "default" entry "* %<%I:%M %p>\n%?"
         ;; '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A, %e %B %Y>\n")))))
 
-(map! :map doom-leader-notes-map
-      "b" #'citar-insert-citation)
-      ;; "b" #'org-cite-insert)
-      ;; "b" #'citar-open-notes)
+;; (add-to-list 'display-buffer-alist
+;;              '("\\*org-roam\\*"
+;;                (display-buffer-in-direction)
+;;                (direction . bottom)
+;;                (window-width . 0.33)
+;;                (window-height . fit-window-to-buffer)))
+
+(add-to-list 'display-buffer-alist
+             '("\\*org-roam\\*"
+               (display-buffer-in-side-window)
+               (side . right)
+               (slot . 0)
+               (window-width . 0.33)
+               (window-parameters . ((no-other-window . t)
+                                     (no-delete-other-windows . t)))))
+
+;; (map! :map doom-leader-notes-map
+;;       "b" #'citar-insert-citation)
+;;       ;; "b" #'org-cite-insert)
+;;       ;; "b" #'citar-open-notes)
 
 ;; (use-package! citar
 ;;   :config
