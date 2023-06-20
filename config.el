@@ -19,7 +19,7 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "DejaVuSansMono" :size 14 :weight 'normal)
-      doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
+      doom-variable-pitch-font (font-spec :family "DejaVuSansMono" :size 14))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -141,6 +141,7 @@
   (setq org-support-shift-select t
         org-return-follows-link t
         org-replace-disputed-keys t
+        org-startup-with-inline-images t
         org-image-actual-width '(400))
   )
 
@@ -158,50 +159,13 @@
         ;; '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A, %e %B %Y>\n")))))
 
-;; (add-to-list 'display-buffer-alist
-;;              '("\\*org-roam\\*"
-;;                (display-buffer-in-direction)
-;;                (direction . bottom)
-;;                (window-width . 0.33)
-;;                (window-height . fit-window-to-buffer)))
-
-(add-to-list 'display-buffer-alist
-             '("\\*org-roam\\*"
-               (display-buffer-in-side-window)
-               (side . right)
-               (slot . 0)
-               (window-width . 0.33)
-               (window-parameters . ((no-other-window . t)
-                                     (no-delete-other-windows . t)))))
-
-;; (map! :map doom-leader-notes-map
-;;       "b" #'citar-insert-citation)
-;;       ;; "b" #'org-cite-insert)
-;;       ;; "b" #'citar-open-notes)
-
-;; (use-package! citar
-;;   :config
-;;   (setq
-;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-;;    org-cite-insert-processor 'citar
-;;    org-cite-follow-processor 'citar
-;;    org-cite-activate-processor 'citar
-;;    citar-bibliography org-cite-global-bibliography
-;;    citar-notes-paths '("~/Dropbox/org/roam/literature")
-;;    citar-at-point-function 'embark-act
-;;    citar-templates
-;;    '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
-;;      (suffix . "   ${=key= id:40}   ${=type=:12}")
-;;      (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-;;      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
+;; (setq!
+;;   citar-bibliography '("~/Dropbox/Papers/library.bib")
+;;   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+;;   citar-notes-paths '("~/Dropbox/org/roam/literature")
+;;   citar-library-paths '("~/Dropbox/Papers/")
+;;   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
 ;;   )
-
-(setq!
-   citar-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-   citar-notes-paths '("~/Dropbox/org/roam/literature")
-   )
 
 (use-package! websocket
   :after org-roam)
@@ -261,6 +225,57 @@
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
 
-;; No más ir a una website para generar ASCII comments!
-(setq figlet-default-font "georgia11")
-(setq figlet-options '("-w 200"))
+;; Copiado de tocosaur: https://tecosaur.github.io/emacs-config/config.html
+(use-package! oc-csl-activate
+  :after oc
+  :config
+  (setq org-cite-csl-activate-use-document-style t)
+  (defun +org-cite-csl-activate/enable ()
+    (interactive)
+    (setq org-cite-activate-processor 'csl-activate)
+    (add-hook! 'org-mode-hook '((lambda () (cursor-sensor-mode 1)) org-cite-csl-activate-render-all))
+    (defadvice! +org-cite-csl-activate-render-all-silent (orig-fn)
+      :around #'org-cite-csl-activate-render-all
+      (with-silent-modifications (funcall orig-fn)))
+    (when (eq major-mode 'org-mode)
+      (with-silent-modifications
+        (save-excursion
+          (goto-char (point-min))
+          (org-cite-activate (point-max)))
+        (org-cite-csl-activate-render-all)))
+    (fmakunbound #'+org-cite-csl-activate/enable)))
+
+(after! citar
+  (setq org-cite-global-bibliography
+        (let ((libfile-search-names '("library.json" "Library.json" "library.bib" "Library.bib"))
+              (libfile-dir "~/Dropbox/Papers")
+              paths)
+          (dolist (libfile libfile-search-names)
+            (when (and (not paths)
+                       (file-exists-p (expand-file-name libfile libfile-dir)))
+              (setq paths (list (expand-file-name libfile libfile-dir)))))
+          paths)
+        citar-bibliography org-cite-global-bibliography
+        citar-symbols
+        `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+          (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+          (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+
+(after! citar-org-roam
+  (setq citar-org-roam-note-title-template "${title}")
+  )
+
+(after! oc-csl
+  (setq org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
+
+(after! oc
+  (setq org-cite-export-processors '((t csl))))
+
+(after! org-noter
+  (setq
+   org-noter-notes-window-location 'other-frame
+   org-noter-always-create-frame nil
+   org-noter-hide-other nil
+   org-noter-notes-search-path '("~/Dropbox/org/roam/")
+   )
+  )

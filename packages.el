@@ -57,5 +57,7 @@
 (package! websocket)
 (package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 
-;; A ver si funciona esto para ASCII art
-(package! figlet)
+;; Copiado de tocosaur: https://tecosaur.github.io/emacs-config/config.html
+(package! org-cite-csl-activate :recipe (:host github :repo "andras-simonyi/org-cite-csl-activate") :pin "9e68d9204469c674f49a20bdf7ea85da4f4bf720")
+
+(package! quarto-mode)
