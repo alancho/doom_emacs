@@ -168,12 +168,29 @@
 ;;      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
 ;;   )
 
-;; biblio
+;; ;; biblio
+;; (after! citar
+;;   (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
+;;   (setq! citar-library-paths '("~/Dropbox/Papers"))
+;;   (setq! citar-notes-paths '("~/Dropbox/notes"))
+;;   )
+
 (after! citar
-  (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
-  (setq! citar-library-paths '("~/Dropbox/Papers"))
-  (setq! citar-notes-paths '("~/Dropbox/notes"))
-  )
+  (setq
+   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+   org-cite-insert-processor 'citar
+   org-cite-follow-processor 'citar
+   org-cite-activate-processor 'citar
+   citar-bibliography org-cite-global-bibliography
+   ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
+   citar-at-point-function 'embark-act
+   citar-library-paths '("~/Dropbox/Papers")
+   citar-symbols
+   `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+
 
 ;; (setq!
 ;;    citar-bibliography '("~/Dropbox/Papers/library.bib")
@@ -242,7 +259,7 @@
   (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
-  (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
+  ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
   (setq denote-prompts '(title keywords signature))
   (setq denote-excluded-directories-regexp nil)
   (setq denote-excluded-keywords-regexp nil)
@@ -252,7 +269,6 @@
 
 (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
 (add-hook 'dired-mode-hook #'denote-dired-mode)
-
 
 (use-package! citar-denote
   :init
