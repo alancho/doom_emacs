@@ -235,7 +235,8 @@
                 rst-mode-hook
                 mu4e-compose-mode-hook
                 message-mode-hook
-                git-commit-mode-hook)
+                git-commit-mode-hook
+                org-mode-hook)
   #'flyspell-mode)
 
 (ispell-change-dictionary "british" t)
@@ -267,8 +268,10 @@
   (setq denote-backlinks-show-context t)
   )
 
-(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-(add-hook 'dired-mode-hook #'denote-dired-mode)
+(after! denote
+  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+  (add-hook 'dired-mode-hook #'denote-dired-mode)
+  )
 
 (use-package! citar-denote
   :init
