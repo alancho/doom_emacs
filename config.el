@@ -257,7 +257,7 @@
 (use-package! denote
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
-  (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
+  ;; (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here

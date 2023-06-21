@@ -54,9 +54,6 @@
 ;; Sólo para que coloree las citas cuando escribo en Rmarkdown
 (package! pandoc-mode)
 
-(package! websocket)
-(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
-
 ;; A ver si funciona esto para ASCII art
 ;; (package! figlet)
 (package! figlet :recipe (:host github :repo "jpkotta/figlet"))
