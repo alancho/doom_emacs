@@ -139,7 +139,8 @@
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
-        org-image-actual-width '(800))
+        org-blank-before-new-entry t
+        org-image-actual-width '(500))
   )
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
@@ -268,10 +269,10 @@
   (setq denote-backlinks-show-context t)
   )
 
-(after! denote
-  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-  (add-hook 'dired-mode-hook #'denote-dired-mode)
-  )
+;; (after! denote
+(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+(add-hook 'dired-mode-hook #'denote-dired-mode)
+;; )
 
 (use-package! citar-denote
   :init
