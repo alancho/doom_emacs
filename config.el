@@ -18,8 +18,9 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
+
 (setq doom-font (font-spec :family "DejaVuSansMono" :size 14 :weight 'normal)
-      doom-variable-pitch-font (font-spec :family "DejaVuSansMono" :size 14))
+      doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -137,6 +138,7 @@
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 
 (use-package! org
+  :hook (org-mode-hook . org-appear-mode)
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
@@ -217,11 +219,6 @@
 (ispell-change-dictionary "british" t)
 (setq ispell-check-comments nil)
 
-;; Probemos usar avy
-(map! :leader
-      (:prefix-map ("a" . "avy")
-       :desc "Go to char timer" "t" #'avy-goto-char-timer))
-
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
 
@@ -245,25 +242,38 @@
         (org-cite-csl-activate-render-all)))
     (fmakunbound #'+org-cite-csl-activate/enable)))
 
-(after! citar
-  (setq org-cite-global-bibliography
-        (let ((libfile-search-names '("library.json" "Library.json" "library.bib" "Library.bib"))
-              (libfile-dir "~/Dropbox/Papers")
-              paths)
-          (dolist (libfile libfile-search-names)
-            (when (and (not paths)
-                       (file-exists-p (expand-file-name libfile libfile-dir)))
-              (setq paths (list (expand-file-name libfile libfile-dir)))))
-          paths)
-        citar-bibliography org-cite-global-bibliography
-        citar-symbols
-        `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-          (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-          (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+;; (after! citar
+;;   (setq org-cite-global-bibliography
+;;         (let ((libfile-search-names '("library.json" "Library.json" "library.bib" "Library.bib"))
+;;               (libfile-dir "~/Dropbox/Papers")
+;;               paths)
+;;           (dolist (libfile libfile-search-names)
+;;             (when (and (not paths)
+;;                        (file-exists-p (expand-file-name libfile libfile-dir)))
+;;               (setq paths (list (expand-file-name libfile libfile-dir)))))
+;;           paths)
+;;         citar-bibliography org-cite-global-bibliography
+;;         citar-symbols
+;;         `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+;;           (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+;;           (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+
+(use-package! citar
+  :config
+  (setq
+   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+   org-cite-insert-processor 'citar
+   org-cite-follow-processor 'citar
+   org-cite-activate-processor 'citar
+   citar-bibliography org-cite-global-bibliography
+   citar-library-paths '("~/Dropbox/Papers/")
+   citar-at-point-function 'embark-act)
+  ;; :bind
+  ;; (:map org-mode-map :package org ("C-c n b" . #'org-cite-insert))
+  )
 
 (after! citar-org-roam
-  (setq citar-org-roam-note-title-template "${title}")
-  )
+  (setq citar-org-roam-note-title-template "${title}"))
 
 (after! oc-csl
   (setq org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
@@ -271,11 +281,5 @@
 (after! oc
   (setq org-cite-export-processors '((t csl))))
 
-(after! org-noter
-  (setq
-   org-noter-notes-window-location 'other-frame
-   org-noter-always-create-frame nil
-   org-noter-hide-other nil
-   org-noter-notes-search-path '("~/Dropbox/org/roam/")
-   )
-  )
+(use-package! org-format
+  :hook (org-mode . org-format-on-save-mode))
