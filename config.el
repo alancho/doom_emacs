@@ -161,14 +161,6 @@
         ;; '(("d" "default" entry "* %?"
            :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A, %e %B %Y>\n")))))
 
-;; (setq!
-;;   citar-bibliography '("~/Dropbox/Papers/library.bib")
-;;   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-;;   citar-notes-paths '("~/Dropbox/org/roam/literature")
-;;   citar-library-paths '("~/Dropbox/Papers/")
-;;   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-;;   )
-
 (use-package! websocket
   :after org-roam)
 
@@ -242,22 +234,6 @@
         (org-cite-csl-activate-render-all)))
     (fmakunbound #'+org-cite-csl-activate/enable)))
 
-;; (after! citar
-;;   (setq org-cite-global-bibliography
-;;         (let ((libfile-search-names '("library.json" "Library.json" "library.bib" "Library.bib"))
-;;               (libfile-dir "~/Dropbox/Papers")
-;;               paths)
-;;           (dolist (libfile libfile-search-names)
-;;             (when (and (not paths)
-;;                        (file-exists-p (expand-file-name libfile libfile-dir)))
-;;               (setq paths (list (expand-file-name libfile libfile-dir)))))
-;;           paths)
-;;         citar-bibliography org-cite-global-bibliography
-;;         citar-symbols
-;;         `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-;;           (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-;;           (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
-
 (use-package! citar
   :config
   (setq
@@ -267,13 +243,14 @@
    org-cite-activate-processor 'citar
    citar-bibliography org-cite-global-bibliography
    citar-library-paths '("~/Dropbox/Papers/")
-   citar-at-point-function 'embark-act)
-  ;; :bind
-  ;; (:map org-mode-map :package org ("C-c n b" . #'org-cite-insert))
-  )
+   citar-at-point-function 'embark-act
+   citar-symbols
+   `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
 
 (after! citar-org-roam
-  (setq citar-org-roam-note-title-template "${title}"))
+  (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"))
 
 (after! oc-csl
   (setq org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
@@ -283,3 +260,7 @@
 
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
+
+(map! :after citar
+      :map doom-leader-notes-map
+      "b" #'citar-insert-citation)
