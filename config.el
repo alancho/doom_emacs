@@ -264,3 +264,5 @@
 (map! :after citar
       :map doom-leader-notes-map
       "b" #'citar-insert-citation)
+
+(use-package! oxr)

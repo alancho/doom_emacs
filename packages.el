@@ -61,3 +61,6 @@
 (package! org-cite-csl-activate :recipe (:host github :repo "andras-simonyi/org-cite-csl-activate") :pin "9e68d9204469c674f49a20bdf7ea85da4f4bf720")
 
 (package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
+
+;; Veamos si funciona este de bdarcus para hacer cross-references
+(package! oxr :recipe (:host github :repo "bdarcus/oxr"))
