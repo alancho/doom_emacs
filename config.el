@@ -142,6 +142,7 @@
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
+        org-hide-emphasis-markers t
         org-level-color-stars-only nil
         org-replace-disputed-keys t
         org-startup-with-inline-images t
