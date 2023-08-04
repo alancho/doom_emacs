@@ -64,3 +64,6 @@
 
 ;; Veamos si funciona este de bdarcus para hacer cross-references
 (package! oxr :recipe (:host github :repo "bdarcus/oxr"))
+
+;; A ver cómo anda esto, parece prometedor
+(package! org-transclusion)
