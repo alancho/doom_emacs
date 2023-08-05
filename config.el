@@ -290,3 +290,15 @@
    :leader
    :prefix "n"
    :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
+
+(defun ads/read-openai-key ()
+  (with-temp-buffer
+    (insert-file-contents "~/key.txt")
+    (string-trim (buffer-string))))
+
+(use-package! gptel
+  :config
+  (setq gptel-model "gpt-3.5-turbo"
+        gptel-playback t
+        gptel-default-mode 'org-mode
+        gptel-api-key #'ads/read-openai-key))

@@ -67,3 +67,5 @@
 
 ;; A ver cómo anda esto, parece prometedor
 (package! org-transclusion)
+
+(package! gptel)
