@@ -216,49 +216,46 @@
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
 
-;; Copiado de tocosaur: https://tecosaur.github.io/emacs-config/config.html
-(use-package! oc-csl-activate
-  :after oc
-  :config
-  (setq org-cite-csl-activate-use-document-style t)
-  (defun +org-cite-csl-activate/enable ()
-    (interactive)
-    (setq org-cite-activate-processor 'csl-activate)
-    (add-hook! 'org-mode-hook '((lambda () (cursor-sensor-mode 1)) org-cite-csl-activate-render-all))
-    (defadvice! +org-cite-csl-activate-render-all-silent (orig-fn)
-      :around #'org-cite-csl-activate-render-all
-      (with-silent-modifications (funcall orig-fn)))
-    (when (eq major-mode 'org-mode)
-      (with-silent-modifications
-        (save-excursion
-          (goto-char (point-min))
-          (org-cite-activate (point-max)))
-        (org-cite-csl-activate-render-all)))
-    (fmakunbound #'+org-cite-csl-activate/enable)))
+;; ;; Copiado de tocosaur: https://tecosaur.github.io/emacs-config/config.html
+;; (use-package! oc-csl-activate
+;;   :after oc
+;;   :config
+;;   (setq org-cite-csl-activate-use-document-style t)
+;;   (defun +org-cite-csl-activate/enable ()
+;;     (interactive)
+;;     (setq org-cite-activate-processor 'csl-activate)
+;;     (add-hook! 'org-mode-hook '((lambda () (cursor-sensor-mode 1)) org-cite-csl-activate-render-all))
+;;     (defadvice! +org-cite-csl-activate-render-all-silent (orig-fn)
+;;       :around #'org-cite-csl-activate-render-all
+;;       (with-silent-modifications (funcall orig-fn)))
+;;     (when (eq major-mode 'org-mode)
+;;       (with-silent-modifications
+;;         (save-excursion
+;;           (goto-char (point-min))
+;;           (org-cite-activate (point-max)))
+;;         (org-cite-csl-activate-render-all)))
+;;     (fmakunbound #'+org-cite-csl-activate/enable)))
 
-(use-package! citar
-  :config
-  (setq
-   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-insert-processor 'citar
-   org-cite-follow-processor 'citar
-   org-cite-activate-processor 'citar
-   citar-bibliography org-cite-global-bibliography
-   citar-library-paths '("~/Dropbox/Papers/")
-   citar-at-point-function 'embark-act
-   citar-symbols
-   `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+;; (use-package! citar
+;;   :config
+;;   (setq
+;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+;;    org-cite-insert-processor 'citar
+;;    org-cite-follow-processor 'citar
+;;    org-cite-activate-processor 'citar
+;;    citar-bibliography org-cite-global-bibliography
+;;    citar-library-paths '("~/Dropbox/Papers/")
+;;    citar-at-point-function 'embark-act))
+;;    ;; citar-symbols
+;;    ;; `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+;;    ;;   (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+;;    ;;   (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
 
-(after! citar-org-roam
-  (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"))
+;; (after! oc-csl
+;;   (setq org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
 
-(after! oc-csl
-  (setq org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
-
-(after! oc
-  (setq org-cite-export-processors '((t csl))))
+;; (after! oc
+;;   (setq org-cite-export-processors '((t csl))))
 
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
@@ -302,3 +299,12 @@
         gptel-playback t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key))
+
+(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
+       citar-library-paths '("~/Dropbox/Papers/")
+       citar-notes-paths '("~/Dropbox/org/roam/references/")
+       citar-at-point-function 'embark-act
+       citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})")
+
+;; (after! citar-org-roam
+;;   (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"))
