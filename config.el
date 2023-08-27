@@ -260,9 +260,9 @@
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
 
-(map! :after citar
-      :map doom-leader-notes-map
-      "b" #'citar-insert-citation)
+;; (map! :after citar
+;;       :map doom-leader-notes-map
+;;       "b" #'citar-insert-citation)
 
 (use-package! oxr)
 
@@ -300,11 +300,31 @@
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key))
 
-(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
-       citar-library-paths '("~/Dropbox/Papers/")
-       citar-notes-paths '("~/Dropbox/org/roam/references/")
-       citar-at-point-function 'embark-act
-       citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})")
+;; (setq! org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+;;        citar-bibliography '("~/Dropbox/Papers/library.bib")
+;;        citar-library-paths '("~/Dropbox/Papers/")
+;;        citar-notes-paths '("~/Dropbox/org/roam/references/")
+;;        citar-at-point-function 'embark-act)
 
 ;; (after! citar-org-roam
-;;   (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"))
+;;   (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"
+;;         citar-org-roam-subdir "references/"))
+
+;; (use-package! citar-org-roam
+;;   :after (citar org-roam)
+;;   :init (citar-org-roam-mode)
+;;   :config
+;;   (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"
+;;         citar-org-roam-subdir "references/"))
+
+(use-package! citar
+  :config
+  (setq
+   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+   org-cite-insert-processor 'citar
+   org-cite-follow-processor 'citar
+   org-cite-activate-processor 'citar
+   citar-bibliography org-cite-global-bibliography
+   citar-notes-paths '("~/Dropbox/org/roam/references/")
+   citar-library-paths '("~/Dropbox/Papers/")
+   citar-at-point-function 'embark-act))
