@@ -93,28 +93,28 @@
     (setq-local split-height-threshold nil)
     (setq-local split-width-threshold 0))
   (setq ess-ask-for-ess-directory nil
-	ess-local-process-name "R"
-	ansi-color-for-comint-mode 'filter
-	comint-scroll-to-bottom-on-input t
-	comint-scroll-to-bottom-on-output t
-	comint-move-point-for-output t
+        ess-local-process-name "R"
+        ansi-color-for-comint-mode 'filter
+        comint-scroll-to-bottom-on-input t
+        comint-scroll-to-bottom-on-output t
+        comint-move-point-for-output t
         ess-use-flymake nil
         ess-eval-visibly 'nowait
-	ess-default-style 'RStudio
-	fill-column 72
-	comment-auto-fill-only-comments t)
+        ess-default-style 'RStudio
+        fill-column 72
+        comment-auto-fill-only-comments t)
   :bind (:map ess-mode-map
-	 ("C-S-<return>" . 'then_R_operator_inline)
-	 ("C-<return>" . 'then_R_operator)
-	 ("M-<return>" . 'then_ggplot_plus)
-	 ("_" . 'ess-insert-assign)
-	 ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
-	 ("s-<return>" . 'then_reticulate_dollar)
+         ("C-S-<return>" . 'then_R_operator_inline)
+         ("C-<return>" . 'then_R_operator)
+         ("M-<return>" . 'then_ggplot_plus)
+         ("_" . 'ess-insert-assign)
+         ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
+         ("s-<return>" . 'then_reticulate_dollar)
          :map inferior-ess-r-mode-map
-	 ("C-S-<return>" . 'then_R_operator_inline)
-	 ("C-<return>" . 'then_R_operator)
-	 ("M-<return>" . 'then_ggplot_plus)
-	 ("_" . 'ess-insert-assign)
+         ("C-S-<return>" . 'then_R_operator_inline)
+         ("C-<return>" . 'then_R_operator)
+         ("M-<return>" . 'then_ggplot_plus)
+         ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)
          )
@@ -140,58 +140,10 @@
   (setq org-support-shift-select t
         org-return-follows-link t
         org-blank-before-new-entry t
-        org-image-actual-width '(500))
-  )
+        org-image-actual-width '(500)))
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
 (setq font-latex-fontify-script nil)
-
-;; (use-package! citar
-;;   :config
-;;   (setq
-;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-;;    org-cite-insert-processor 'citar
-;;    org-cite-follow-processor 'citar
-;;    org-cite-activate-processor 'citar
-;;    citar-bibliography org-cite-global-bibliography
-;;    citar-notes-paths '("~/Dropbox/org/roam/literature")
-;;    citar-at-point-function 'embark-act
-;;    citar-templates
-;;    '((main . "${author editor:25}   ${date year issued:4}   ${title:40}")
-;;      (suffix . "   ${=key= id:40}   ${=type=:12}")
-;;      (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-;;      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
-;;   )
-
-;; (after! citar
-;;   (setq
-;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-;;    org-cite-insert-processor 'citar
-;;    org-cite-follow-processor 'citar
-;;    org-cite-activate-processor 'citar
-;;    citar-bibliography org-cite-global-bibliography
-;;    ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
-;;    citar-at-point-function 'embark-act
-;;    citar-library-paths '("~/Dropbox/Papers")
-;;    citar-symbols
-;;    `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-;;      (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-;;      (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
-
-
-;; (setq!
-;;    citar-bibliography '("~/Dropbox/Papers/library.bib")
-;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-;;    ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
-;;    )
-;;    ;; citar-templates
-;;    ;; '(;; (main . "${author editor:25}   ${date year issued:4}   ${title:40}")
-;;    ;;   ;; (suffix . "   ${=key= id:40}   ${=type=:12}")
-;;    ;;   ;; (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-;;    ;;   (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n"))
-;;    ;; )
 
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
@@ -241,6 +193,12 @@
 
 (use-package! denote
   :config
+  ;; Gracias a este muchacho: https://lists.sr.ht/~protesilaos/denote/%3Cm0tu6q6bg0.fsf%40disroot.org%3E#%3C87h72q2hpe.fsf@protesilaos.com%3E
+  (defun my-denote-dired-mode-hook()
+    (denote-dired-mode-in-directories)
+    (if denote-dired-mode
+        (dired-hide-details-mode +1)
+      (diredfl-mode +1)))
   (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
   (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
   (setq denote-infer-keywords t)
@@ -250,17 +208,9 @@
   (setq denote-excluded-directories-regexp nil)
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
-  (setq denote-backlinks-show-context t))
-
-;; Gracias a este muchacho: https://lists.sr.ht/~protesilaos/denote/%3Cm0tu6q6bg0.fsf%40disroot.org%3E#%3C87h72q2hpe.fsf@protesilaos.com%3E
-(defun my-denote-dired-mode-hook()
-  (denote-dired-mode-in-directories)
-  (if denote-dired-mode
-      (dired-hide-details-mode +1)
-    (diredfl-mode +1)))
-
-(add-hook 'dired-mode-hook #'my-denote-dired-mode-hook)
-(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+  (setq denote-backlinks-show-context t)
+  (add-hook 'dired-mode-hook #'my-denote-dired-mode-hook)
+  (add-hook 'find-file-hook #'denote-link-buttonize-buffer))
 
 (use-package! citar-denote
   :init
@@ -268,8 +218,8 @@
 
 ;; biblio
 (setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
-       citar-library-paths '("~/Dropbox/Papers")
-       citar-notes-paths '("~/Dropbox/notes"))
+       citar-library-paths '("~/Dropbox/Papers/")
+       citar-notes-paths '("~/Dropbox/notes/"))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
@@ -283,13 +233,12 @@
    :prefix "n"
    :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
 
-(defun ads/read-openai-key ()
-  (with-temp-buffer
-    (insert-file-contents "~/key.txt")
-    (string-trim (buffer-string))))
-
 (use-package! gptel
   :config
+  (defun ads/read-openai-key ()
+    (with-temp-buffer
+      (insert-file-contents "~/key.txt")
+      (string-trim (buffer-string))))
   (setq gptel-model "gpt-3.5-turbo"
         gptel-playback t
         gptel-default-mode 'org-mode
