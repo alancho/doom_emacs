@@ -51,14 +51,9 @@
 
 (package! unfill)
 
-;; Sólo para que coloree las citas cuando escribo en Rmarkdown
-(package! pandoc-mode)
-
-;; A ver si funciona esto para ASCII art
-;; (package! figlet)
-(package! figlet :recipe (:host github :repo "jpkotta/figlet"))
+;; ;; Sólo para que coloree las citas cuando escribo en Rmarkdown
+;; (package! pandoc-mode)
 
 ;; Vamos a empezar a usar denote
-;; (package! denote :recipe (:host github :repo "protesilaos/denote" :branch "signature"))
 (package! denote)
 (package! citar-denote)

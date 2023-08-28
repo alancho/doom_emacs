@@ -124,16 +124,16 @@
 
 (setq company-global-modes
       '(not ess-r-mode
-            inferior-ess-r-mode
-            emacs-lisp-mode
-            eshell-mode
-            markdown-mode
-            org-mode
-            shell-mode
-            text-mode
-            latex-mode))
+        inferior-ess-r-mode
+        emacs-lisp-mode
+        eshell-mode
+        markdown-mode
+        org-mode
+        shell-mode
+        text-mode
+        latex-mode))
 
-(add-hook 'markdown-mode-hook 'pandoc-mode)
+;; (add-hook 'markdown-mode-hook 'pandoc-mode)
 
 (use-package! org
   :config
@@ -145,11 +145,6 @@
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
 (setq font-latex-fontify-script nil)
-
-;; (map! :map doom-leader-notes-map
-;;       "b" #'citar-insert-citation)
-;;       ;; "b" #'org-cite-insert)
-;;       ;; "b" #'citar-open-notes)
 
 ;; (use-package! citar
 ;;   :config
@@ -169,28 +164,21 @@
 ;;      (note . "Notas de ${=key=}: ${title}, ${journal}\n\n* Abstract\n\n#+begin_quote\n${abstract}\n#+end_quote\n\n* Quotes\n\n* Fleeting notes\n# Lo que te surja al leerlo\n\n* Literature notes\n# En tus propias palabras\n")))
 ;;   )
 
-;; ;; biblio
 ;; (after! citar
-;;   (setq! citar-bibliography '("~/Dropbox/Papers/library.bib"))
-;;   (setq! citar-library-paths '("~/Dropbox/Papers"))
-;;   (setq! citar-notes-paths '("~/Dropbox/notes"))
-;;   )
-
-(after! citar
-  (setq
-   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-csl-styles-dir "~/Dropbox/templates/csl"
-   org-cite-insert-processor 'citar
-   org-cite-follow-processor 'citar
-   org-cite-activate-processor 'citar
-   citar-bibliography org-cite-global-bibliography
-   ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
-   citar-at-point-function 'embark-act
-   citar-library-paths '("~/Dropbox/Papers")
-   citar-symbols
-   `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+;;   (setq
+;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+;;    org-cite-csl-styles-dir "~/Dropbox/templates/csl"
+;;    org-cite-insert-processor 'citar
+;;    org-cite-follow-processor 'citar
+;;    org-cite-activate-processor 'citar
+;;    citar-bibliography org-cite-global-bibliography
+;;    ;; citar-notes-paths '("~/Dropbox/org/roam/literature")
+;;    citar-at-point-function 'embark-act
+;;    citar-library-paths '("~/Dropbox/Papers")
+;;    citar-symbols
+;;    `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+;;      (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+;;      (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
 
 
 ;; (setq!
@@ -251,14 +239,10 @@
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
 
-;; No más ir a una website para generar ASCII comments!
-(setq figlet-default-font "georgia11")
-(setq figlet-options '("-w 200"))
-
 (use-package! denote
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
-  ;; (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
+  (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
@@ -266,14 +250,26 @@
   (setq denote-excluded-directories-regexp nil)
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
-  (setq denote-backlinks-show-context t)
-  )
+  (setq denote-backlinks-show-context t))
 
-;; (after! denote
+;; Gracias a este muchacho: https://lists.sr.ht/~protesilaos/denote/%3Cm0tu6q6bg0.fsf%40disroot.org%3E#%3C87h72q2hpe.fsf@protesilaos.com%3E
+(defun my-denote-dired-mode-hook()
+  (denote-dired-mode-in-directories)
+  (if denote-dired-mode
+      (dired-hide-details-mode +1)
+    (diredfl-mode +1)))
+
+(add-hook 'dired-mode-hook #'my-denote-dired-mode-hook)
 (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-(add-hook 'dired-mode-hook #'denote-dired-mode)
-;; )
 
 (use-package! citar-denote
   :init
   (citar-denote-mode))
+
+;; biblio
+(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
+       citar-library-paths '("~/Dropbox/Papers")
+       citar-notes-paths '("~/Dropbox/notes"))
+
+(map! :map doom-leader-notes-map
+      "b" #'citar-insert-citation)
