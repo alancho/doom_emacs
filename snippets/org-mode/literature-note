@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: Create a literature note
+# key: lit
+# --
+* Literature notes
+In your own words.
+
+* Fleeting notes
+Acerca del PDF que lees
+
+$0
+
+* References
+#+print_bibliography:
