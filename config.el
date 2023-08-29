@@ -133,7 +133,7 @@
         text-mode
         latex-mode))
 
-;; (add-hook 'markdown-mode-hook 'pandoc-mode)
+(add-hook 'markdown-mode-hook 'pandoc-mode)
 
 (use-package! org
   :config
@@ -191,16 +191,16 @@
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
 
+;; biblio
+(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
+       org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+       citar-library-paths '("~/Dropbox/Papers/")
+       citar-notes-paths '("~/Dropbox/notes/"))
+
 (use-package! denote
   :config
-  ;; Gracias a este muchacho: https://lists.sr.ht/~protesilaos/denote/%3Cm0tu6q6bg0.fsf%40disroot.org%3E#%3C87h72q2hpe.fsf@protesilaos.com%3E
-  (defun my-denote-dired-mode-hook()
-    (denote-dired-mode-in-directories)
-    (if denote-dired-mode
-        (dired-hide-details-mode +1)
-      (diredfl-mode +1)))
-  (setq denote-directory (expand-file-name "~/Dropbox/notes/"))
-  (setq denote-known-keywords '("bayesian" "cropscience" "ai"))
+  (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
+  (setq denote-known-keywords '("bayesian" "cropscience" "AI" "modelling"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
@@ -209,17 +209,17 @@
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
-  (add-hook 'dired-mode-hook #'my-denote-dired-mode-hook)
-  (add-hook 'find-file-hook #'denote-link-buttonize-buffer))
+  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+  ;; We use different ways to specify a path for demo purposes.
+  (setq denote-dired-directories
+        (list denote-directory
+              (thread-last denote-directory (expand-file-name "attachments"))
+              (expand-file-name "~/Dropbox/denotes")))
+  (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories))
 
 (use-package! citar-denote
   :init
   (citar-denote-mode))
-
-;; biblio
-(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
-       citar-library-paths '("~/Dropbox/Papers/")
-       citar-notes-paths '("~/Dropbox/notes/"))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
@@ -243,3 +243,8 @@
         gptel-playback t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key))
+
+(use-package! org-format
+  :hook (org-mode . org-format-on-save-mode))
+
+(use-package! oxr)

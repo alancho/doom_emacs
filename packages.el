@@ -51,8 +51,8 @@
 
 (package! unfill)
 
-;; ;; Sólo para que coloree las citas cuando escribo en Rmarkdown
-;; (package! pandoc-mode)
+;; Sólo para que coloree las citas cuando escribo en Rmarkdown
+(package! pandoc-mode)
 
 ;; Vamos a empezar a usar denote
 (package! denote)
@@ -65,3 +65,11 @@
 (package! org-transclusion)
 
 (package! gptel)
+
+(package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
+
+;; Lo deshabilito para que denote-dired-mode funcione correctamente
+(package! diredfl :disable t)
+
+(package! poly-R :disable t)
+(package! polymode :disable t)
