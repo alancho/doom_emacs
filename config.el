@@ -139,6 +139,9 @@
   :config
   (setq org-support-shift-select t
         org-return-follows-link t
+        org-hide-emphasis-markers t
+        org-level-color-stars-only nil
+        org-replace-disputed-keys t
         org-blank-before-new-entry t
         org-image-actual-width '(500)))
 
@@ -213,7 +216,7 @@
   ;; We use different ways to specify a path for demo purposes.
   (setq denote-dired-directories
         (list denote-directory
-              (thread-last denote-directory (expand-file-name "attachments"))
+              (thread-last denote-directory (expand-file-name "bibliography"))
               (expand-file-name "~/Dropbox/denotes")))
   (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories))
 
