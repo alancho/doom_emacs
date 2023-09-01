@@ -137,8 +137,8 @@
 
 (use-package! org
   :config
-  (setq org-support-shift-select t
-        org-return-follows-link t
+  (setq org-support-shift-select 'always
+        org-return-follows-link nil
         org-hide-emphasis-markers t
         org-level-color-stars-only nil
         org-replace-disputed-keys t
@@ -203,7 +203,7 @@
 (use-package! denote
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
-  (setq denote-known-keywords '("bayesian" "cropscience" "AI" "modelling"))
+  (setq denote-known-keywords '("bayesian" "cropscience" "ai" "modelling"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
@@ -212,7 +212,7 @@
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
-  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+  ;; (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
   ;; We use different ways to specify a path for demo purposes.
   (setq denote-dired-directories
         (list denote-directory
@@ -220,21 +220,25 @@
               (expand-file-name "~/Dropbox/denotes")))
   (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories))
 
+
 (use-package! citar-denote
   :init
-  (citar-denote-mode))
+  (citar-denote-mode)
+  :config
+  ;; (setq citar-denote-title-format "author-year")
+  (setq citar-denote-subdir t))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
 
-(use-package! org-transclusion
-  :after org
-  :init
-  (map!
-   :map global-map "<f12>" #'org-transclusion-add
-   :leader
-   :prefix "n"
-   :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
+;; (use-package! org-transclusion
+;;   :after org
+;;   :init
+;;   (map!
+;;    :map global-map "<f12>" #'org-transclusion-add
+;;    :leader
+;;    :prefix "n"
+;;    :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
 
 (use-package! gptel
   :config
