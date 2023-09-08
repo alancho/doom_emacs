@@ -25,7 +25,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-vibrant)
+(setq doom-theme 'doom-one)
 
 ;; (set-face-attribute 'default nil :height 105 :family "dejavu" :weight 'normal :width 'normal)
 
@@ -95,45 +95,43 @@
     (setq-local split-height-threshold nil)
     (setq-local split-width-threshold 0))
   (setq ess-ask-for-ess-directory nil
-	ess-local-process-name "R"
-	ansi-color-for-comint-mode 'filter
-	comint-scroll-to-bottom-on-input t
-	comint-scroll-to-bottom-on-output t
-	comint-move-point-for-output t
+        ess-local-process-name "R"
+        ansi-color-for-comint-mode 'filter
+        comint-scroll-to-bottom-on-input t
+        comint-scroll-to-bottom-on-output t
+        comint-move-point-for-output t
         ess-use-flymake nil
         ess-eval-visibly 'nowait
-	ess-default-style 'RStudio
-	fill-column 72
-	comment-auto-fill-only-comments t)
+        ess-default-style 'RStudio
+        fill-column 72
+        comment-auto-fill-only-comments t)
   :bind (:map ess-mode-map
-	 ("C-S-<return>" . 'then_R_operator_inline)
-	 ("C-<return>" . 'then_R_operator)
-	 ("M-<return>" . 'then_ggplot_plus)
-	 ("_" . 'ess-insert-assign)
-	 ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
-	 ("s-<return>" . 'then_reticulate_dollar)
-         :map inferior-ess-r-mode-map
-	 ("C-S-<return>" . 'then_R_operator_inline)
-	 ("C-<return>" . 'then_R_operator)
-	 ("M-<return>" . 'then_ggplot_plus)
-	 ("_" . 'ess-insert-assign)
+         ("C-S-<return>" . 'then_R_operator_inline)
+         ("C-<return>" . 'then_R_operator)
+         ("M-<return>" . 'then_ggplot_plus)
+         ("_" . 'ess-insert-assign)
          ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
          ("s-<return>" . 'then_reticulate_dollar)
-         )
-  )
+         :map inferior-ess-r-mode-map
+         ("C-S-<return>" . 'then_R_operator_inline)
+         ("C-<return>" . 'then_R_operator)
+         ("M-<return>" . 'then_ggplot_plus)
+         ("_" . 'ess-insert-assign)
+         ("S-<return>" . 'ess-eval-region-or-function-or-paragraph-and-step)
+         ("s-<return>" . 'then_reticulate_dollar)))
 
 (setq projectile-track-known-projects-automatically nil)
 
 (setq company-global-modes
       '(not ess-r-mode
-            inferior-ess-r-mode
-            emacs-lisp-mode
-            eshell-mode
-            markdown-mode
-            org-mode
-            shell-mode
-            text-mode
-            latex-mode))
+        inferior-ess-r-mode
+        emacs-lisp-mode
+        eshell-mode
+        markdown-mode
+        org-mode
+        shell-mode
+        text-mode
+        latex-mode))
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 
@@ -146,22 +144,14 @@
         org-level-color-stars-only nil
         org-replace-disputed-keys t
         org-startup-with-inline-images t
-        org-image-actual-width '(400))
-  )
+        org-image-actual-width '(400)))
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
 (setq font-latex-fontify-script nil)
 
 (use-package! org-roam
   :config
-  (setq org-support-shift-select t
-        org-return-follows-link t
-        org-roam-db-autosync-mode t
-        org-replace-disputed-keys t
-        org-roam-dailies-capture-templates
-        '(("d" "default" entry "* %<%I:%M %p>\n%?"
-        ;; '(("d" "default" entry "* %?"
-           :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A, %e %B %Y>\n")))))
+  (setq org-roam-db-autosync-mode t))
 
 (use-package! websocket
   :after org-roam)
@@ -178,7 +168,6 @@
 (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
-(global-set-key (kbd "<f12>") #'org-roam-dailies-capture-today)
 
 ;; Aliases
 (set-eshell-alias! "us" "sudo apt-get update && sudo apt-get upgrade && sudo apt-get clean"
@@ -197,9 +186,7 @@
             '("#\\+BEGIN_QUOTE" . "#\\+END_QUOTE")
             '("#\\+begin_src" . "#\\+end_src")
             '("#\\+begin_example" . "#\\+end_example")
-            '("#\\+begin_quote" . "#\\+end_quote")
-            )
-  )
+            '("#\\+begin_quote" . "#\\+end_quote")))
 
 (remove-hook! '(markdown-mode-hook
                 TeX-mode-hook
@@ -216,53 +203,18 @@
 ;; Mejor manera de usar locate con consult
 (setq consult-locate-args "locate --ignore-case --regex")
 
-;; ;; Copiado de tocosaur: https://tecosaur.github.io/emacs-config/config.html
-;; (use-package! oc-csl-activate
-;;   :after oc
-;;   :config
-;;   (setq org-cite-csl-activate-use-document-style t)
-;;   (defun +org-cite-csl-activate/enable ()
-;;     (interactive)
-;;     (setq org-cite-activate-processor 'csl-activate)
-;;     (add-hook! 'org-mode-hook '((lambda () (cursor-sensor-mode 1)) org-cite-csl-activate-render-all))
-;;     (defadvice! +org-cite-csl-activate-render-all-silent (orig-fn)
-;;       :around #'org-cite-csl-activate-render-all
-;;       (with-silent-modifications (funcall orig-fn)))
-;;     (when (eq major-mode 'org-mode)
-;;       (with-silent-modifications
-;;         (save-excursion
-;;           (goto-char (point-min))
-;;           (org-cite-activate (point-max)))
-;;         (org-cite-csl-activate-render-all)))
-;;     (fmakunbound #'+org-cite-csl-activate/enable)))
-
-;; (use-package! citar
-;;   :config
-;;   (setq
-;;    org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-;;    org-cite-insert-processor 'citar
-;;    org-cite-follow-processor 'citar
-;;    org-cite-activate-processor 'citar
-;;    citar-bibliography org-cite-global-bibliography
-;;    citar-library-paths '("~/Dropbox/Papers/")
-;;    citar-at-point-function 'embark-act))
-;;    ;; citar-symbols
-;;    ;; `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-;;    ;;   (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-;;    ;;   (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
-
-;; (after! oc-csl
-;;   (setq org-cite-csl-styles-dir "~/Dropbox/templates/csl"))
-
-;; (after! oc
-;;   (setq org-cite-export-processors '((t csl))))
-
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
 
-;; (map! :after citar
-;;       :map doom-leader-notes-map
-;;       "b" #'citar-insert-citation)
+;; biblio
+(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
+       org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
+       citar-library-paths '("~/Dropbox/Papers/")
+       citar-notes-paths '("~/Dropbox/notes/"))
+
+(map! :after citar
+      :map doom-leader-notes-map
+      "b" #'citar-insert-citation)
 
 (use-package! oxr)
 
@@ -288,43 +240,20 @@
    :prefix "n"
    :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
 
-(defun ads/read-openai-key ()
-  (with-temp-buffer
-    (insert-file-contents "~/key.txt")
-    (string-trim (buffer-string))))
-
 (use-package! gptel
   :config
+  (defun ads/read-openai-key ()
+    (with-temp-buffer
+      (insert-file-contents "~/key.txt")
+      (string-trim (buffer-string))))
   (setq gptel-model "gpt-3.5-turbo"
         gptel-playback t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key))
 
-;; (setq! org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-;;        citar-bibliography '("~/Dropbox/Papers/library.bib")
-;;        citar-library-paths '("~/Dropbox/Papers/")
-;;        citar-notes-paths '("~/Dropbox/org/roam/references/")
-;;        citar-at-point-function 'embark-act)
-
-;; (after! citar-org-roam
-;;   (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"
-;;         citar-org-roam-subdir "references/"))
-
-;; (use-package! citar-org-roam
-;;   :after (citar org-roam)
-;;   :init (citar-org-roam-mode)
-;;   :config
-;;   (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"
-;;         citar-org-roam-subdir "references/"))
-
-(use-package! citar
+(use-package! citar-org-roam
+  :after (org-roam citar)
   :config
-  (setq
-   org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-   org-cite-insert-processor 'citar
-   org-cite-follow-processor 'citar
-   org-cite-activate-processor 'citar
-   citar-bibliography org-cite-global-bibliography
-   citar-notes-paths '("~/Dropbox/org/roam/references/")
-   citar-library-paths '("~/Dropbox/Papers/")
-   citar-at-point-function 'embark-act))
+  (citar-org-roam-mode)
+  (setq citar-org-roam-note-title-template "${title}\n#+subtitle: ${author editor} (${year})"
+        citar-org-roam-subdir "references/"))
