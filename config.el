@@ -214,10 +214,10 @@
   (setq denote-backlinks-show-context t)
   ;; (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
   ;; We use different ways to specify a path for demo purposes.
-  (setq denote-dired-directories
-        (list denote-directory
-              (thread-last denote-directory (expand-file-name "bibliography"))
-              (expand-file-name "~/Dropbox/denotes")))
+  ;; (setq denote-dired-directories
+  ;;       (list denote-directory
+  ;;             (thread-last denote-directory (expand-file-name "bibliography"))
+  ;;             (expand-file-name "~/Dropbox/denotes")))
   (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories))
 
 
@@ -225,8 +225,8 @@
   :init
   (citar-denote-mode)
   :config
-  ;; (setq citar-denote-title-format "author-year")
-  (setq citar-denote-subdir t))
+  (setq citar-denote-title-format "author-year")
+  (setq citar-denote-subdir nil))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
