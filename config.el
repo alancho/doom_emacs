@@ -140,7 +140,7 @@
   (setq org-support-shift-select 'always
         org-return-follows-link nil
         org-hide-emphasis-markers t
-        org-level-color-stars-only nil
+        org-level-color-stars-only t
         org-replace-disputed-keys t
         org-blank-before-new-entry t
         org-image-actual-width '(500)))
@@ -202,8 +202,8 @@
 
 (use-package! denote
   :config
-  (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
-  (setq denote-known-keywords '("bayesian" "cropscience" "ai" "modelling"))
+  (setq denote-directory (expand-file-name "~/Dropbox/notes-testing/"))
+  (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
@@ -212,13 +212,7 @@
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
-  ;; (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-  ;; We use different ways to specify a path for demo purposes.
-  ;; (setq denote-dired-directories
-  ;;       (list denote-directory
-  ;;             (thread-last denote-directory (expand-file-name "bibliography"))
-  ;;             (expand-file-name "~/Dropbox/denotes")))
-  (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories))
+  (add-hook 'dired-mode-hook #'denote-dired-mode))
 
 
 (use-package! citar-denote
@@ -255,3 +249,7 @@
   :hook (org-mode . org-format-on-save-mode))
 
 (use-package! oxr)
+
+(after! org
+  (setq org-todo-keywords
+        '((sequence "LEER(l)" "|" "LEIDO(L)" "CANCELLED(c)"))))
