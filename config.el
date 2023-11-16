@@ -200,27 +200,68 @@
        citar-library-paths '("~/Dropbox/Papers/")
        citar-notes-paths '("~/Dropbox/notes/"))
 
+(setq citar-open-entry-function #'citar-open-entry-in-zotero)
+
+;; (use-package! denote
+;;   :config
+;;   (setq denote-directory (expand-file-name "~/Dropbox/notes-testing/"))
+;;   (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
+;;   (setq denote-infer-keywords t)
+;;   (setq denote-sort-keywords t)
+;;   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
+;;   (setq denote-prompts '(title keywords signature))
+;;   (setq denote-excluded-directories-regexp nil)
+;;   (setq denote-excluded-keywords-regexp nil)
+;;   (setq denote-date-prompt-use-org-read-date t)
+;;   (setq denote-backlinks-show-context t)
+;;   (add-hook 'dired-mode-hook #'denote-dired-mode))
+
 (use-package! denote
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/notes-testing/"))
   (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
-  ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
   (setq denote-prompts '(title keywords signature))
   (setq denote-excluded-directories-regexp nil)
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
-  (add-hook 'dired-mode-hook #'denote-dired-mode))
-
+  (setq denote-dired-directories (list denote-directory))
+  ;; :hook
+  ;; (dired-mode . denote-dired-mode-in-directories)
+  :bind
+  (("C-c d n" . denote-create-note)
+   ("C-c d f" . denote-open-or-create)
+   ("C-c d j" . denote-date)
+   ("C-c d i" . denote-link-or-create)
+   ("C-c d l" . denote-find-link)
+   ("C-c d b" . denote-find-backlink)
+   ("C-c d D" . denote-org-dblock-insert-links)
+   ("C-c d r" . denote-rename-file-using-front-matter)
+   ("C-c d R" . denote-rename-file)
+   ("C-c d k" . denote-keywords-add)
+   ("C-c d K" . denote-keywords-remove)))
 
 (use-package! citar-denote
+  :after denote
   :init
   (citar-denote-mode)
   :config
   (setq citar-denote-title-format "author-year")
-  (setq citar-denote-subdir nil))
+  (setq citar-denote-subdir nil)
+  :bind
+  (("C-c d c" . citar-denote-open-reference-entry)))
+
+;; (use-package! consult-notes
+;;   :after denote
+;;   :hook
+;;   (dired-mode . consult-notes-denote-mode)
+;;   :bind
+;;   (("C-c d d" . consult-notes)))
+
+(after! consult-notes
+  (consult-notes-denote-mode))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)

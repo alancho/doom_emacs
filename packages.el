@@ -57,6 +57,7 @@
 ;; Vamos a empezar a usar denote
 (package! denote)
 (package! citar-denote)
+;; (package! consult-notes) ;; por ahora no lo veo necesario
 
 ;; Veamos si funciona este de bdarcus para hacer cross-references
 (package! oxr :recipe (:host github :repo "bdarcus/oxr"))
@@ -69,7 +70,7 @@
 (package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
 
 ;; Lo deshabilito para que denote-dired-mode funcione correctamente
-(package! diredfl :disable t)
+;; (package! diredfl :disable t)
 
 (package! poly-R :disable t)
 (package! polymode :disable t)
