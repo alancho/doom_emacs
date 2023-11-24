@@ -140,7 +140,7 @@
   (setq org-support-shift-select 'always
         org-return-follows-link nil
         org-hide-emphasis-markers t
-        org-level-color-stars-only t
+        org-level-color-stars-only nil
         org-replace-disputed-keys t
         org-blank-before-new-entry t
         org-image-actual-width '(500)))
@@ -294,3 +294,22 @@
 (after! org
   (setq org-todo-keywords
         '((sequence "LEER(l)" "|" "LEIDO(L)" "CANCELLED(c)"))))
+
+;; Prefiero que la fuente de los headings en org no sea bold
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-level-1 ((t (:inherit outline-1 :extend t :weight normal))))
+ '(org-level-2 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-3 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-4 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-5 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-6 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-7 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-8 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-9 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-10 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-11 ((t (:inherit outline-2 :extend t :weight normal))))
+ '(org-level-12 ((t (:inherit outline-2 :extend t :weight normal)))))
