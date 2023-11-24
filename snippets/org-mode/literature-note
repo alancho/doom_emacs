@@ -2,13 +2,11 @@
 # name: Create a literature note
 # key: lit
 # --
+* Fleeting notes
+$0 Acerca del PDF que lees
+
 * Literature notes
 In your own words.
-
-* Fleeting notes
-Acerca del PDF que lees
-
-$0
 
 * References
 #+print_bibliography:
