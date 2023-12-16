@@ -228,8 +228,8 @@
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
   (setq denote-dired-directories (list denote-directory))
-  ;; :hook
-  ;; (dired-mode . denote-dired-mode-in-directories)
+  :hook
+  (dired-mode . denote-dired-mode-in-directories)
   :bind
   (("C-c d n" . denote-create-note)
    ("C-c d f" . denote-open-or-create)
