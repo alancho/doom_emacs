@@ -243,6 +243,15 @@
    ("C-c d k" . denote-keywords-add)
    ("C-c d K" . denote-keywords-remove)))
 
+;; Define a read-only directory class
+(dir-locals-set-class-variables 'read-only
+ '((nil . ((buffer-read-only . t)))))
+
+;; Esto es para ver si puedo abrir las notas de denote siempre en read-only, para no meter la pata
+;; Associate directories with the read-only class
+(dolist (dir (list "~/Dropbox/notes-testing/"))
+  (dir-locals-set-directory-class (file-truename dir) 'read-only))
+
 (use-package! citar-denote
   :after denote
   :init
