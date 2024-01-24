@@ -218,7 +218,7 @@
 
 (use-package! denote
   :config
-  (setq denote-directory (expand-file-name "~/Dropbox/notes-testing/"))
+  (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
   (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
