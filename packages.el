@@ -74,3 +74,6 @@
 
 (package! poly-R :disable t)
 (package! polymode :disable t)
+
+;; Deshabilitamos a zen pero veamos cómo funciona olivetti
+(package! olivetti)

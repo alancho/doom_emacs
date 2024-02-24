@@ -322,3 +322,40 @@
  '(org-level-10 ((t (:inherit outline-2 :extend t :weight normal))))
  '(org-level-11 ((t (:inherit outline-2 :extend t :weight normal))))
  '(org-level-12 ((t (:inherit outline-2 :extend t :weight normal)))))
+
+(defvar original-frame-font nil
+  "Variable to store the original frame font before toggling.")
+
+(defvar original-buffer-face-mode-face nil
+  "Variable to store the original buffer-face-mode-face before toggling.")
+
+(defun toggle-olivetti-and-set-iosevka ()
+  "Toggle between activating and deactivating Olivetti mode and set Iosevka font."
+  (interactive)
+  ;; Check if Olivetti mode is active
+  (if (bound-and-true-p olivetti-mode)
+      ;; Deactivate Olivetti mode
+      (progn
+        (olivetti-mode -1)
+        ;; Restore the original font and buffer-face-mode-face
+        (when original-frame-font
+          (set-frame-font original-frame-font t t)
+          (setq original-frame-font nil))
+        (when original-buffer-face-mode-face
+          (setq buffer-face-mode-face original-buffer-face-mode-face)
+          (buffer-face-mode 0)))  ;; Turn off buffer-face-mode
+    ;; Activate Olivetti mode
+    (progn
+      ;; Save the original font and buffer-face-mode-face
+      (setq original-frame-font (face-attribute 'default :font))
+      (setq original-buffer-face-mode-face buffer-face-mode-face)
+      ;; Set Iosevka font locally for the buffer
+      (setq buffer-face-mode-face '(:family "Iosevka" :height 120))
+      (buffer-face-mode 1)
+      ;; Activate Olivetti mode
+      (olivetti-mode 1))))
+
+(map!
+ :leader
+ :prefix "t"
+ :desc "Olivetti" "o" 'toggle-olivetti-and-set-iosevka)
