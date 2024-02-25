@@ -20,7 +20,8 @@
 ;; font string. You generally only need these two:
 ;; Otras fuentes que me gustan: Ubuntu Mono, Iosevka, Fira Code
 (setq doom-font (font-spec :family "DejaVuSansMono" :size 14 :weight 'normal)
-      doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
+      ;; doom-variable-pitch-font (font-spec :family "Iosevka" :size 14)
+      )
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -359,3 +360,7 @@
  :leader
  :prefix "t"
  :desc "Olivetti" "o" 'toggle-olivetti-and-set-iosevka)
+
+(after! writeroom-mode
+  (setq +zen-text-scale 0.1
+        +zen-mixed-pitch-modes '(adoc-mode rst-mode)))
