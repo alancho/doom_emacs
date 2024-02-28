@@ -351,7 +351,7 @@
       (setq original-frame-font (face-attribute 'default :font))
       (setq original-buffer-face-mode-face buffer-face-mode-face)
       ;; Set Iosevka font locally for the buffer
-      (setq buffer-face-mode-face '(:family "Iosevka" :height 120))
+      (setq buffer-face-mode-face '(:family "Iosevka Comfy" :height 120))
       (buffer-face-mode 1)
       ;; Activate Olivetti mode
       (olivetti-mode 1))))
