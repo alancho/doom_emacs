@@ -362,5 +362,5 @@
  :desc "Olivetti" "o" 'toggle-olivetti-and-set-iosevka)
 
 (after! writeroom-mode
-  (setq +zen-text-scale 0.1
+  (setq +zen-text-scale 1
         +zen-mixed-pitch-modes '(adoc-mode rst-mode)))
