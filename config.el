@@ -276,14 +276,14 @@
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
 
-(use-package! org-transclusion
-  :after org
-  :init
-  (map!
-   :map global-map "<f12>" #'org-transclusion-add
-   :leader
-   :prefix "n"
-   :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
+;; (use-package! org-transclusion
+;;   :after org
+;;   :init
+;;   (map!
+;;    :map global-map "<f12>" #'org-transclusion-add
+;;    :leader
+;;    :prefix "n"
+;;    :desc "Org Transclusion Mode" "t" #'org-transclusion-mode))
 
 (use-package! gptel
   :config
