@@ -364,3 +364,6 @@
 (after! writeroom-mode
   (setq +zen-text-scale 1
         +zen-mixed-pitch-modes '(adoc-mode rst-mode)))
+
+;; Para que me asocie apsim a xml-mode
+(add-to-list 'auto-mode-alist '("\\.apsim\\'" . xml-mode))
