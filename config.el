@@ -367,3 +367,15 @@
 
 ;; Para que me asocie apsim a xml-mode
 (add-to-list 'auto-mode-alist '("\\.apsim\\'" . xml-mode))
+
+;; A ver cómo anda ChatGPT que le pregunté cómo hacer esto
+(defun create-temporary-org-file ()
+  "Create and save a new temporary Org mode file in /tmp directory with a unique name."
+  (interactive)
+  (let* ((timestamp (format-time-string "%Y%m%d%H%M%S"))
+         (file-name (concat "temp_org_" timestamp ".org"))
+         (file-path (concat "/tmp/" file-name)))
+    (switch-to-buffer (find-file-noselect file-path))
+    (org-mode)
+    (save-buffer)
+    (message (concat "Temporary Org file created and saved as " file-path))))
