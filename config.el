@@ -258,8 +258,9 @@
   :init
   (citar-denote-mode)
   :config
-  (setq citar-denote-title-format "author-year")
+  (setq citar-denote-title-format "author-year-title")
   (setq citar-denote-subdir nil)
+  (setq citar-denote-title-format-authors 2)
   :bind
   (("C-c d c" . citar-denote-open-reference-entry)))
 
