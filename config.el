@@ -381,3 +381,14 @@
     (org-mode)
     (save-buffer)
     (message (concat "Temporary Org file created and saved as " file-path))))
+
+(setq global-hl-line-modes nil)
+;; (global-hl-line-mode -1)
+
+(add-to-list 'exec-path "/home/alancho/.cabal/bin")
+
+(after! org
+  (set-popup-rule! "^\\*Org Src" :ignore t))
+
+(after! org
+  (setq org-src-window-setup 'current-window))
