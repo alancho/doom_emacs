@@ -355,7 +355,8 @@
       (setq buffer-face-mode-face '(:family "Iosevka Comfy" :height 120))
       (buffer-face-mode 1)
       ;; Activate Olivetti mode
-      (olivetti-mode 1))))
+      (olivetti-mode 1)
+      (setq olivetti-body-width 140))))
 
 (map!
  :leader
