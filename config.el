@@ -143,7 +143,6 @@
         org-hide-emphasis-markers t
         org-level-color-stars-only nil
         org-replace-disputed-keys t
-        org-blank-before-new-entry t
         org-image-actual-width '(500)))
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
