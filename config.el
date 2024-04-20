@@ -391,3 +391,15 @@
 
 (after! org
   (setq org-src-window-setup 'current-window))
+
+(defun create-temporary-r-file ()
+  "Create and save a new temporary R file in /tmp directory with a unique name."
+  (interactive)
+  (let* ((timestamp (format-time-string "%Y%m%d%H%M%S"))
+         (file-name (concat "temp_R_" timestamp ".R"))
+         (file-path (concat "/tmp/" file-name)))
+    (switch-to-buffer (find-file-noselect file-path))
+    (setq-local auto-mode-alist (cons '("\\.R$" . ess-mode) auto-mode-alist))
+    (insert "require(tidyverse)\n\n")
+    (save-buffer)
+    (message (concat "Temporary R file created and saved as " file-path))))
