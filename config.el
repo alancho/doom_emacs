@@ -403,3 +403,6 @@
     (insert "require(tidyverse)\n\n")
     (save-buffer)
     (message (concat "Temporary R file created and saved as " file-path))))
+
+(after! figlet
+  (setq figlet-default-font "banner"))

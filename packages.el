@@ -77,3 +77,5 @@
 
 ;; Deshabilitamos a zen pero veamos cómo funciona olivetti
 (package! olivetti)
+
+(package! figlet :recipe (:host github :repo "jpkotta/figlet"))
