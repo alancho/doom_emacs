@@ -202,20 +202,6 @@
 
 (setq citar-open-entry-function #'citar-open-entry-in-zotero)
 
-;; (use-package! denote
-;;   :config
-;;   (setq denote-directory (expand-file-name "~/Dropbox/notes-testing/"))
-;;   (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
-;;   (setq denote-infer-keywords t)
-;;   (setq denote-sort-keywords t)
-;;   ;; (setq denote-file-type 'markdown-yaml) ; Org is the default, set others here
-;;   (setq denote-prompts '(title keywords signature))
-;;   (setq denote-excluded-directories-regexp nil)
-;;   (setq denote-excluded-keywords-regexp nil)
-;;   (setq denote-date-prompt-use-org-read-date t)
-;;   (setq denote-backlinks-show-context t)
-;;   (add-hook 'dired-mode-hook #'denote-dired-mode))
-
 (use-package! denote
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
@@ -242,6 +228,13 @@
    ("C-c d R" . denote-rename-file)
    ("C-c d k" . denote-keywords-add)
    ("C-c d K" . denote-keywords-remove)))
+
+(defun open-my-denote-directory ()
+  (interactive)
+  (find-file "~/Dropbox/denotes"))
+
+(global-set-key (kbd "<f12>") 'open-my-denote-directory)
+
 
 ;; ;; Define a read-only directory class
 ;; (dir-locals-set-class-variables 'read-only
