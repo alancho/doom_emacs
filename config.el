@@ -384,7 +384,8 @@
   (set-popup-rule! "^\\*Org Src" :ignore t))
 
 (after! org
-  (setq org-src-window-setup 'current-window))
+  (setq org-src-window-setup 'current-window)
+  (setq org-descriptive-links nil))
 
 (defun create-temporary-r-file ()
   "Create and save a new temporary R file in /tmp directory with a unique name."
