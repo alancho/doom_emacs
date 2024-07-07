@@ -361,6 +361,7 @@
 
 ;; Para que me asocie apsim a xml-mode
 (add-to-list 'auto-mode-alist '("\\.apsim\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.apsimx\\'" . json-mode))
 
 ;; A ver cómo anda ChatGPT que le pregunté cómo hacer esto
 (defun create-temporary-org-file ()
