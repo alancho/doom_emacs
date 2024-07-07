@@ -284,7 +284,7 @@
     (with-temp-buffer
       (insert-file-contents "~/key.txt")
       (string-trim (buffer-string))))
-  (setq gptel-model "gpt-3.5-turbo"
+  (setq gptel-model "gpt-4o"
         gptel-playback t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key))
