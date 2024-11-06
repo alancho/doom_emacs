@@ -394,7 +394,7 @@
       (buffer-face-mode 1)
       ;; Activate Olivetti mode
       (olivetti-mode 1)
-      (setq olivetti-body-width 140))))
+      (setq olivetti-body-width 150))))
 
 (map!
  :leader
