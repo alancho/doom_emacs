@@ -256,10 +256,10 @@
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
   (setq denote-dired-directories (list denote-directory))
-  (setq denote-file-name-slug-functions
-        '((title . my/denote-sluggify-title)
-          (signature . denote-sluggify-signature)
-          (keywords . denote-sluggify-keywords)))
+  ;; (setq denote-file-name-slug-functions
+  ;;       '((title . my/denote-sluggify-title)
+  ;;         (signature . denote-sluggify-signature)
+  ;;         (keywords . denote-sluggify-keywords)))
   :hook
   (dired-mode . denote-dired-mode-in-directories)
   :bind
