@@ -333,7 +333,8 @@
   (setq gptel-model "gpt-4o"
         gptel-playback t
         gptel-default-mode 'org-mode
-        gptel-api-key #'ads/read-openai-key))
+        gptel-api-key #'ads/read-openai-key
+        gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."))
 
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
