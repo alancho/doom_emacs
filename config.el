@@ -448,3 +448,36 @@
 
 (after! figlet
   (setq figlet-default-font "banner"))
+
+(setq org-attach-store-link-p 'attached)
+
+;; (add-to-list 'org-latex-packages-alist '("" "moderncv" t))
+
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("articulo"
+                 "\\documentclass{article}
+                  [NO-DEFAULT-PACKAGES]
+                  [NO-PACKAGES]
+                  [EXTRA]"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("moderncv"
+                 "\\documentclass[8pt,a4paper,sans]{moderncv}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+
+;; Para exportar siempre fuera del directorio
+(defun my-org-export-output-file-name (orig-fun extension &optional subtreep pub-dir)
+  (let ((pub-dir "~/Downloads"))
+    (funcall orig-fun extension subtreep pub-dir)))
+
+(advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
+
+
+;; (add-to-list )
