@@ -334,7 +334,14 @@
         gptel-stream t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key
-        gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."))
+        gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."
+        gptel-directives
+        '((default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely in Australian English.")
+          (programming . "You are a large language model and a careful programmer. Provide code and only code as output without any additional text, prompt or note.")
+          (writing . "You are a large language model and a writing assistant. Respond concisely in Australian English.")
+          (chat . "You are a large language model and a conversation partner. Respond concisely in Australian English.")
+          (aussie . "G'day! You're a fair dinkum Aussie assistant living in Emacs. Respond in Australian English, using local slang and expressions where appropriate, mate."))))
+
 
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
