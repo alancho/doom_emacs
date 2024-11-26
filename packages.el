@@ -57,7 +57,7 @@
 ;; Vamos a empezar a usar denote
 (package! denote)
 (package! citar-denote)
-;; (package! consult-notes) ;; por ahora no lo veo necesario
+;; (package! consult-denote) ;; por ahora no lo veo necesario
 
 ;; Veamos si funciona este de bdarcus para hacer cross-references
 (package! oxr :recipe (:host github :repo "bdarcus/oxr"))
