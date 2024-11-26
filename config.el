@@ -418,6 +418,9 @@
 (add-to-list 'auto-mode-alist '("\\.apsim\\'" . xml-mode))
 (add-to-list 'auto-mode-alist '("\\.apsimx\\'" . json-mode))
 
+;; Y para que asocie Stan con c++-mode
+(add-to-list 'auto-mode-alist '("\\.stan\\'" . c++-mode))
+
 ;; A ver cómo anda ChatGPT que le pregunté cómo hacer esto
 (defun create-temporary-org-file ()
   "Create and save a new temporary Org mode file in /tmp directory with a unique name."
