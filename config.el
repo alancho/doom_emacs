@@ -443,7 +443,7 @@
 
 (after! org
   (setq org-src-window-setup 'current-window)
-  (setq org-descriptive-links nil))
+  (setq org-descriptive-links t))
 
 (defun create-temporary-r-file ()
   "Create and save a new temporary R file in /tmp directory with a unique name."
@@ -489,6 +489,3 @@
     (funcall orig-fun extension subtreep pub-dir)))
 
 (advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
-
-
-;; (add-to-list )
