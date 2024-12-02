@@ -123,16 +123,16 @@
 
 (setq projectile-track-known-projects-automatically nil)
 
-(setq company-global-modes
-      '(not ess-r-mode
-        inferior-ess-r-mode
-        emacs-lisp-mode
-        eshell-mode
-        markdown-mode
-        org-mode
-        shell-mode
-        text-mode
-        latex-mode))
+;; (setq company-global-modes
+;;       '(not ess-r-mode
+;;         inferior-ess-r-mode
+;;         emacs-lisp-mode
+;;         eshell-mode
+;;         markdown-mode
+;;         org-mode
+;;         shell-mode
+;;         text-mode
+;;         latex-mode))
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 
