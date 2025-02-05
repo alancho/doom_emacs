@@ -510,6 +510,7 @@
          (file-path (concat "/tmp/" file-name)))
     (switch-to-buffer (find-file-noselect file-path))
     (org-mode)
+    (toggle-olivetti-and-set-iosevka)
     (save-buffer)
     (message (concat "Temporary Org file created and saved as " file-path))))
 
