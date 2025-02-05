@@ -534,7 +534,7 @@
          (file-path (concat "/tmp/" file-name)))
     (switch-to-buffer (find-file-noselect file-path))
     (setq-local auto-mode-alist (cons '("\\.R$" . ess-mode) auto-mode-alist))
-    (insert "require(tidyverse)\n\n")
+    (insert "require(tidyverse)\n")
     (save-buffer)
     (message (concat "Temporary R file created and saved as " file-path))))
 
