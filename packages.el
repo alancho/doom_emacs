@@ -79,3 +79,8 @@
 (package! olivetti)
 
 (package! figlet :recipe (:host github :repo "jpkotta/figlet"))
+
+;; Python
+(package! company-box)
+(package! blacken)
+(package! dap-mode)

@@ -570,3 +570,74 @@
     (funcall orig-fun extension subtreep pub-dir)))
 
 (advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
+
+;; ######
+;; #     # #   # ##### #    #  ####  #    #
+;; #     #  # #    #   #    # #    # ##   #
+;; ######    #     #   ###### #    # # #  #
+;; #         #     #   #    # #    # #  # #
+;; #         #     #   #    # #    # #   ##
+;; #         #     #   #    #  ####  #    #
+
+(after! company
+  (setq company-idle-delay 0.0
+        company-minimum-prefix-length 1))
+
+(use-package! company-box
+  :hook (company-mode . company-box-mode))
+
+(after! lsp-mode
+  (setq lsp-headerline-breadcrumb-enable nil
+        lsp-enable-snippet t))
+
+;; Enable LSP for Python automatically
+(add-hook 'python-mode-hook #'lsp!)
+
+(after! flycheck
+  (setq flycheck-python-pyright-executable "pyright"))
+
+(setq conda-anaconda-home (expand-file-name "~/miniconda3"))
+
+(use-package! dap-mode
+  :after lsp-mode
+  :config
+  (require 'dap-python)
+  (setq dap-python-executable "python3"))
+
+(use-package! blacken
+  :hook (python-mode . blacken-mode))
+
+(setq gc-cons-threshold 100000000) ;; Increase garbage collection threshold
+(setq read-process-output-max (* 1024 1024)) ;; Increase LSP performance
+
+;; (defun my/python-shell-send-buffer-with-repl-check ()
+;;   "Start Python REPL if not already running, then send the buffer."
+;;   (interactive)
+;;   (unless (comint-check-proc "*Python*")
+;;     (run-python))
+;;   (python-shell-send-buffer))
+
+;; ;; Add the keybinding after python-mode is loaded
+;; (with-eval-after-load 'python
+;;   (define-key python-mode-map (kbd "C-c C-c") 'my/python-shell-send-buffer-with-repl-check))
+
+(defun my/python-shell-send-buffer-with-repl-check-and-split ()
+  "Start Python REPL if not already running, split window vertically,
+show REPL on the right, and send the buffer."
+  (interactive)
+  ;; Check if a Python REPL is running
+  (unless (comint-check-proc "*Python*")
+    ;; If not, start a Python REPL
+    (run-python))
+  ;; Split the window if the REPL is not visible
+  (unless (get-buffer-window "*Python*")
+    (split-window-right)                     ;; Split the window vertically
+    (other-window 1)                         ;; Move to the new window
+    (switch-to-buffer "*Python*")            ;; Switch to the Python REPL buffer
+    (other-window -1))                       ;; Move back to the script window
+  ;; Send the buffer to the REPL
+  (python-shell-send-buffer))
+
+;; Add the keybinding after python-mode is loaded
+(with-eval-after-load 'python
+  (define-key python-mode-map (kbd "C-c C-c") 'my/python-shell-send-buffer-with-repl-check-and-split))
