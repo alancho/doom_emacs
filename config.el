@@ -410,12 +410,12 @@
     (with-temp-buffer
       (insert-file-contents "~/key.txt")
       (string-trim (buffer-string))))
-  (setq gptel-model "gpt-4o"
+  (setq gptel-model 'gpt-4o
         gptel-stream t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key
-        gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."
-        gptel--rewrite-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."
+        ;; gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."
+        ;; gptel--rewrite-message "You are a prose editor. Rewrite the following text to be more professional, ensuring it's still clear and easily understandable, in Australian English."
         gptel-directives
         '((default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely in Australian English.")
           (programming . "You are a large language model and a careful programmer. Provide code and only code as output without any additional text, prompt or note.")
