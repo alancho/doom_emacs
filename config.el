@@ -136,73 +136,6 @@
 
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 
-
-;; (defun +org-init-capture-defaults-h ()
-;;   "Sets up some reasonable defaults, as well as two `org-capture' workflows that
-;; I like:
-
-;; 1. The traditional way: invoking `org-capture' directly, via SPC X, or through
-;;    the :cap ex command.
-;; 2. Through a org-capture popup frame that is invoked from outside Emacs (the
-;;    ~/.emacs.d/bin/org-capture script). This can be invoked from qutebrowser,
-;;    vimperator, dmenu or a global keybinding."
-;;   (setq org-default-notes-file
-;;         (expand-file-name +org-capture-notes-file org-directory)
-;;         +org-capture-journal-file
-;;         (expand-file-name +org-capture-journal-file org-directory)
-;;         org-capture-templates
-;;         '(("t" "Personal todo" entry
-;;            (file+headline +org-capture-todo-file "Inbox")
-;;            "* [ ] %?\n%i\n%a" :prepend t)
-;;           ("n" "Personal notes" entry
-;;            (file+headline +org-capture-notes-file "Inbox")
-;;            "* %u %?\n%i\n%a" :prepend t)
-;;           ("j" "Journal" entry
-;;            (file denote-journal-extras-path-to-new-or-existing-entry)
-;;            "* [%(format-time-string \"%H:%M\")] %?\n%i\n%a"
-;;            :kill-buffer t
-;;            :empty-lines 1)
-;;           ;; ("j" "Journal" entry
-;;           ;;  (file+olp+datetree +org-capture-journal-file)
-;;           ;;  "* %U %?\n%i\n%a" :prepend t)
-
-;;           ;; Will use {project-root}/{todo,notes,changelog}.org, unless a
-;;           ;; {todo,notes,changelog}.org file is found in a parent directory.
-;;           ;; Uses the basename from `+org-capture-todo-file',
-;;           ;; `+org-capture-changelog-file' and `+org-capture-notes-file'.
-;;           ("p" "Templates for projects")
-;;           ("pt" "Project-local todo" entry  ; {project-root}/todo.org
-;;            (file+headline +org-capture-project-todo-file "Inbox")
-;;            "* TODO %?\n%i\n%a" :prepend t)
-;;           ("pn" "Project-local notes" entry  ; {project-root}/notes.org
-;;            (file+headline +org-capture-project-notes-file "Inbox")
-;;            "* %U %?\n%i\n%a" :prepend t)
-;;           ("pc" "Project-local changelog" entry  ; {project-root}/changelog.org
-;;            (file+headline +org-capture-project-changelog-file "Unreleased")
-;;            "* %U %?\n%i\n%a" :prepend t)
-
-;;           ;; Will use {org-directory}/{+org-capture-projects-file} and store
-;;           ;; these under {ProjectName}/{Tasks,Notes,Changelog} headings. They
-;;           ;; support `:parents' to specify what headings to put them under, e.g.
-;;           ;; :parents ("Projects")
-;;           ("o" "Centralized templates for projects")
-;;           ("ot" "Project todo" entry
-;;            (function +org-capture-central-project-todo-file)
-;;            "* TODO %?\n %i\n %a"
-;;            :heading "Tasks"
-;;            :prepend nil)
-;;           ("on" "Project notes" entry
-;;            (function +org-capture-central-project-notes-file)
-;;            "* %U %?\n %i\n %a"
-;;            :heading "Notes"
-;;            :prepend t)
-;;           ("oc" "Project changelog" entry
-;;            (function +org-capture-central-project-changelog-file)
-;;            "* %U %?\n %i\n %a"
-;;            :heading "Changelog"
-;;            :prepend t)))
-;;   )
-
 ;; (use-package! org
 ;;   :preface
 ;;   (add-hook! 'org-load-hook
@@ -282,51 +215,10 @@
 
 (setq citar-open-entry-function #'citar-open-entry-in-zotero)
 
-;; (defun denote--slug-accents (text)
-;;   "Return the slug of NODE."
-;;   (let ((slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
-;;                            768 ; U+0300 COMBINING GRAVE ACCENT
-;;                            769 ; U+0301 COMBINING ACUTE ACCENT
-;;                            770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
-;;                            771 ; U+0303 COMBINING TILDE
-;;                            772 ; U+0304 COMBINING MACRON
-;;                            774 ; U+0306 COMBINING BREVE
-;;                            775 ; U+0307 COMBINING DOT ABOVE
-;;                            776 ; U+0308 COMBINING DIAERESIS
-;;                            777 ; U+0309 COMBINING HOOK ABOVE
-;;                            778 ; U+030A COMBINING RING ABOVE
-;;                            779 ; U+030B COMBINING DOUBLE ACUTE ACCENT
-;;                            780 ; U+030C COMBINING CARON
-;;                            795 ; U+031B COMBINING HORN
-;;                            803 ; U+0323 COMBINING DOT BELOW
-;;                            804 ; U+0324 COMBINING DIAERESIS BELOW
-;;                            805 ; U+0325 COMBINING RING BELOW
-;;                            807 ; U+0327 COMBINING CEDILLA
-;;                            813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
-;;                            814 ; U+032E COMBINING BREVE BELOW
-;;                            816 ; U+0330 COMBINING TILDE BELOW
-;;                            817 ; U+0331 COMBINING MACRON BELOW
-;;                            )))
-;;     (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
-;;                (strip-nonspacing-marks (s) (string-glyph-compose
-;;                                             (apply #'string
-;;                                                    (seq-remove #'nonspacing-mark-p
-;;                                                                (string-glyph-decompose s)))))
-;;                (cl-replace (text pair) (replace-regexp-in-string (car pair) (cdr pair) text)))
-;;       (let* ((pairs `(("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
-;;                       ("--*" . "-")                   ;; remove sequential underscores
-;;                       ("^-" . "")                     ;; remove starting underscore
-;;                       ("-$" . "")))                   ;; remove ending underscore
-;;              (slug (-reduce-from #'cl-replace (strip-nonspacing-marks text) pairs)))
-;;         (downcase slug)))))
-
-;; (defun my/denote-sluggify-title (str)
-;;   "Make STR an appropriate slug for title."
-;;   (denote--slug-accents (downcase (denote--slug-hyphenate (denote--slug-no-punct str)))))
-
 (use-package! denote
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
+  ;; (setq denote-directory (expand-file-name "~/Downloads/denote-sim/"))
   (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
