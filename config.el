@@ -227,32 +227,66 @@
   (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-backlinks-show-context t)
+  (setq denote-journal-extras-title-format 'day-date-month-year)
+  (setq denote-journal-extras-directory nil)
   (setq denote-dired-directories (list denote-directory))
-  ;; (setq denote-file-name-slug-functions
-  ;;       '((title . my/denote-sluggify-title)
-  ;;         (signature . denote-sluggify-signature)
-  ;;         (keywords . denote-sluggify-keywords)))
   :hook
   (dired-mode . denote-dired-mode-in-directories)
   :bind
-  (("C-c d n" . denote-create-note)
-   ("C-c d f" . denote-open-or-create)
-   ("C-c d j" . denote-date)
-   ("C-c d i" . denote-link-or-create)
-   ("C-c d l" . denote-find-link)
-   ("C-c d b" . denote-find-backlink)
-   ("C-c d D" . denote-org-dblock-insert-links)
-   ("C-c d r" . denote-rename-file-using-front-matter)
-   ("C-c d R" . denote-rename-file)
-   ("C-c d k" . denote-keywords-add)
-   ("C-c d K" . denote-keywords-remove)))
+  (("C-c n d n" . denote-create-note)
+   ("C-c n d f" . denote-open-or-create)
+   ("C-c n d j" . denote-date)
+   ("C-c n d i" . denote-link-or-create)
+   ("C-c n d I" . denote-link-insert-links-matching-regexp)
+   ("C-c n d l" . denote-find-link)
+   ("C-c n d b" . denote-find-backlink)
+   ("C-c n d D" . denote-org-dblock-insert-links)
+   ("C-c n d r" . denote-rename-file-using-front-matter)
+   ("C-c n d R" . denote-rename-file)
+   ("C-c n d k" . denote-keywords-add)
+   ("C-c n d K" . denote-keywords-remove)))
+
+(setq org-capture-templates
+      '(("t" "Personal todo" entry
+         (file+headline denote-journal-extras-path-to-new-or-existing-entry "Tasks")
+         ;; "* TODO [%(format-time-string \"%H:%M\")] %?\n%i\n%a" :prepend t)
+         "* TODO %U %?\n%i\n%a" :prepend t)
+        ("n" "Personal note" entry
+         (file+headline denote-journal-extras-path-to-new-or-existing-entry "Notes")
+         "* %U %?\n%i\n%a" :prepend t)))
+
+(defun jab/denote-add-to-agenda-files (keyword)
+  "Append list of files containing 'keyword' to org-agenda-files."
+  (interactive "sEnter keyword: ")
+  (let ((files (directory-files "~/Dropbox/denotes/" t keyword)))
+    (dolist (file files)
+      (unless (member file org-agenda-files)
+        (add-to-list 'org-agenda-files file)))))
+
+(jab/denote-add-to-agenda-files "_journal\\|_project")
+
+;; ;; Add all Denote files tagged as "project" to org-agenda-files
+;; (defun salan/denote-add-to-agenda-files (keyword)
+;;   "Append list of files containing 'keyword' to org-agenda-files"
+;;   (interactive)
+;;   (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
+
+;; (salan/denote-add-to-agenda-files "_project")
 
 (defun open-my-denote-directory ()
   (interactive)
   (find-file "~/Dropbox/denotes"))
+;; (find-file "~/Downloads/denote-sim"))
 
 (global-set-key (kbd "<f12>") 'open-my-denote-directory)
 
+;; ;; Consult-Notes for easy access to notes
+;; (use-package! consult-notes
+;;   :bind
+;;   (("C-c n d F" . consult-notes)
+;;    ("C-c n d g" . consult-notes-search-in-all-notes))
+;;   :init
+;;   (consult-notes-denote-mode))
 
 ;; ;; Define a read-only directory class
 ;; (dir-locals-set-class-variables 'read-only
