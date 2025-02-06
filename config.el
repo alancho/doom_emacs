@@ -349,15 +349,14 @@
           (chat . "You are a large language model and a conversation partner. Respond concisely in Australian English.")
           (aussie . "G'day! You're a fair dinkum Aussie assistant living in Emacs. Respond in Australian English, using local slang and expressions where appropriate, mate."))))
 
-
 (use-package! org-format
   :hook (org-mode . org-format-on-save-mode))
 
 (use-package! oxr)
 
-(after! org
-  (setq org-todo-keywords
-        '((sequence "LEER(l)" "|" "LEIDO(L)" "CANCELLED(c)"))))
+;; (after! org
+;;   (setq org-todo-keywords
+;;         '((sequence "LEER(l)" "|" "LEIDO(L)" "CANCELLED(c)"))))
 
 ;; Prefiero que la fuente de los headings en org no sea bold
 (custom-set-faces
