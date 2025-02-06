@@ -566,3 +566,9 @@ show REPL on the right, and send the buffer."
 ;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
   (define-key python-mode-map (kbd "C-c C-c") 'my/python-shell-send-buffer-with-repl-check-and-split))
+
+(setq org-agenda-prefix-format
+      '((agenda . " %i %?-12t% s")
+        (todo . " %i ")
+        (tags . " %i ")
+        (search . " %i ")))
