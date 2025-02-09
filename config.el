@@ -572,3 +572,9 @@ show REPL on the right, and send the buffer."
         (todo . " %i ")
         (tags . " %i ")
         (search . " %i ")))
+
+;; Auto commit for denote
+   (use-package! git-auto-commit-mode
+     :config
+     (setq gac-default-message "Auto-commit: %s"
+           gac-debounce-interval 120))  ;; Change to the desired interval in seconds
