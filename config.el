@@ -259,9 +259,16 @@
   "Append list of files containing 'keyword' to org-agenda-files."
   (interactive "sEnter keyword: ")
   (let ((files (directory-files "~/Dropbox/denotes/" t keyword)))
-    (dolist (file files)
-      (unless (member file org-agenda-files)
-        (add-to-list 'org-agenda-files file)))))
+    ;; (dolist (file files)
+    ;;   (unless (member file org-agenda-files)
+    ;;     (add-to-list 'org-agenda-files file)))))
+    (setq org-agenda-files
+          (append (remove nil
+                          (mapcar (lambda (file)
+                                    (unless (member file org-agenda-files)
+                                      file))
+                                  files))
+                  org-agenda-files))))
 
 (jab/denote-add-to-agenda-files "_journal\\|_project")
 
