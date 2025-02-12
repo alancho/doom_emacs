@@ -85,5 +85,5 @@
 (package! blacken)
 (package! dap-mode)
 
-;; Auto commit for denote
-(package! git-auto-commit-mode :recipe (:host github :repo "ryuslash/git-auto-commit-mode"))
+;; ;; Auto commit for denote
+;; (package! git-auto-commit-mode :recipe (:host github :repo "ryuslash/git-auto-commit-mode"))

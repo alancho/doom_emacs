@@ -595,8 +595,23 @@ point to the Python REPL. If no REPL is open, start one first."
         (tags . " %i ")
         (search . " %i ")))
 
-;; Auto commit for denote
-   (use-package! git-auto-commit-mode
-     :config
-     (setq gac-default-message "Auto-commit: %s"
-           gac-debounce-interval 120))  ;; Change to the desired interval in seconds
+;; ;; Auto commit for denote
+;;    (use-package! git-auto-commit-mode
+;;      :config
+;;      (setq gac-default-message "Auto-commit"
+;;            gac-debounce-interval 3600))  ;; Change to the desired interval in seconds
+
+;; (after! org
+;;   (setq org-latex-pdf-process
+;;         '("latexmk -pdf -shell-escape -interaction=nonstopmode -output-directory=%o %f")))
+(setq org-latex-pdf-process
+      '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -pdf -output-directory=%o %f"))
+
+
+(setq org-latex-listings 'minted)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Para que esto funcione                                      ;;
+;; #+BIND: org-beamer-frame-default-options "allowframebreaks" ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq org-export-allow-bind-keywords t)
