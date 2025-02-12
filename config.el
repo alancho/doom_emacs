@@ -542,37 +542,52 @@
 (setq gc-cons-threshold 100000000) ;; Increase garbage collection threshold
 (setq read-process-output-max (* 1024 1024)) ;; Increase LSP performance
 
-;; (defun my/python-shell-send-buffer-with-repl-check ()
-;;   "Start Python REPL if not already running, then send the buffer."
-;;   (interactive)
-;;   (unless (comint-check-proc "*Python*")
-;;     (run-python))
-;;   (python-shell-send-buffer))
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
 
-;; ;; Add the keybinding after python-mode is loaded
-;; (with-eval-after-load 'python
-;;   (define-key python-mode-map (kbd "C-c C-c") 'my/python-shell-send-buffer-with-repl-check))
-
-(defun my/python-shell-send-buffer-with-repl-check-and-split ()
-  "Start Python REPL if not already running, split window vertically,
-show REPL on the right, and send the buffer."
+(defun python-shell-send-paragraph-and-step ()
+  "Send the current paragraph (block of code) to the Python REPL. If
+no REPL is open, start one first. Move the cursor to the end of
+the paragraph and step forward."
   (interactive)
-  ;; Check if a Python REPL is running
+  ;; Ensure the Python REPL is running
   (unless (comint-check-proc "*Python*")
-    ;; If not, start a Python REPL
-    (run-python))
-  ;; Split the window if the REPL is not visible
-  (unless (get-buffer-window "*Python*")
-    (split-window-right)                     ;; Split the window vertically
-    (other-window 1)                         ;; Move to the new window
-    (switch-to-buffer "*Python*")            ;; Switch to the Python REPL buffer
-    (other-window -1))                       ;; Move back to the script window
-  ;; Send the buffer to the REPL
-  (python-shell-send-buffer))
+    (run-python (python-shell-calculate-command) nil t))
+  ;; Define the paragraph region
+  (let ((start (save-excursion
+                 (backward-paragraph)
+                 (point)))
+        (end (save-excursion
+               (forward-paragraph)
+               (point))))
+    ;; Send the region to the REPL
+    (python-shell-send-region start end))
+  ;; Move the cursor to the end of the paragraph and step forward
+  (forward-paragraph)
+  ;; Ensure the cursor stays in the script buffer
+  (pop-to-buffer (current-buffer)))
+
+
+(defun python-shell-send-buffer-until-point ()
+  "Send all lines from the beginning of the buffer up to the current
+point to the Python REPL. If no REPL is open, start one first."
+  (interactive)
+  ;; Ensure the Python REPL is running
+  (unless (comint-check-proc "*Python*")
+    (run-python (python-shell-calculate-command) nil t))
+  ;; Define the region from the beginning of the buffer to the current point
+  (let ((start (point-min))
+        (end (point)))
+    (python-shell-send-region start end))
+  ;; Optionally, focus the REPL
+  ;; (pop-to-buffer "*Python*"))
+  (pop-to-buffer (current-buffer)))
+
 
 ;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "C-c C-c") 'my/python-shell-send-buffer-with-repl-check-and-split))
+  (define-key python-mode-map (kbd "S-<return>") 'python-shell-send-paragraph-and-step)
+  (define-key python-mode-map (kbd "C-c C-<up>") 'python-shell-send-buffer-until-point))
 
 (setq org-agenda-prefix-format
       '((agenda . " %i %?-12t% s")
