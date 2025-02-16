@@ -523,12 +523,23 @@
         lsp-enable-snippet t))
 
 ;; Enable LSP for Python automatically
-(add-hook 'python-mode-hook #'lsp!)
+(add-hook 'python-mode-hook #'lsp)
 
 (after! flycheck
   (setq flycheck-python-pyright-executable "pyright"))
 
-(setq conda-anaconda-home (expand-file-name "~/miniconda3"))
+;; (setq conda-anaconda-home (expand-file-name "~/miniconda3"))
+
+(use-package! conda
+  :init
+  (setq conda-anaconda-home (expand-file-name "~/miniconda3")) ;; adjust this path
+  (setq conda-env-home-directory (expand-file-name ".")) ;; or specify the parent of the .conda directory
+  :config
+  (conda-env-initialize-interactive-shells)
+  (conda-env-initialize-eshell)
+  ;; Optional: You can automatically activate a conda environment by default
+  ;; (conda-env-autoactivate-mode t)
+  )
 
 (use-package! dap-mode
   :after lsp-mode
@@ -546,43 +557,58 @@
       python-shell-interpreter-args "-i")
 
 (defun python-shell-send-paragraph-and-step ()
-  "Send the current paragraph (block of code) to the Python REPL. If
-no REPL is open, start one first. Move the cursor to the end of
-the paragraph and step forward."
   (interactive)
-  ;; Ensure the Python REPL is running
-  (unless (comint-check-proc "*Python*")
-    (run-python (python-shell-calculate-command) nil t))
-  ;; Define the paragraph region
-  (let ((start (save-excursion
-                 (backward-paragraph)
-                 (point)))
-        (end (save-excursion
-               (forward-paragraph)
-               (point))))
-    ;; Send the region to the REPL
-    (python-shell-send-region start end))
-  ;; Move the cursor to the end of the paragraph and step forward
-  (forward-paragraph)
-  ;; Ensure the cursor stays in the script buffer
-  (pop-to-buffer (current-buffer)))
+  ;; Store the current buffer to return focus later
+  (let ((current-buffer (current-buffer)))
+    ;; Ensure the Python REPL is running using Doom's +python/open-repl
+    (unless (get-buffer-process "*Python*")
+      (+python/open-repl))  ;; Use Doom's +python/open-repl function to handle REPL startup
+    ;; Wait until the REPL is ready
+    (while (not (get-buffer-process "*Python*"))
+      (sit-for 0.1))  ;; Briefly wait until the REPL has started
+    ;; Define the region from the beginning of the buffer to the current point
+    (let ((start (save-excursion
+                   (backward-paragraph)
+                   (point)))
+          (end (save-excursion
+                 (forward-paragraph)
+                 (point))))
+      ;; Get the code and trim trailing whitespace and newlines
+      (let ((code (string-trim (buffer-substring-no-properties start end))))
+        ;; Only send the trimmed code if it's non-empty
+        (if (not (string-empty-p code))
+            (python-shell-send-string code)
+          (message "No code to send"))))
+      (forward-paragraph)
+    ;; Return focus to the script buffer after sending the code
+    (with-current-buffer current-buffer
+      (pop-to-buffer current-buffer))))
 
 
 (defun python-shell-send-buffer-until-point ()
-  "Send all lines from the beginning of the buffer up to the current
-point to the Python REPL. If no REPL is open, start one first."
+  "Send all lines from the beginning of the buffer up to the current point to the Python REPL.
+   If no REPL is open, start one first. Trailing whitespace and newlines are excluded."
   (interactive)
-  ;; Ensure the Python REPL is running
-  (unless (comint-check-proc "*Python*")
-    (run-python (python-shell-calculate-command) nil t))
-  ;; Define the region from the beginning of the buffer to the current point
-  (let ((start (point-min))
-        (end (point)))
-    (python-shell-send-region start end))
-  ;; Optionally, focus the REPL
-  ;; (pop-to-buffer "*Python*"))
-  (pop-to-buffer (current-buffer)))
-
+  ;; Store the current buffer to return focus later
+  (let ((current-buffer (current-buffer)))
+    ;; Ensure the Python REPL is running using Doom's +python/open-repl
+    (unless (get-buffer-process "*Python*")
+      (+python/open-repl))  ;; Use Doom's +python/open-repl function to handle REPL startup
+    ;; Wait until the REPL is ready
+    (while (not (get-buffer-process "*Python*"))
+      (sit-for 0.1))  ;; Briefly wait until the REPL has started
+    ;; Define the region from the beginning of the buffer to the current point
+    (let ((start (point-min))
+          (end (point)))
+      ;; Get the code and trim trailing whitespace and newlines
+      (let ((code (string-trim (buffer-substring-no-properties start end))))
+        ;; Only send the trimmed code if it's non-empty
+        (if (not (string-empty-p code))
+            (python-shell-send-string code)
+          (message "No code to send"))))
+    ;; Return focus to the script buffer after sending the code
+    (with-current-buffer current-buffer
+      (pop-to-buffer current-buffer))))
 
 ;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
