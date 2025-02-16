@@ -621,6 +621,12 @@
         (tags . " %i ")
         (search . " %i ")))
 
+(setq org-agenda-sorting-strategy
+      '((agenda habit-down time-up urgency-down category-keep)
+        (todo time-down)
+        (tags urgency-down category-keep)
+        (search category-keep)))
+
 ;; ;; Auto commit for denote
 ;;    (use-package! git-auto-commit-mode
 ;;      :config
