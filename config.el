@@ -647,3 +647,27 @@
 ;; #+BIND: org-beamer-frame-default-options "allowframebreaks" ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq org-export-allow-bind-keywords t)
+
+;; (add-hook 'delete-frame-functions (lambda (_) (winner-mode -1) (winner-mode 1)))
+
+;; (defun my/new-ess-r-session ()
+;;   "Start a new independent R session when opening an ESS script in a new frame."
+;;   (when (not (get-buffer "*R*"))
+;;     (R)
+;;     (ess-rename-process (format "R-%d" (random 1000)))))
+
+;; (add-hook 'after-make-frame-functions
+;;           (lambda (_) (my/new-ess-r-session)))
+
+;; (defun my/new-ess-r-session ()
+;;   "Start a new independent R session in the directory of the opened script."
+;;   (when (and (eq major-mode 'ess-r-mode)  ;; Only trigger in R scripts
+;;              (not (get-buffer "*R*")))    ;; Ensure no existing R session
+;;     (let* ((script-dir (file-name-directory (or (buffer-file-name) default-directory)))
+;;            (proc-name (format "R-%d" (random 1000))))
+;;       (setq default-directory script-dir)  ;; Set working directory
+;;       (R)                                  ;; Start new R session
+;;       (ess-rename-process proc-name)       ;; Rename process to avoid conflicts
+;;       (ess-eval-linewise (format "setwd('%s')" script-dir)))))  ;; Ensure R uses the script directory
+
+;; (add-hook 'ess-r-mode-hook #'my/new-ess-r-session)
