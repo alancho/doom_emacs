@@ -248,29 +248,28 @@
 
 (setq org-capture-templates
       '(("t" "Personal todo" entry
-         (file+headline denote-journal-extras-path-to-new-or-existing-entry "Tasks")
-         ;; "* TODO [%(format-time-string \"%H:%M\")] %?\n%i\n%a" :prepend t)
+         (file "~/Dropbox/org/todos.org")
          "* TODO %U %?\n%i\n%a" :prepend t)
         ("n" "Personal note" entry
-         (file+headline denote-journal-extras-path-to-new-or-existing-entry "Notes")
+         (file  "~/Dropbox/org/notes.org")
          "* %U %?\n%i\n%a" :prepend t)))
 
-(defun jab/denote-add-to-agenda-files (keyword)
-  "Append list of files containing 'keyword' to org-agenda-files."
-  (interactive "sEnter keyword: ")
-  (let ((files (directory-files "~/Dropbox/denotes/" t keyword)))
-    ;; (dolist (file files)
-    ;;   (unless (member file org-agenda-files)
-    ;;     (add-to-list 'org-agenda-files file)))))
-    (setq org-agenda-files
-          (append (remove nil
-                          (mapcar (lambda (file)
-                                    (unless (member file org-agenda-files)
-                                      file))
-                                  files))
-                  org-agenda-files))))
+;; (defun jab/denote-add-to-agenda-files (keyword)
+;;   "Append list of files containing 'keyword' to org-agenda-files."
+;;   (interactive "sEnter keyword: ")
+;;   (let ((files (directory-files "~/Dropbox/denotes/" t keyword)))
+;;     ;; (dolist (file files)
+;;     ;;   (unless (member file org-agenda-files)
+;;     ;;     (add-to-list 'org-agenda-files file)))))
+;;     (setq org-agenda-files
+;;           (append (remove nil
+;;                           (mapcar (lambda (file)
+;;                                     (unless (member file org-agenda-files)
+;;                                       file))
+;;                                   files))
+;;                   org-agenda-files))))
 
-(jab/denote-add-to-agenda-files "_journal\\|_project")
+;; (jab/denote-add-to-agenda-files "_journal\\|_project")
 
 ;; ;; Add all Denote files tagged as "project" to org-agenda-files
 ;; (defun salan/denote-add-to-agenda-files (keyword)
@@ -559,36 +558,54 @@
 (defun my-python-send-buffer-to-repl ()
   (interactive)
   (let ((orig-win (selected-window)))
-    ;; If there's no window showing the REPL, split vertically and open it.
-    (unless (get-buffer-window "*Python*")
-      (split-window-right)           ; Vertical split.
-      (other-window 1)               ; Move to the new right window.
-      (+eval/open-repl-same-window)   ; Open the REPL in that window.
-      (display-line-numbers-mode 1)  ; Enable line numbers in the REPL.
-      (other-window -1))             ; Return to the original window.
-    ;; Ensure that the REPL buffer shows line numbers even if it already exists.
-    (with-current-buffer "*Python*"
-      (display-line-numbers-mode 1))
+    ;; Open the REPL in the right-hand window.
+    ;; This command will create the window split if needed.
+    (+eval/open-repl-other-window)
+    ;; Return focus to the original (script) window.
+    (select-window orig-win)
     ;; Send the entire buffer to the REPL.
-    (+eval/buffer)
-    ;; Restore focus to the original script buffer.
-    (select-window orig-win)))
+    (+eval/buffer)))
+
+;; (defun my-python-send-buffer-to-repl ()
+;;   (interactive)
+;;   (let ((orig-win (selected-window)))
+;;     ;; If there's no window showing the REPL, split vertically and open it.
+;;     (unless (get-buffer-window "*Python*")
+;;       (split-window-right)           ; Vertical split.
+;;       (other-window 1)               ; Move to the new right window.
+;;       (+eval/open-repl-same-window)   ; Open the REPL in that window.
+;;       (display-line-numbers-mode 1)  ; Enable line numbers in the REPL.
+;;       (other-window -1))             ; Return to the original window.
+;;     ;; Ensure that the REPL buffer shows line numbers even if it already exists.
+;;     (with-current-buffer "*Python*"
+;;       (display-line-numbers-mode 1))
+;;     ;; Send the entire buffer to the REPL.
+;;     (+eval/buffer)
+;;     ;; Restore focus to the original script buffer.
+;;     (select-window orig-win)))
 
 ;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
   (define-key python-mode-map (kbd "S-<return>") 'my-python-send-buffer-to-repl))
 
-(setq org-agenda-prefix-format
-      '((agenda . " %i %?-12t% s")
-        (todo . " %i ")
-        (tags . " %i ")
-        (search . " %i ")))
+;; (setq org-agenda-prefix-format
+;;       '((agenda . " %i %?-12t% s")
+;;         (todo . " %i ")
+;;         (tags . " %i ")
+;;         (search . " %i ")))
+
+;; (setq org-agenda-sorting-strategy
+;;       '((agenda habit-down time-up urgency-down category-keep)
+;;         (todo time-down)
+;;         (tags urgency-down category-keep)
+;;         (search category-keep)))
 
 (setq org-agenda-sorting-strategy
       '((agenda habit-down time-up urgency-down category-keep)
-        (todo time-down)
+        (todo timestamp-down)
         (tags urgency-down category-keep)
         (search category-keep)))
+
 
 ;; ;; Auto commit for denote
 ;;    (use-package! git-auto-commit-mode
@@ -639,13 +656,14 @@
 
 (after! org
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)"))
+        '((sequence "TODO(t)" "STRT(s)" "WAIT(w)" "HOLD(h)" "PROJ(p)" "INBO(i)" "|" "DONE(d)" "KILL(k)"))
         org-todo-keyword-faces
         '(("[-]" . +org-todo-active)
           ("STRT" . +org-todo-active)
           ("[?]" . +org-todo-onhold)
           ("WAIT" . +org-todo-onhold)
           ("HOLD" . +org-todo-onhold)
-          ("IDEA" . +org-todo-project)
+          ("PROJ" . +org-todo-project)
+          ("INBO" . +org-todo-onhold)
           ("NO" . +org-todo-cancel)
           ("KILL" . +org-todo-cancel))))
