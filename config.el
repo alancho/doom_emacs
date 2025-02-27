@@ -556,24 +556,27 @@
 (setq python-shell-interpreter "python3"
       python-shell-interpreter-args "-i")
 
-(defun my-python-shell-send-buffer ()
+(defun my-python-send-buffer-to-repl ()
   (interactive)
   (let ((orig-win (selected-window)))
-    ;; Ensure the Python REPL is running using Doom's +python/open-repl
-    (unless (get-buffer-process "*Python*")
-      (+python/open-repl))
-    ;; Wait until the REPL is ready
-    (while (not (get-buffer-process "*Python*"))
-      (sit-for 0.1))
-    ;; Use python-mode's built-in function to send the entire buffer
-    (python-shell-send-buffer)
-    ;; Restore focus to the original window (your script buffer)
+    ;; If there's no window showing the REPL, split vertically and open it.
+    (unless (get-buffer-window "*Python*")
+      (split-window-right)           ; Vertical split.
+      (other-window 1)               ; Move to the new right window.
+      (+eval/open-repl-same-window)   ; Open the REPL in that window.
+      (display-line-numbers-mode 1)  ; Enable line numbers in the REPL.
+      (other-window -1))             ; Return to the original window.
+    ;; Ensure that the REPL buffer shows line numbers even if it already exists.
+    (with-current-buffer "*Python*"
+      (display-line-numbers-mode 1))
+    ;; Send the entire buffer to the REPL.
+    (+eval/buffer)
+    ;; Restore focus to the original script buffer.
     (select-window orig-win)))
-
 
 ;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "S-<return>") 'my-python-shell-send-buffer))
+  (define-key python-mode-map (kbd "S-<return>") 'my-python-send-buffer-to-repl))
 
 (setq org-agenda-prefix-format
       '((agenda . " %i %?-12t% s")
