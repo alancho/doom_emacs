@@ -556,64 +556,24 @@
 (setq python-shell-interpreter "python3"
       python-shell-interpreter-args "-i")
 
-(defun python-shell-send-paragraph-and-step ()
+(defun my-python-shell-send-buffer ()
   (interactive)
-  ;; Store the current buffer to return focus later
-  (let ((current-buffer (current-buffer)))
+  (let ((orig-win (selected-window)))
     ;; Ensure the Python REPL is running using Doom's +python/open-repl
     (unless (get-buffer-process "*Python*")
-      (+python/open-repl))  ;; Use Doom's +python/open-repl function to handle REPL startup
+      (+python/open-repl))
     ;; Wait until the REPL is ready
     (while (not (get-buffer-process "*Python*"))
-      (sit-for 0.1))  ;; Briefly wait until the REPL has started
-    ;; Define the region from the beginning of the buffer to the current point
-    (let ((start (save-excursion
-                   (backward-paragraph)
-                   (point)))
-          (end (save-excursion
-                 (forward-paragraph)
-                 (point))))
-      ;; Get the code and trim trailing whitespace and newlines
-      (let ((code (string-trim (buffer-substring-no-properties start end))))
-        ;; Only send the trimmed code if it's non-empty
-        (if (not (string-empty-p code))
-            (python-shell-send-string code)
-          (message "No code to send"))))
-      (forward-paragraph)
-    ;; Return focus to the script buffer after sending the code
-    (with-current-buffer current-buffer
-      (pop-to-buffer current-buffer))))
+      (sit-for 0.1))
+    ;; Use python-mode's built-in function to send the entire buffer
+    (python-shell-send-buffer)
+    ;; Restore focus to the original window (your script buffer)
+    (select-window orig-win)))
 
-
-(defun python-shell-send-buffer-until-point ()
-  "Send all lines from the beginning of the buffer up to the current point to the Python REPL.
-   If no REPL is open, start one first. Trailing whitespace and newlines are excluded."
-  (interactive)
-  ;; Store the current buffer to return focus later
-  (let ((current-buffer (current-buffer)))
-    ;; Ensure the Python REPL is running using Doom's +python/open-repl
-    (unless (get-buffer-process "*Python*")
-      (+python/open-repl))  ;; Use Doom's +python/open-repl function to handle REPL startup
-    ;; Wait until the REPL is ready
-    (while (not (get-buffer-process "*Python*"))
-      (sit-for 0.1))  ;; Briefly wait until the REPL has started
-    ;; Define the region from the beginning of the buffer to the current point
-    (let ((start (point-min))
-          (end (point)))
-      ;; Get the code and trim trailing whitespace and newlines
-      (let ((code (string-trim (buffer-substring-no-properties start end))))
-        ;; Only send the trimmed code if it's non-empty
-        (if (not (string-empty-p code))
-            (python-shell-send-string code)
-          (message "No code to send"))))
-    ;; Return focus to the script buffer after sending the code
-    (with-current-buffer current-buffer
-      (pop-to-buffer current-buffer))))
 
 ;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "S-<return>") 'python-shell-send-paragraph-and-step)
-  (define-key python-mode-map (kbd "C-c C-<up>") 'python-shell-send-buffer-until-point))
+  (define-key python-mode-map (kbd "S-<return>") 'my-python-shell-send-buffer))
 
 (setq org-agenda-prefix-format
       '((agenda . " %i %?-12t% s")
@@ -647,6 +607,8 @@
 ;; #+BIND: org-beamer-frame-default-options "allowframebreaks" ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq org-export-allow-bind-keywords t)
+
+;; (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 
 ;; (add-hook 'delete-frame-functions (lambda (_) (winner-mode -1) (winner-mode 1)))
 
