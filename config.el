@@ -671,3 +671,16 @@
 ;;       (ess-eval-linewise (format "setwd('%s')" script-dir)))))  ;; Ensure R uses the script directory
 
 ;; (add-hook 'ess-r-mode-hook #'my/new-ess-r-session)
+
+(after! org
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)"))
+        org-todo-keyword-faces
+        '(("[-]" . +org-todo-active)
+          ("STRT" . +org-todo-active)
+          ("[?]" . +org-todo-onhold)
+          ("WAIT" . +org-todo-onhold)
+          ("HOLD" . +org-todo-onhold)
+          ("IDEA" . +org-todo-project)
+          ("NO" . +org-todo-cancel)
+          ("KILL" . +org-todo-cancel))))
