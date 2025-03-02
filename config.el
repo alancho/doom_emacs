@@ -249,10 +249,10 @@
 (setq org-capture-templates
       '(("t" "Personal todo" entry
          (file "~/Dropbox/org/todos.org")
-         "* TODO %U %?\n%i\n%a" :prepend t)
+         "* TODO %?\n%U\n%i\n%a" :prepend t)
         ("n" "Personal note" entry
          (file  "~/Dropbox/org/notes.org")
-         "* %U %?\n%i\n%a" :prepend t)))
+         "* %?\n%U\n%i\n%a" :prepend t)))
 
 ;; (defun jab/denote-add-to-agenda-files (keyword)
 ;;   "Append list of files containing 'keyword' to org-agenda-files."
