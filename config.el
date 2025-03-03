@@ -683,3 +683,9 @@
           ("INBO" . +org-todo-onhold)
           ("NO" . +org-todo-cancel)
           ("KILL" . +org-todo-cancel))))
+
+;; Para que los icons de apsimx sean como los de json
+(after! nerd-icons
+  ;; Set the icon for 'apsimx' to use a JSON-like icon
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("apsimx" nerd-icons-codicon "nf-cod-settings" :face nerd-icons-yellow)))
