@@ -618,7 +618,7 @@
 
 (setq org-agenda-sorting-strategy
       '((agenda habit-down time-up urgency-down category-keep)
-        (todo timestamp-down)
+        (todo priority-down timestamp-down)
         (tags urgency-down category-keep)
         (search category-keep)))
 
