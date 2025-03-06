@@ -688,4 +688,6 @@
 (after! nerd-icons
   ;; Set the icon for 'apsimx' to use a JSON-like icon
   (add-to-list 'nerd-icons-extension-icon-alist
-               '("apsimx" nerd-icons-codicon "nf-cod-settings" :face nerd-icons-yellow)))
+               '("apsimx" nerd-icons-codicon "nf-cod-settings" :face nerd-icons-yellow))
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("rds" nerd-icons-octicon "nf-oct-database" :face nerd-icons-orange)))
