@@ -672,7 +672,7 @@
 
 (after! org
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "STRT(s)" "WAIT(w)" "HOLD(h)" "PROJ(p)" "INBOX(i)" "|" "DONE(d)" "KILL(k)"))
+        '((sequence "TODO(t)" "STRT(s)" "WAIT(w)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "KILL(k)"))
         org-todo-keyword-faces
         '(("[-]" . +org-todo-active)
           ("STRT" . +org-todo-active)
