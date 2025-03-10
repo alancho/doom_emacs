@@ -249,10 +249,10 @@
 (setq org-capture-templates
       '(("t" "Personal todo" entry
          (file "~/Dropbox/org/todos.org")
-         "* TODO %?\n%U\n%i\n%a" :prepend t)
+         "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
         ("n" "Personal note" entry
          (file  "~/Dropbox/org/notes.org")
-         "* %?\n%U\n%i\n%a" :prepend t)))
+         "* %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)))
 
 ;; (defun jab/denote-add-to-agenda-files (keyword)
 ;;   "Append list of files containing 'keyword' to org-agenda-files."
@@ -618,7 +618,7 @@
 
 (setq org-agenda-sorting-strategy
       '((agenda habit-down time-up urgency-down category-keep)
-        (todo priority-down timestamp-down)
+        (todo deadline-up priority-down timestamp-down)
         (tags urgency-down category-keep)
         (search category-keep)))
 
