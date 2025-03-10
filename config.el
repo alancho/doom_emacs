@@ -680,7 +680,6 @@
           ("WAIT" . +org-todo-onhold)
           ("HOLD" . +org-todo-onhold)
           ("PROJ" . +org-todo-project)
-          ("INBOX" . +org-todo-onhold)
           ("NO" . +org-todo-cancel)
           ("KILL" . +org-todo-cancel))))
 
