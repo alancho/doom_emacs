@@ -690,3 +690,6 @@
                '("apsimx" nerd-icons-codicon "nf-cod-settings" :face nerd-icons-yellow))
   (add-to-list 'nerd-icons-extension-icon-alist
                '("rds" nerd-icons-octicon "nf-oct-database" :face nerd-icons-orange)))
+
+(after! org
+ (setq org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 8))))
