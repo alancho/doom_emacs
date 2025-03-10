@@ -689,7 +689,9 @@
   (add-to-list 'nerd-icons-extension-icon-alist
                '("apsimx" nerd-icons-codicon "nf-cod-settings" :face nerd-icons-yellow))
   (add-to-list 'nerd-icons-extension-icon-alist
-               '("rds" nerd-icons-octicon "nf-oct-database" :face nerd-icons-orange)))
+               '("rds" nerd-icons-octicon "nf-oct-database" :face nerd-icons-orange))
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("db" nerd-icons-octicon "nf-oct-database" :face nerd-icons-yellow)))
 
 (after! org
  (setq org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 8))))
