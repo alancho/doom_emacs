@@ -449,7 +449,10 @@
 (add-to-list 'auto-mode-alist '("\\.apsimx\\'" . json-mode))
 
 ;; Y para que asocie Stan con c++-mode
-(add-to-list 'auto-mode-alist '("\\.stan\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.stan\\'" . c++-mode))
+
+;; Y para slurm files como sh files
+(add-to-list 'auto-mode-alist '("\\.slurm\\'" . bash-mode))
 
 ;; A ver cómo anda ChatGPT que le pregunté cómo hacer esto
 (defun create-temporary-org-file ()
@@ -693,6 +696,10 @@
                '("apsimx" nerd-icons-codicon "nf-cod-settings" :face nerd-icons-yellow))
   (add-to-list 'nerd-icons-extension-icon-alist
                '("rds" nerd-icons-octicon "nf-oct-database" :face nerd-icons-orange))
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("slurm" nerd-icons-devicon "nf-dev-terminal" :face nerd-icons-purple))
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("tmpl" nerd-icons-devicon "nf-dev-terminal" :face nerd-icons-purple))
   (add-to-list 'nerd-icons-extension-icon-alist
                '("db" nerd-icons-octicon "nf-oct-database" :face nerd-icons-yellow)))
 
