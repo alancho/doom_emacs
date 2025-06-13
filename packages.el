@@ -80,6 +80,9 @@
 
 (package! figlet :recipe (:host github :repo "jpkotta/figlet"))
 
+;; Aider integration
+(package! aidermacs :recipe (:host github :repo "tninja/aidermacs"))
+
 ;; Python
 (package! company-box)
 (package! blacken)
