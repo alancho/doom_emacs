@@ -65,7 +65,7 @@
 ;; Muchos problemas...;; ;; A ver cómo anda esto, parece prometedor
 ;; (package! org-transclusion)
 
-(package! gptel)
+;; (package! gptel)
 
 (package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
 
