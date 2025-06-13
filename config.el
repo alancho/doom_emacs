@@ -705,3 +705,13 @@
 
 (after! org
  (setq org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 8))))
+
+(defun my-ripgrep-fixed-directory (&optional initial-input)
+  "Search in a fixed directory using ripgrep via consult.
+Optional INITIAL-INPUT can be given as the initial minibuffer input."
+  (interactive)
+  (consult-ripgrep "~/Dropbox/org" initial-input))
+
+(map! :leader
+      :desc "Ripgrep org notes"
+      "s n" #'my-ripgrep-fixed-directory)
