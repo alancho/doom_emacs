@@ -715,3 +715,13 @@ Optional INITIAL-INPUT can be given as the initial minibuffer input."
 (map! :leader
       :desc "Ripgrep org notes"
       "s n" #'my-ripgrep-fixed-directory)
+
+;; Aidermacs configuration
+(use-package! aidermacs
+  :config
+  (setq aidermacs-aider-executable "aider")  ; Adjust path if needed
+  :bind
+  (("C-c a a" . aidermacs-start)
+   ("C-c a s" . aidermacs-send-buffer)
+   ("C-c a r" . aidermacs-send-region)
+   ("C-c a q" . aidermacs-quit)))
