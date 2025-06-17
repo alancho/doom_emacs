@@ -725,3 +725,9 @@ Optional INITIAL-INPUT can be given as the initial minibuffer input."
    ("C-c a s" . aidermacs-send-buffer)
    ("C-c a r" . aidermacs-send-region)
    ("C-c a q" . aidermacs-quit)))
+
+;; (use-package! org-journal
+;;   :config
+;;   (setq org-journal-enable-agenda-integration t
+;;         org-journal-file-type 'yearly
+;;         org-journal-file-format "%Y%m%d.org"))
