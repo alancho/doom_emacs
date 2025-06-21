@@ -56,6 +56,7 @@
 
 ;; Vamos a empezar a usar denote
 (package! denote)
+(package! denote-journal)
 (package! citar-denote)
 ;; (package! consult-denote) ;; por ahora no lo veo necesario
 

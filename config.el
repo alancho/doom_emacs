@@ -222,72 +222,45 @@
   :config
   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
   ;; (setq denote-directory (expand-file-name "~/Downloads/denote-sim/"))
-  (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
-  (setq denote-infer-keywords t)
-  (setq denote-sort-keywords t)
-  (setq denote-prompts '(title keywords signature))
-  (setq denote-excluded-directories-regexp nil)
-  (setq denote-excluded-keywords-regexp nil)
+  ;; (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
+  ;; (setq denote-infer-keywords t)
+  ;; (setq denote-sort-keywords t)
+  ;; (setq denote-prompts '(title keywords signature))
+  ;; (setq denote-excluded-directories-regexp nil)
+  ;; (setq denote-excluded-keywords-regexp nil)
   (setq denote-date-prompt-use-org-read-date t)
-  (setq denote-backlinks-show-context t)
-  (setq denote-journal-extras-title-format 'day-date-month-year)
-  (setq denote-journal-extras-directory nil)
   (setq denote-dired-directories (list denote-directory))
+  ;; Add all Denote files tagged as "agenda" to org-agenda-files
+  (defun salan/denote-add-to-agenda-files (keyword)
+    "Append list of files containing 'keyword' to org-agenda-files"
+    (interactive)
+    (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
+  (salan/denote-add-to-agenda-files "_agenda")
   :hook
   (dired-mode . denote-dired-mode-in-directories)
   :bind
-  (("C-c n d n" . denote-create-note)
+  (
    ("C-c n d f" . denote-open-or-create)
-   ("C-c n d j" . denote-date)
+   ("C-c n d j" . denote-journal-new-or-existing-entry)
    ("C-c n d i" . denote-link-or-create)
-   ("C-c n d I" . denote-link-insert-links-matching-regexp)
-   ("C-c n d l" . denote-find-link)
-   ("C-c n d b" . denote-find-backlink)
-   ("C-c n d D" . denote-org-dblock-insert-links)
-   ("C-c n d r" . denote-rename-file-using-front-matter)
-   ("C-c n d R" . denote-rename-file)
-   ("C-c n d k" . denote-keywords-add)
-   ("C-c n d K" . denote-keywords-remove)))
+   ;; ("C-c n d I" . denote-link-insert-links-matching-regexp)
+   ;; ("C-c n d l" . denote-find-link)
+   ;; ("C-c n d b" . denote-find-backlink)
+   ;; ("C-c n d D" . denote-org-dblock-insert-links)
+   ;; ("C-c n d r" . denote-rename-file-using-front-matter)
+   ;; ("C-c n d R" . denote-rename-file)
+   ;; ("C-c n d k" . denote-keywords-add)
+   ;; ("C-c n d K" . denote-keywords-remove)
+   ))
 
 (setq org-capture-templates
       '(("t" "Personal todo" entry
          (file "~/Dropbox/org/todos.org")
          "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
         ("n" "Personal note" entry
-         (file  "~/Dropbox/org/notes.org")
+         (file denote-journal-path-to-new-or-existing-entry)
          "* %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)))
 
-;; (defun jab/denote-add-to-agenda-files (keyword)
-;;   "Append list of files containing 'keyword' to org-agenda-files."
-;;   (interactive "sEnter keyword: ")
-;;   (let ((files (directory-files "~/Dropbox/denotes/" t keyword)))
-;;     ;; (dolist (file files)
-;;     ;;   (unless (member file org-agenda-files)
-;;     ;;     (add-to-list 'org-agenda-files file)))))
-;;     (setq org-agenda-files
-;;           (append (remove nil
-;;                           (mapcar (lambda (file)
-;;                                     (unless (member file org-agenda-files)
-;;                                       file))
-;;                                   files))
-;;                   org-agenda-files))))
-
-;; (jab/denote-add-to-agenda-files "_journal\\|_project")
-
-;; ;; Add all Denote files tagged as "project" to org-agenda-files
-;; (defun salan/denote-add-to-agenda-files (keyword)
-;;   "Append list of files containing 'keyword' to org-agenda-files"
-;;   (interactive)
-;;   (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
-
-;; (salan/denote-add-to-agenda-files "_project")
-
-(defun open-my-denote-directory ()
-  (interactive)
-  (find-file "~/Dropbox/denotes"))
-;; (find-file "~/Downloads/denote-sim"))
-
-(global-set-key (kbd "<f12>") 'open-my-denote-directory)
 
 ;; ;; Consult-Notes for easy access to notes
 ;; (use-package! consult-notes
@@ -628,13 +601,6 @@
         (tags urgency-down category-keep)
         (search category-keep)))
 
-
-;; ;; Auto commit for denote
-;;    (use-package! git-auto-commit-mode
-;;      :config
-;;      (setq gac-default-message "Auto-commit"
-;;            gac-debounce-interval 3600))  ;; Change to the desired interval in seconds
-
 ;; (after! org
 ;;   (setq org-latex-pdf-process
 ;;         '("latexmk -pdf -shell-escape -interaction=nonstopmode -output-directory=%o %f")))
@@ -704,11 +670,9 @@
                '("db" nerd-icons-octicon "nf-oct-database" :face nerd-icons-yellow)))
 
 (after! org
- (setq org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 8))))
+  (setq org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 8))))
 
 (defun my-ripgrep-fixed-directory (&optional initial-input)
-  "Search in a fixed directory using ripgrep via consult.
-Optional INITIAL-INPUT can be given as the initial minibuffer input."
   (interactive)
   (consult-ripgrep "~/Dropbox/org" initial-input))
 
@@ -726,8 +690,7 @@ Optional INITIAL-INPUT can be given as the initial minibuffer input."
    ("C-c a r" . aidermacs-send-region)
    ("C-c a q" . aidermacs-quit)))
 
-;; (use-package! org-journal
-;;   :config
-;;   (setq org-journal-enable-agenda-integration t
-;;         org-journal-file-type 'yearly
-;;         org-journal-file-format "%Y%m%d.org"))
+(use-package! denote-journal
+  :hook (calendar-mode . denote-journal-calendar-mode)
+  :config
+  (setq denote-journal-title-format 'day-date-month-year))
