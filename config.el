@@ -231,11 +231,11 @@
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-dired-directories (list denote-directory))
   ;; Add all Denote files tagged as "agenda" to org-agenda-files
-  (defun salan/denote-add-to-agenda-files (keyword)
+  (defun ads/denote-add-to-agenda-files (keyword)
     "Append list of files containing 'keyword' to org-agenda-files"
     (interactive)
     (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
-  (salan/denote-add-to-agenda-files "_agenda")
+  (ads/denote-add-to-agenda-files "_agenda")
   :hook
   (dired-mode . denote-dired-mode-in-directories)
   :bind
