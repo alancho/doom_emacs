@@ -744,3 +744,31 @@
   :hook (calendar-mode . denote-journal-calendar-mode)
   :config
   (setq denote-journal-title-format 'day-date-month-year))
+
+(defun ads/agenda-restrict-this-project ()
+  "Restrict agenda to current project"
+  (interactive)
+  (let ((org-agenda-files (list (projectile-project-root))))
+    (org-agenda)))
+
+(defun ads/add-projectile-todo-files-to-agenda ()
+  "Add all todo.org files from projectile directories to org-agenda-files."
+  (let* ((projectile-cache-file "~/.config/emacs/.local/cache/projectile/projects.eld")
+         (projectile-dirs (when (file-exists-p projectile-cache-file)
+                           (with-temp-buffer
+                             (insert-file-contents projectile-cache-file)
+                             (read (current-buffer)))))
+         (todo-files (delq nil
+                           (mapcar (lambda (dir)
+                                     (let ((todo-file (expand-file-name "todo.org" dir)))
+                                       (when (file-exists-p todo-file)
+                                         todo-file)))
+                                   projectile-dirs))))
+    todo-files))
+
+(setq org-agenda-files
+      (append '("/home/alancho/Dropbox/org/inbox.org"
+                "/home/alancho/Dropbox/org/notes.org"
+                "/home/alancho/Dropbox/org/projects.org"
+                "/home/alancho/Dropbox/org/todo.org")
+              (ads/add-projectile-todo-files-to-agenda)))
