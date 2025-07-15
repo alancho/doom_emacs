@@ -338,7 +338,16 @@
                            ("anthropic-beta" . "prompt-caching-2024-07-31"))))
     :request-params '(:thinking (:type "enabled" :budget_tokens 2048)
                       :max_tokens 4096))
-  (setq gptel-model 'gpt-4o
+  ;; :key can be a function that returns the API key.
+  (gptel-make-gemini "Gemini"
+    :key #'ads/read-gemini-key
+    :stream t
+    :models '(gemini-2.5-pro-preview-06-05))
+  (setq gptel-backend (gptel-make-gemini "Gemini"
+                        :key #'ads/read-gemini-key
+                        :stream t
+                        :models '(gemini-2.5-pro-preview-06-05))
+        gptel-model 'gemini-2.5-pro-preview-06-05
         gptel-stream t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key
