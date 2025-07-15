@@ -322,6 +322,10 @@
     (with-temp-buffer
       (insert-file-contents "~/key-anthropic.txt")
       (string-trim (buffer-string))))
+  (defun ads/read-gemini-key ()
+    (with-temp-buffer
+      (insert-file-contents "~/key-gemini.txt")
+      (string-trim (buffer-string))))
   (gptel-make-anthropic "Claude-3.7"
     :key #'ads/read-anthropic-key
     :stream t
