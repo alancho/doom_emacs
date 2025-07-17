@@ -371,13 +371,16 @@
  '(org-level-11 ((t (:inherit outline-2 :extend t :weight normal))))
  '(org-level-12 ((t (:inherit outline-2 :extend t :weight normal)))))
 
+;; Add this line near the top of your config.el,
+;; or at least before the my-org-project-tag function.
+
 ;; Org Capture Templates
 (setq org-capture-templates
       '(;; ("t" "Personal todo" entry
         ;;  (file "~/Dropbox/org/todos.org")
         ;;  "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
-        ("t" "Personal todo" entry (file+headline +org-capture-todo-file "Inbox")
-         "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
+        ("t" "Personal todo" entry (file +org-capture-todo-file)
+         "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
          ;; "* [ ] %?\n%i\n%a" :prepend t)
         ("n" "Personal note" entry
          (file denote-journal-path-to-new-or-existing-entry)
@@ -386,12 +389,12 @@
         ;;  "* %u %?\n%i\n%a" :prepend t)
         ;; ("j" "Journal" entry (file+olp+datetree +org-capture-journal-file)
         ;;  "* %U %?\n%i\n%a" :prepend t)
-        ("p" "Templates for projects")
+        ;; ("p" "Templates for projects")
         ;; ("pt" "Project-local todo" entry
         ;;  (file+headline +org-capture-project-todo-file "Inbox") "* TODO %?\n%i\n%a"
         ;;  :prepend t)
-        ("pt" "Project-local todo" entry
-         (file +org-capture-project-todo-file) "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
+        ("p" "Project-local todo" entry
+         (file +org-capture-project-todo-file) "* TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
          :prepend t)
         ;; ("pn" "Project-local notes" entry
         ;;  (file+headline +org-capture-project-notes-file "Inbox") "* %U %?\n%i\n%a"
@@ -399,10 +402,10 @@
         ;; ("pc" "Project-local changelog" entry
         ;;  (file+headline +org-capture-project-changelog-file "Unreleased")
         ;;  "* %U %?\n%i\n%a" :prepend t)
-        ("o" "Centralized templates for projects")
-        ("op" "Project todo" entry #'+org-capture-central-project-todo-file
-         ;; "* TODO %?\n %i\n %a" :heading "Tasks" :prepend nil
-         "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :heading "Tasks" :prepend nil :parents ("Projectiles"))
+        ;; ("o" "Centralized templates for projects")
+        ;; ("op" "Project todo" entry #'+org-capture-central-project-todo-file
+        ;;  ;; "* TODO %?\n %i\n %a" :heading "Tasks" :prepend nil
+        ;;  "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :heading "Tasks" :prepend nil :parents ("Projectiles"))
         ;; ("on" "Project notes" entry #'+org-capture-central-project-notes-file
         ;;  "* %U %?\n %i\n %a" :heading "Notes" :prepend t)
         ;; ("oc" "Project changelog" entry #'+org-capture-central-project-changelog-file
