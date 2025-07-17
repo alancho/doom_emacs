@@ -6,7 +6,6 @@
 ;;; ========================================================================
 ;;; PERSONAL INFORMATION
 ;;; ========================================================================
-
 (setq user-full-name "Alan Severini"
       user-mail-address "severini.alan@gmail.com")
 
@@ -582,11 +581,11 @@
   (gptel-make-gemini "Gemini"
     :key #'ads/read-gemini-key
     :stream t
-    :models '(gemini-2.5-pro-preview-06-05))
+    :models '(gemini-2.5-pro))
   (setq gptel-backend (gptel-make-gemini "Gemini"
                         :key #'ads/read-gemini-key
                         :stream t
-                        :models '(gemini-2.5-pro-preview-06-05))
+                        :models '(gemini-2.5-pro))
         gptel-model 'gemini-2.5-pro-preview-06-05
         gptel-stream t
         gptel-default-mode 'org-mode
@@ -686,4 +685,3 @@
     (funcall orig-fun extension subtreep pub-dir)))
 
 (advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
-
