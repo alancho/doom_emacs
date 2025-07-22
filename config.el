@@ -373,11 +373,28 @@
 ;; Add this line near the top of your config.el,
 ;; or at least before the my-org-project-tag function.
 (defun my-org-project-todo-file ()
-  "Return the path to the project's todo file."
-  (when-let ((project-root (projectile-project-root)))
-    (concat (file-name-as-directory project-root)
-            (file-name-nondirectory (directory-file-name project-root))
-            ".org")))
+  "Return the path to the project's todo file, or a default if not in a project."
+  (let* ((projectile-root (and (fboundp 'projectile-project-root) 
+                               (projectile-project-root)))
+         (project-root (or projectile-root
+                          (when (fboundp 'project-current)
+                            (when-let ((project (project-current)))
+                              (project-root project)))))
+         (result (if project-root
+                     (concat (file-name-as-directory project-root)
+                             (file-name-nondirectory (directory-file-name project-root))
+                             ".org")
+                   (expand-file-name "~/Dropbox/org/todo.org"))))
+    (message "Projectile root: %s, Project root: %s, Result: %s" 
+             projectile-root project-root result)
+    result))
+
+(defun my-org-project-tag ()
+  "Return the project name as a tag for org capture."
+  (let* ((file-path (my-org-project-todo-file))
+         (filename (file-name-nondirectory file-path))
+         (tag (file-name-sans-extension filename)))
+    (replace-regexp-in-string "-" "_" tag)))
 
 ;; Org Capture Templates
 (setq org-capture-templates
@@ -399,7 +416,7 @@
         ;;  (file+headline +org-capture-project-todo-file "Inbox") "* TODO %?\n%i\n%a"
         ;;  :prepend t)
         ("p" "Project-local todo" entry
-         (file (my-org-project-todo-file)) "* TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
+         (file my-org-project-todo-file) "* TODO %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
          :prepend t)
         ;; ("pn" "Project-local notes" entry
         ;;  (file+headline +org-capture-project-notes-file "Inbox") "* %U %?\n%i\n%a"
@@ -420,15 +437,27 @@
 ;; Org Agenda Configuration
 (setq org-agenda-sorting-strategy
       '((agenda habit-down time-up urgency-down category-keep)
-        (todo deadline-up priority-down timestamp-down)
+        (todo tag-down deadline-up priority-down timestamp-down)
         (tags urgency-down category-keep)
         (search category-keep)))
+
+(setq org-agenda-prefix-format
+      '((agenda  . " %i %-12:c%?-12t% s")
+        (todo  . " %i %-40:c")
+        (tags  . " %i %-12:c")
+        (search . " %i %-12:c")))
 
 (defun ads/agenda-restrict-this-project ()
   "Restrict agenda to current project"
   (interactive)
   (let ((org-agenda-files (list (projectile-project-root))))
     (org-agenda)))
+
+(defun my/agenda-filter-by-file (filename)
+  "Show agenda filtered to specific org file."
+  (interactive "sFilename (e.g., project-alpha.org): ")
+  (let ((org-agenda-files (list (expand-file-name filename))))
+    (org-agenda nil "a")))
 
 (defun ads/add-projectile-todo-files-to-agenda ()
   "Add all project org files from projectile directories to org-agenda-files."
