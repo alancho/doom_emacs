@@ -586,7 +586,7 @@
                         :key #'ads/read-gemini-key
                         :stream t
                         :models '(gemini-2.5-pro))
-        gptel-model 'gemini-2.5-pro-preview-06-05
+        gptel-model 'gemini-2.5-pro
         gptel-stream t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key
