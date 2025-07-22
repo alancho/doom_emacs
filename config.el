@@ -372,6 +372,12 @@
 
 ;; Add this line near the top of your config.el,
 ;; or at least before the my-org-project-tag function.
+(defun my-org-project-todo-file ()
+  "Return the path to the project's todo file."
+  (when-let ((project-root (projectile-project-root)))
+    (concat (file-name-as-directory project-root)
+            (file-name-nondirectory (directory-file-name project-root))
+            ".org")))
 
 ;; Org Capture Templates
 (setq org-capture-templates
@@ -393,7 +399,7 @@
         ;;  (file+headline +org-capture-project-todo-file "Inbox") "* TODO %?\n%i\n%a"
         ;;  :prepend t)
         ("p" "Project-local todo" entry
-         (file +org-capture-project-todo-file) "* TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
+         (file (my-org-project-todo-file)) "* TODO %? %^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
          :prepend t)
         ;; ("pn" "Project-local notes" entry
         ;;  (file+headline +org-capture-project-notes-file "Inbox") "* %U %?\n%i\n%a"
@@ -425,19 +431,20 @@
     (org-agenda)))
 
 (defun ads/add-projectile-todo-files-to-agenda ()
-  "Add all todo.org files from projectile directories to org-agenda-files."
+  "Add all project org files from projectile directories to org-agenda-files."
   (let* ((projectile-cache-file "~/.config/emacs/.local/cache/projectile/projects.eld")
          (projectile-dirs (when (file-exists-p projectile-cache-file)
                            (with-temp-buffer
                              (insert-file-contents projectile-cache-file)
                              (read (current-buffer)))))
-         (todo-files (delq nil
-                           (mapcar (lambda (dir)
-                                     (let ((todo-file (expand-file-name "todo.org" dir)))
-                                       (when (file-exists-p todo-file)
-                                         todo-file)))
-                                   projectile-dirs))))
-    todo-files))
+         (org-files (delq nil
+                          (mapcar (lambda (dir)
+                                    (let* ((project-name (file-name-nondirectory (directory-file-name dir)))
+                                           (org-file (expand-file-name (concat project-name ".org") dir)))
+                                      (when (file-exists-p org-file)
+                                        org-file)))
+                                  projectile-dirs))))
+    org-files))
 
 (setq org-agenda-files
       (append '("/home/alancho/Dropbox/org/inbox.org"
