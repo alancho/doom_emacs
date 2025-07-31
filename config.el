@@ -443,8 +443,8 @@
 
 (setq org-agenda-prefix-format
       '((agenda  . " %i %-12:c%?-12t% s")
-        (todo  . " %i %-40:c")
-        (tags  . " %i %-12:c")
+        (todo  . " %i %-30:c")
+        (tags  . " %i %-30:c")
         (search . " %i %-12:c")))
 
 (defun ads/agenda-restrict-this-project ()
