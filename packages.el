@@ -70,8 +70,8 @@
 
 (package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
 
-;; Lo deshabilito para que denote-dired-mode funcione correctamente
-(package! diredfl :disable t)
+;; ;; Lo deshabilito para que denote-dired-mode funcione correctamente
+;; (package! diredfl :disable t)
 
 (package! poly-R :disable t)
 (package! polymode :disable t)
