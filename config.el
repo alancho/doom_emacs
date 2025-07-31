@@ -90,6 +90,7 @@
 ;;; ========================================================================
 
 (setq projectile-track-known-projects-automatically nil)
+(setq projectile-sort-order 'recently-active)
 
 (setq company-global-modes
       '(not ess-r-mode
