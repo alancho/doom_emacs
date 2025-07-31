@@ -721,3 +721,24 @@
     (funcall orig-fun extension subtreep pub-dir)))
 
 (advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
+
+(defun ess-knitr-spin-current-file ()
+  "Execute knitr::spin() on the current R script file."
+  (interactive)
+  (when (not (derived-mode-p 'ess-r-mode))
+    (user-error "Not in an R buffer"))
+
+  (let ((file-name (buffer-file-name)))
+    (when (not file-name)
+      (user-error "Buffer is not visiting a file"))
+
+    (save-buffer)
+    (ess-force-buffer-current "R process to use: ")
+    (let ((command (format "knitr::spin(\"%s\")"
+                          (replace-regexp-in-string "\\\\" "\\\\\\\\" file-name))))
+      (ess-eval-linewise command))))
+
+;; Bind it to a key if desired
+;; (map! :map ess-r-mode-map
+;;       :localleader
+;;       :desc "Knitr spin" "ks" #'ess-knitr-spin-current-file)
