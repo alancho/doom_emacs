@@ -724,8 +724,8 @@
 
 (advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
 
-(defun ess-knitr-spin-current-file ()
-  "Execute knitr::spin() on the current R script file."
+(defun ess-render-current-file ()
+  "Execute rmarkdown::render() on the current R script file."
   (interactive)
   (when (not (derived-mode-p 'ess-r-mode))
     (user-error "Not in an R buffer"))
