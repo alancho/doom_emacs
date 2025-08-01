@@ -627,6 +627,7 @@
         gptel-stream t
         gptel-default-mode 'org-mode
         gptel-api-key #'ads/read-openai-key
+        gptel-include-reasoning nil
         ;; gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."
         ;; gptel--rewrite-message "You are a prose editor. Rewrite the following text to be more professional, ensuring it's still clear and easily understandable, in Australian English."
         gptel-directives
