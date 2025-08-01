@@ -736,11 +736,103 @@
 
     (save-buffer)
     (ess-force-buffer-current "R process to use: ")
-    (let ((command (format "knitr::spin(\"%s\")"
-                          (replace-regexp-in-string "\\\\" "\\\\\\\\" file-name))))
+    (let ((command (format "rmarkdown::render(\"%s\")"
+                           (replace-regexp-in-string "\\\\" "\\\\\\\\" file-name))))
       (ess-eval-linewise command))))
 
-;; Bind it to a key if desired
-;; (map! :map ess-r-mode-map
-;;       :localleader
-;;       :desc "Knitr spin" "ks" #'ess-knitr-spin-current-file)
+;;  #####
+;; #     #   ##   #        ##   #    #
+;; #        #  #  #       #  #  ##   #
+;;  #####  #    # #      #    # # #  #
+;;       # ###### #      ###### #  # #
+;; #     # #    # #      #    # #   ##
+;;  #####  #    # ###### #    # #    #
+
+(defun create-slurm-r-script (&optional time-limit job-name partition modules qos)
+  "Create a Slurm script for the current R file.
+TIME-LIMIT: time limit for the job (default: '01:00:00')
+JOB-NAME: name for the Slurm job (default: basename of current file)
+PARTITION: Slurm partition to use (default: prompts user)
+MODULES: space-separated list of modules to load (default: prompts user)
+QOS: quality of service (default: prompts user)"
+  (interactive)
+  (let* ((current-file (buffer-file-name))
+         (current-dir (file-name-directory current-file))
+         (r-script-name (file-name-nondirectory current-file))
+         (base-name (file-name-sans-extension r-script-name))
+         (slurm-script-name (concat base-name ".slurm"))
+         (slurm-script-path (concat current-dir slurm-script-name))
+         (time-limit (or time-limit
+                        (read-string "Time limit (HH:MM:SS): " "01:00:00")))
+         (job-name (or job-name
+                      (read-string "Job name: " base-name)))
+         (partition (or partition
+                       (read-string "Partition: " "general")))
+         (modules (or modules
+                     (read-string "Modules (space-separated): " "r nlopt gcc/12.3.0")))
+         (qos (or qos
+                 (read-string "QOS (quality of service): " "normal")))
+         (output-file (concat base-name "_%j.out"))
+         (error-file (concat base-name "_%j.err")))
+
+    ;; Check if current buffer is an R file
+    (unless (and current-file (string-match "\\.R$" current-file))
+      (error "Current buffer is not an R file"))
+
+    ;; Generate module load commands
+    (let ((module-lines (if (or (not modules) (string-empty-p modules))
+                           "# No modules specified"
+                         (mapconcat (lambda (module)
+                                     (format "module load %s" module))
+                                   (split-string modules)
+                                   "\n"))))
+
+      ;; Create Slurm script content
+      (let ((slurm-content
+             (format "#!/bin/bash
+#SBATCH --job-name=%s
+#SBATCH --output=%s
+#SBATCH --error=%s
+#SBATCH --time=%s
+#SBATCH --partition=%s
+#SBATCH --qos=%s
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+#SBATCH --account=a_chenu
+
+# Load modules
+%s
+
+# Print job information
+echo \"Job started at: $(date)\"
+echo \"Running on node: $(hostname)\"
+echo \"Job ID: $SLURM_JOB_ID\"
+echo \"Time limit: %s\"
+echo \"QOS: %s\"
+
+# Run R script with time limit as argument
+Rscript %s %s
+
+echo \"Job finished at: $(date)\"
+"
+                     job-name
+                     output-file
+                     error-file
+                     time-limit
+                     partition
+                     qos
+                     module-lines
+                     time-limit
+                     qos
+                     r-script-name
+                     time-limit)))
+
+        ;; Write Slurm script to file
+        (with-temp-file slurm-script-path
+          (insert slurm-content))
+
+        ;; Open the created Slurm script
+        (find-file slurm-script-path)
+
+        (message "Created Slurm script: %s" slurm-script-name)))))
