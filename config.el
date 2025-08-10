@@ -352,6 +352,13 @@
 (after! org
   (set-popup-rule! "^\\*Org Src" :ignore t))
 
+;; (after! org
+;;   ;; Disable fancy priorities, which are enabled by +pretty
+;;   (setq org-superstar-prettify-priorities nil)
+;;   ;; Customize headline bullets
+;;   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "▸")))
+
+
 ;; Prefiero que la fuente de los headings en org no sea bold
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -541,12 +548,12 @@
   (dired-mode . denote-dired-mode-in-directories)
   :bind
   (
-   ("C-c n d f" . denote-open-or-create)
+   ("C-." . denote-open-or-create)
    ("C-c n d j" . denote-journal-new-or-existing-entry)
-   ("C-c n d i" . denote-link-or-create)
+   ("C-;" . denote-link-or-create)
    ;; ("C-c n d I" . denote-link-insert-links-matching-regexp)
    ;; ("C-c n d l" . denote-find-link)
-   ;; ("C-c n d b" . denote-find-backlink)
+   ("<f12>" . denote-find-backlink)
    ;; ("C-c n d D" . denote-org-dblock-insert-links)
    ;; ("C-c n d r" . denote-rename-file-using-front-matter)
    ;; ("C-c n d R" . denote-rename-file)
