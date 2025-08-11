@@ -58,7 +58,7 @@
 (package! denote)
 (package! denote-journal)
 (package! citar-denote)
-;; (package! consult-denote) ;; por ahora no lo veo necesario
+;; (package! consult-denote)
 
 ;; Veamos si funciona este de bdarcus para hacer cross-references
 (package! oxr :recipe (:host github :repo "bdarcus/oxr"))

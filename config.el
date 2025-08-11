@@ -89,7 +89,7 @@
 ;;; PROJECTILE & COMPLETION
 ;;; ========================================================================
 
-(setq projectile-track-known-projects-automatically nil)
+(setq projectile-track-known-projects-automatically t)
 (setq projectile-sort-order 'recently-active)
 
 (setq company-global-modes
@@ -579,8 +579,8 @@
 ;;   :bind
 ;;   (("C-c d d" . consult-notes)))
 
-(after! consult-notes
-  (consult-notes-denote-mode))
+;; (after! consult-notes
+;;   (consult-notes-denote-mode))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
@@ -590,6 +590,7 @@
   :config
   (setq denote-journal-title-format 'day-date-month-year))
 
+;; (use-package! consult-denote)
 
 ;;; ========================================================================
 ;;; AI/LLM CONFIGURATION
