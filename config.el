@@ -404,43 +404,25 @@
          (tag (file-name-sans-extension filename)))
     (replace-regexp-in-string "-" "_" tag)))
 
-;; Org Capture Templates
+;; Org Capture Templates with improved keybindings
 (setq org-capture-templates
-      '(;; ("t" "Personal todo" entry
-        ;;  (file "~/Dropbox/org/todos.org")
-        ;;  "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
-        ("t" "Personal todo" entry (file +org-capture-todo-file)
+      '(("t" "Todo - Personal" entry (file +org-capture-todo-file)
          "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
-        ;; "* [ ] %?\n%i\n%a" :prepend t)
-        ("n" "Personal note" entry
+        ("n" "Note - Personal" entry
          (file denote-journal-path-to-new-or-existing-entry)
          "* %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
-        ;; ("n" "Personal notes" entry (file+headline +org-capture-notes-file "Inbox")
-        ;;  "* %u %?\n%i\n%a" :prepend t)
-        ;; ("j" "Journal" entry (file+olp+datetree +org-capture-journal-file)
-        ;;  "* %U %?\n%i\n%a" :prepend t)
-        ;; ("p" "Templates for projects")
-        ;; ("pt" "Project-local todo" entry
-        ;;  (file+headline +org-capture-project-todo-file "Inbox") "* TODO %?\n%i\n%a"
-        ;;  :prepend t)
-        ("p" "Project-local todo" entry
-         (file my-org-project-todo-file) "* TODO %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
+        ("p" "Projectile todo" entry
+         (file my-org-project-todo-file) "- [ ] %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
          :prepend t)
-        ;; ("pn" "Project-local notes" entry
-        ;;  (file+headline +org-capture-project-notes-file "Inbox") "* %U %?\n%i\n%a"
-        ;;  :prepend t)
-        ;; ("pc" "Project-local changelog" entry
-        ;;  (file+headline +org-capture-project-changelog-file "Unreleased")
-        ;;  "* %U %?\n%i\n%a" :prepend t)
-        ;; ("o" "Centralized templates for projects")
-        ;; ("op" "Project todo" entry #'+org-capture-central-project-todo-file
-        ;;  ;; "* TODO %?\n %i\n %a" :heading "Tasks" :prepend nil
-        ;;  "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :heading "Tasks" :prepend nil :parents ("Projectiles"))
-        ;; ("on" "Project notes" entry #'+org-capture-central-project-notes-file
-        ;;  "* %U %?\n %i\n %a" :heading "Notes" :prepend t)
-        ;; ("oc" "Project changelog" entry #'+org-capture-central-project-changelog-file
-        ;;  "* %U %?\n %i\n %a" :heading "Changelog" :prepend t)
         ))
+
+;; Override default org-capture keybinding for faster access
+(map! :leader
+      (:prefix ("c" . "capture")
+       :desc "Personal todo" "t" (lambda () (interactive) (org-capture nil "t"))
+       :desc "Personal note" "n" (lambda () (interactive) (org-capture nil "n")) 
+       :desc "Projectile todo" "p" (lambda () (interactive) (org-capture nil "p"))
+       :desc "Org capture menu" "c" #'org-capture))
 
 ;; Org Agenda Configuration
 (setq org-agenda-sorting-strategy
@@ -548,17 +530,17 @@
   (dired-mode . denote-dired-mode-in-directories)
   :bind
   (
-   ("C-." . denote-open-or-create)
-   ("C-c n d j" . denote-journal-new-or-existing-entry)
-   ("C-;" . denote-link-or-create)
-   ;; ("C-c n d I" . denote-link-insert-links-matching-regexp)
-   ;; ("C-c n d l" . denote-find-link)
-   ("<f12>" . denote-find-backlink)
-   ;; ("C-c n d D" . denote-org-dblock-insert-links)
-   ;; ("C-c n d r" . denote-rename-file-using-front-matter)
-   ;; ("C-c n d R" . denote-rename-file)
-   ;; ("C-c n d k" . denote-keywords-add)
-   ;; ("C-c n d K" . denote-keywords-remove)
+   ("C-c d n" . denote-open-or-create)           ;; d(enote) n(ew)
+   ("C-c d j" . denote-journal-new-or-existing-entry) ;; d(enote) j(ournal)
+   ("C-c d l" . denote-link-or-create)           ;; d(enote) l(ink)
+   ("C-c d b" . denote-find-backlink)            ;; d(enote) b(acklink)
+   ;; ("C-c d I" . denote-link-insert-links-matching-regexp)
+   ;; ("C-c d f" . denote-find-link)
+   ;; ("C-c d D" . denote-org-dblock-insert-links)
+   ;; ("C-c d r" . denote-rename-file-using-front-matter)
+   ;; ("C-c d R" . denote-rename-file)
+   ;; ("C-c d k" . denote-keywords-add)
+   ;; ("C-c d K" . denote-keywords-remove)
    ))
 
 (use-package! citar-denote
@@ -727,8 +709,12 @@
 
 ;; Para exportar siempre fuera del directorio
 (defun my-org-export-output-file-name (orig-fun extension &optional subtreep pub-dir)
-  (let ((pub-dir "~/Downloads"))
-    (funcall orig-fun extension subtreep pub-dir)))
+  (let ((output-dir
+         (if (and buffer-file-name
+                  (string-match-p (expand-file-name "~/Dropbox/denotes/") buffer-file-name))
+             "~/Downloads"
+           pub-dir)))
+    (funcall orig-fun extension subtreep output-dir)))
 
 (advice-add 'org-export-output-file-name :around #'my-org-export-output-file-name)
 
