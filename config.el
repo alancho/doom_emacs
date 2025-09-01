@@ -473,7 +473,9 @@
               (ads/add-projectile-todo-files-to-agenda)))
 
 (use-package! org-format
-  :hook (org-mode . org-format-on-save-mode))
+  :hook (org-mode . org-format-on-save-mode)
+  :config
+  (setq org-format-blank-lines-before-subheadings 0))
 
 (use-package! oxr)
 
