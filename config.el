@@ -407,10 +407,10 @@
 ;; Org Capture Templates with improved keybindings
 (setq org-capture-templates
       '(("t" "Todo - Personal" entry (file +org-capture-todo-file)
-         "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
+         "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
         ("n" "Note - Personal" entry
          (file denote-journal-path-to-new-or-existing-entry)
-         "* %?\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i" :prepend t)
+         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
         ("p" "Projectile todo" entry
          (file my-org-project-todo-file) "- [ ] %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
          :prepend t)
