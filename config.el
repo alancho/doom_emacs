@@ -493,11 +493,49 @@
               (ads/add-projectile-todo-files-to-agenda)))
 
 (use-package! org-format
-  ;; :hook (org-mode . org-format-on-save-mode)
+  :hook (org-mode . org-format-on-save-mode)
   :config
-  (setq org-format-blank-lines-before-subheadings 0
-        org-format-blank-lines-before-first-heading 1
-        org-format-blank-lines-before-level-1-headings 1)) ;; Or your desired number of lines
+  (defun org-format--headings (scope)
+    (let ((seen-first-heading-p))
+      (org-map-entries (lambda ()
+                         ;; Widen so we can see space preceding the current
+                         ;; headline.
+                         (org-with-wide-buffer
+                          (let* ((level (car (org-heading-components)))
+                                 (prev-line-is-headline
+                                  (save-excursion
+                                    (beginning-of-line)
+                                    (when (> (point) (point-min))
+                                      (forward-line -1)
+                                      (looking-at org-outline-regexp-bol))))
+                                 (headline-spacing
+                                  (cond
+                                   (prev-line-is-headline 0)
+                                   ((and (equal 1 level) (not seen-first-heading-p))
+                                    (setq seen-first-heading-p t)
+                                    org-format-blank-lines-before-first-heading)
+                                   ((equal 1 level)
+                                    org-format-blank-lines-before-level-1-headings)
+                                   (t
+                                    org-format-blank-lines-before-subheadings))))
+                            (org-format--ensure-empty-lines headline-spacing)))
+
+                         (unless (and (fboundp 'org-transclusion-within-transclusion-p)
+                                      (org-transclusion-within-transclusion-p))
+                           (forward-line 1)
+                           (org-format--delete-blank-lines)
+                           (org-format--ensure-empty-lines org-format-blank-lines-before-meta)
+                           (org-end-of-meta-data t)
+                           (let ((next-line-is-headline (save-excursion
+                                                          (forward-line 1)
+                                                          (looking-at org-outline-regexp-bol))))
+                             (unless next-line-is-headline
+                               (org-format--ensure-empty-lines org-format-blank-lines-before-content)))))
+                       t
+                       scope))))
+;; (setq org-format-blank-lines-before-subheadings 0
+;;       org-format-blank-lines-before-first-heading 1
+;;       org-format-blank-lines-before-level-1-headings 1)) ;; Or your desired number of lines
 
 (use-package! oxr)
 
@@ -703,8 +741,8 @@
 ;;; LATEX CONFIGURATION
 ;;; ========================================================================
 
-(setq org-latex-pdf-process
-      '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -pdf -output-directory=%o %f"))
+;; (setq org-latex-pdf-process
+;;       '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -pdf -output-directory=%o %f"))
 
 (setq org-latex-listings 'minted)
 
@@ -902,3 +940,8 @@ echo \"Job finished at: $(date)\"
 
       ;; Open the created Slurm script
       (find-file script-path))))
+
+(setq org-babel-R-command "R --no-init-file --quiet --slave --no-save")
+(setq org-babel-default-header-args:R
+      '((:session . "none")
+        (:prologue . "suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(knitr)); source('~/Dropbox/R/theme_alan.R')")))
