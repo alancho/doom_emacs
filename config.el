@@ -897,7 +897,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=%s
 #SBATCH --mem=%s
-#SBATCH --account=a_chenu
+#SBATCH --account=a_qaafi_css
 
 # Load modules
 %s
