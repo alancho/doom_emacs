@@ -947,3 +947,44 @@ echo \"Job finished at: $(date)\"
         (:prologue . "suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(knitr)); source('~/Dropbox/R/theme_alan.R')")))
 
 (use-package! claudemacs)
+
+;; config.el -- robust org-roam backlinks RET handler
+(after! org-roam
+  (require 'seq)
+
+  (defun my/org-roam--candidate-windows ()
+    "Return a list of usable windows in the selected frame excluding the *org-roam* window."
+    (let* ((roam-buf (get-buffer "*org-roam*"))
+           (roam-win (and roam-buf (get-buffer-window roam-buf t))))
+      (seq-filter
+       (lambda (w)
+         (and (not (eq w roam-win))
+              (not (window-minibuffer-p w))
+              (not (window-dedicated-p w))
+              (not (window-parameter w 'no-other-window))
+              (window-live-p w)))
+       (window-list (selected-frame)))))
+
+  (defun my/org-roam-visit-reuse-window ()
+    "Open the org-roam node at point by replacing the buffer in a non-roam window.
+This uses `find-file-noselect` + `set-window-buffer` to avoid creating a new split."
+    (interactive)
+    (let ((node (org-roam-node-at-point)))
+      (unless node (user-error "No org-roam node at point"))
+      (let* ((file (org-roam-node-file node))
+             (pt   (org-roam-node-point node))
+             (cands (my/org-roam--candidate-windows))
+             (target (car cands)))
+        (if (and file target)
+            (let ((buf (find-file-noselect file)))
+              ;; place the buffer into the target window and jump to point
+              (set-window-buffer target buf)
+              (select-window target)
+              (with-current-buffer buf (when (and pt (integerp pt)) (goto-char pt))))
+          ;; fallback: default visit (keeps upstream behaviour)
+          (org-roam-node-visit node)))))
+
+  ;; Ensure the keybinding is available in the roam buffer (covers most setups)
+  (with-eval-after-load 'org-roam
+    (define-key org-roam-mode-map (kbd "RET") #'my/org-roam-visit-reuse-window)
+    (define-key org-roam-mode-map (kbd "<return>") #'my/org-roam-visit-reuse-window)))
