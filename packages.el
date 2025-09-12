@@ -88,3 +88,8 @@
 
 ;; ;; Auto commit for denote
 ;; (package! git-auto-commit-mode :recipe (:host github :repo "ryuslash/git-auto-commit-mode"))
+
+(package! eat :recipe (:host codeberg :repo "akib/emacs-eat" :files ("*.el" ("term" "term/*.el") "integration" "*.texi" "*.ti" ("terminfo/e" "terminfo/e/*") ("terminfo/65" "terminfo/65/*") (:exclude ".dir-locals.el" "*-tests.el"))))
+
+(package! claudemacs
+  :recipe (:host github :repo "cpoile/claudemacs"))

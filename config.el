@@ -945,3 +945,5 @@ echo \"Job finished at: $(date)\"
 (setq org-babel-default-header-args:R
       '((:session . "none")
         (:prologue . "suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(knitr)); source('~/Dropbox/R/theme_alan.R')")))
+
+(use-package! claudemacs)
