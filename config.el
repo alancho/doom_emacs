@@ -424,25 +424,25 @@
          (tag (file-name-sans-extension filename)))
     (replace-regexp-in-string "-" "_" tag)))
 
-;; Org Capture Templates with improved keybindings
-(setq org-capture-templates
-      '(("t" "Todo - Personal" entry (file +org-capture-todo-file)
-         "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
-        ("n" "Note - Personal" entry
-         (file denote-journal-path-to-new-or-existing-entry)
-         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
-        ("p" "Projectile todo" entry
-         (file my-org-project-todo-file) "- [ ] %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
-         :prepend t)
-        ))
+;; ;; Org Capture Templates with improved keybindings
+;; (setq org-capture-templates
+;;       '(("t" "Todo - Personal" entry (file +org-capture-todo-file)
+;;          "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
+;;         ("n" "Note - Personal" entry
+;;          (file denote-journal-path-to-new-or-existing-entry)
+;;          "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
+;;         ("p" "Projectile todo" entry
+;;          (file my-org-project-todo-file) "- [ ] %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
+;;          :prepend t)
+;;         ))
 
-;; Override default org-capture keybinding for faster access
-(map! :leader
-      (:prefix ("c" . "capture")
-       :desc "Personal todo" "t" (lambda () (interactive) (org-capture nil "t"))
-       :desc "Personal note" "n" (lambda () (interactive) (org-capture nil "n"))
-       :desc "Projectile todo" "p" (lambda () (interactive) (org-capture nil "p"))
-       :desc "Org capture menu" "c" #'org-capture))
+;; ;; Override default org-capture keybinding for faster access
+;; (map! :leader
+;;       (:prefix ("c" . "capture")
+;;        :desc "Personal todo" "t" (lambda () (interactive) (org-capture nil "t"))
+;;        :desc "Personal note" "n" (lambda () (interactive) (org-capture nil "n"))
+;;        :desc "Projectile todo" "p" (lambda () (interactive) (org-capture nil "p"))
+;;        :desc "Org capture menu" "c" #'org-capture))
 
 ;; Org Agenda Configuration
 (setq org-agenda-sorting-strategy
@@ -567,53 +567,53 @@
        citar-library-paths '("~/Dropbox/Papers/")
        citar-notes-paths '("~/Dropbox/notes/"))
 
-(setq citar-open-entry-function #'citar-open-entry-in-zotero)
+;; (setq citar-open-entry-function #'citar-open-entry-in-zotero)
 
-(use-package! denote
-  :config
-  (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
-  ;; (setq denote-directory (expand-file-name "~/Downloads/denote-sim/"))
-  ;; (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
-  ;; (setq denote-infer-keywords t)
-  ;; (setq denote-sort-keywords t)
-  ;; (setq denote-prompts '(title keywords signature))
-  ;; (setq denote-excluded-directories-regexp nil)
-  ;; (setq denote-excluded-keywords-regexp nil)
-  (setq denote-date-prompt-use-org-read-date t)
-  (setq denote-dired-directories (list denote-directory))
-  ;; Add all Denote files tagged as "agenda" to org-agenda-files
-  (defun ads/denote-add-to-agenda-files (keyword)
-    "Append list of files containing 'keyword' to org-agenda-files"
-    (interactive)
-    (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
-  (ads/denote-add-to-agenda-files "_agenda")
-  :hook
-  (dired-mode . denote-dired-mode-in-directories)
-  :bind
-  (
-   ("C-c d n" . denote-open-or-create)           ;; d(enote) n(ew)
-   ("C-c d j" . denote-journal-new-or-existing-entry) ;; d(enote) j(ournal)
-   ("C-c d l" . denote-link-or-create)           ;; d(enote) l(ink)
-   ("C-c d b" . denote-find-backlink)            ;; d(enote) b(acklink)
-   ;; ("C-c d I" . denote-link-insert-links-matching-regexp)
-   ;; ("C-c d f" . denote-find-link)
-   ;; ("C-c d D" . denote-org-dblock-insert-links)
-   ;; ("C-c d r" . denote-rename-file-using-front-matter)
-   ;; ("C-c d R" . denote-rename-file)
-   ;; ("C-c d k" . denote-keywords-add)
-   ;; ("C-c d K" . denote-keywords-remove)
-   ))
+;; (use-package! denote
+;;   :config
+;;   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
+;;   ;; (setq denote-directory (expand-file-name "~/Downloads/denote-sim/"))
+;;   ;; (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
+;;   ;; (setq denote-infer-keywords t)
+;;   ;; (setq denote-sort-keywords t)
+;;   ;; (setq denote-prompts '(title keywords signature))
+;;   ;; (setq denote-excluded-directories-regexp nil)
+;;   ;; (setq denote-excluded-keywords-regexp nil)
+;;   (setq denote-date-prompt-use-org-read-date t)
+;;   (setq denote-dired-directories (list denote-directory))
+;;   ;; Add all Denote files tagged as "agenda" to org-agenda-files
+;;   (defun ads/denote-add-to-agenda-files (keyword)
+;;     "Append list of files containing 'keyword' to org-agenda-files"
+;;     (interactive)
+;;     (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
+;;   (ads/denote-add-to-agenda-files "_agenda")
+;;   :hook
+;;   (dired-mode . denote-dired-mode-in-directories)
+;;   :bind
+;;   (
+;;    ("C-c d n" . denote-open-or-create)           ;; d(enote) n(ew)
+;;    ("C-c d j" . denote-journal-new-or-existing-entry) ;; d(enote) j(ournal)
+;;    ("C-c d l" . denote-link-or-create)           ;; d(enote) l(ink)
+;;    ("C-c d b" . denote-find-backlink)            ;; d(enote) b(acklink)
+;;    ;; ("C-c d I" . denote-link-insert-links-matching-regexp)
+;;    ;; ("C-c d f" . denote-find-link)
+;;    ;; ("C-c d D" . denote-org-dblock-insert-links)
+;;    ;; ("C-c d r" . denote-rename-file-using-front-matter)
+;;    ;; ("C-c d R" . denote-rename-file)
+;;    ;; ("C-c d k" . denote-keywords-add)
+;;    ;; ("C-c d K" . denote-keywords-remove)
+;;    ))
 
-(use-package! citar-denote
-  :after denote
-  :init
-  (citar-denote-mode)
-  :config
-  (setq citar-denote-title-format "author-year-title")
-  (setq citar-denote-subdir nil)
-  (setq citar-denote-title-format-authors 2)
-  :bind
-  (("C-c d c" . citar-denote-open-reference-entry)))
+;; (use-package! citar-denote
+;;   :after denote
+;;   :init
+;;   (citar-denote-mode)
+;;   :config
+;;   (setq citar-denote-title-format "author-year-title")
+;;   (setq citar-denote-subdir nil)
+;;   (setq citar-denote-title-format-authors 2)
+;;   :bind
+;;   (("C-c d c" . citar-denote-open-reference-entry)))
 
 ;; (use-package! consult-notes
 ;;   :after denote
