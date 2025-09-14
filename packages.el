@@ -68,7 +68,8 @@
 
 ;; (package! gptel)
 
-(package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
+;; Creo que ya aprendí a formatear por mí mismo
+;; (package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
 
 ;; ;; Lo deshabilito para que denote-dired-mode funcione correctamente
 ;; (package! diredfl :disable t)
