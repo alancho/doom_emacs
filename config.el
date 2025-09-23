@@ -989,3 +989,7 @@ This uses `find-file-noselect` + `set-window-buffer` to avoid creating a new spl
   (with-eval-after-load 'org-roam
     (define-key org-roam-mode-map (kbd "RET") #'my/org-roam-visit-reuse-window)
     (define-key org-roam-mode-map (kbd "<return>") #'my/org-roam-visit-reuse-window)))
+
+(use-package! consult-notes
+  :config
+  (consult-notes-org-roam-mode))
