@@ -642,52 +642,22 @@
 
 (use-package! gptel
   :config
-  (defun ads/read-openai-key ()
+  (defun ads/read-api-key (file)
     (with-temp-buffer
-      (insert-file-contents "~/key.txt")
+      (insert-file-contents file)
       (string-trim (buffer-string))))
-  (defun ads/read-anthropic-key ()
-    (with-temp-buffer
-      (insert-file-contents "~/key-anthropic.txt")
-      (string-trim (buffer-string))))
-  (defun ads/read-gemini-key ()
-    (with-temp-buffer
-      (insert-file-contents "~/key-gemini.txt")
-      (string-trim (buffer-string))))
-  (gptel-make-anthropic "Claude-3.7"
-    :key #'ads/read-anthropic-key
-    :stream t
-    :models '(claude-3-7-sonnet-20250219)
-    :header (lambda () (when-let* ((key (gptel--get-api-key)))
-                         `(("x-api-key" . ,key)
-                           ("anthropic-version" . "2023-06-01")
-                           ("anthropic-beta" . "pdfs-2024-09-25")
-                           ("anthropic-beta" . "output-128k-2025-02-19")
-                           ("anthropic-beta" . "prompt-caching-2024-07-31"))))
-    :request-params '(:thinking (:type "enabled" :budget_tokens 2048)
-                      :max_tokens 4096))
-  ;; :key can be a function that returns the API key.
-  (gptel-make-gemini "Gemini"
-    :key #'ads/read-gemini-key
-    :stream t
-    :models '(gemini-2.5-pro))
-  (setq gptel-backend (gptel-make-gemini "Gemini"
-                        :key #'ads/read-gemini-key
-                        :stream t
-                        :models '(gemini-2.5-pro))
-        gptel-model 'gemini-2.5-pro
-        gptel-stream t
-        gptel-default-mode 'org-mode
-        gptel-api-key #'ads/read-openai-key
-        gptel-include-reasoning nil
-        ;; gptel--system-message "You are a large language model living in Emacs and a helpful assistant. Respond concisely. Please provide all responses in Australian English."
-        ;; gptel--rewrite-message "You are a prose editor. Rewrite the following text to be more professional, ensuring it's still clear and easily understandable, in Australian English."
-        gptel-directives
-        '((default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely in Australian English.")
-          (programming . "You are a large language model and a careful programmer. Provide code and only code as output without any additional text, prompt or note.")
-          (writing . "You are a large language model and a writing assistant. Please write in Australian formal and academic English. The tone should be polished, clear, and professional but not overly verbose or unnecessarily complex. Avoid jargon unless essential to the topic, and ensure the writing maintains readability and precision.")
-          (chat . "You are a large language model and a conversation partner. Respond concisely in Australian English.")
-          (aussie . "G'day! You're a fair dinkum Aussie assistant living in Emacs. Respond in Australian English, using local slang and expressions where appropriate, mate."))))
+  (defun ads/read-openrouter-key ()
+    (ads/read-api-key "~/key-openrouter.txt"))
+  (setq gptel-model   'anthropic/claude-sonnet-4
+        gptel-backend
+        (gptel-make-openai "OpenRouter"
+          :host "openrouter.ai"
+          :endpoint "/api/v1/chat/completions"
+          :stream t
+          :key #'ads/read-openrouter-key
+          :models '(anthropic/claude-sonnet-4
+                    openai/gpt-5
+                    google/gemini-2.5-flash))))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
