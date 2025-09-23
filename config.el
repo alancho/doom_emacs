@@ -629,11 +629,11 @@
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
 
-(use-package! denote-journal
-  :hook (calendar-mode . denote-journal-calendar-mode)
-  :config
-  (setq denote-journal-title-format 'day-date-month-year))
+;; (use-package! denote-journal
+;;   :hook (calendar-mode . denote-journal-calendar-mode)
+;;   :config
 
+;;   (setq denote-journal-title-format 'day-date-month-year))
 ;; (use-package! consult-denote)
 
 ;;; ========================================================================
