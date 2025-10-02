@@ -649,6 +649,7 @@
   (defun ads/read-openrouter-key ()
     (ads/read-api-key "~/key-openrouter.txt"))
   (setq gptel-model   'anthropic/claude-sonnet-4
+        gptel-default-mode 'org-mode
         gptel-backend
         (gptel-make-openai "OpenRouter"
           :host "openrouter.ai"
