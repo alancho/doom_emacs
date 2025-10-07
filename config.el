@@ -861,15 +861,13 @@
     (let ((slurm-content
            (format "#!/bin/bash
 #SBATCH --job-name=%s
-#SBATCH --output=%s
-#SBATCH --error=%s
 #SBATCH --time=%s
 #SBATCH --partition=%s
 #SBATCH --qos=%s%s
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=%s
 #SBATCH --mem=%s
-#SBATCH --account=a_qaafi_css
+#SBATCH --account=a_qaafi_ccs
 
 # Load modules
 %s
@@ -918,7 +916,7 @@ echo \"Job finished at: $(date)\"
       '((:session . "none")
         (:prologue . "suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(knitr)); source('~/Dropbox/R/theme_alan.R')")))
 
-(use-package! claudemacs)
+;; (use-package! claudemacs)
 
 ;; config.el -- robust org-roam backlinks RET handler
 (after! org-roam
