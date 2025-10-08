@@ -149,7 +149,7 @@
 
 ;; Aliases
 (set-eshell-alias! "us" "sudo apt-get update && sudo apt-get upgrade && sudo apt-get clean"
-                   "up" "conda update conda && conda update --all"
+                   "up" "uv sync"
                    "ll" "ls -lha"
                    "bunya" "ssh uqasever@bunya.rcc.uq.edu.au"
                    "tobunya" "rsync -avz --exclude '.git' --exclude '.*' $1 uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$2"
@@ -549,7 +549,7 @@
 
 ;; Aliases
 (set-eshell-alias! "us" "sudo apt-get update && sudo apt-get upgrade && sudo apt-get clean"
-                   "up" "conda update conda && conda update --all"
+                   "up" "uv sync"
                    "ll" "ls -lha"
                    "bunya" "ssh uqasever@bunya.rcc.uq.edu.au"
                    "tobunya" "rsync -avz --exclude '.git' --exclude '.*' $1 uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$2"
@@ -674,40 +674,42 @@
 (after! flycheck
   (setq flycheck-python-pyright-executable "pyright"))
 
-(use-package! conda
-  :init
-  (setq conda-anaconda-home (expand-file-name "~/miniconda3"))
-  (setq conda-env-home-directory (expand-file-name "."))
+(use-package! envrc
   :config
-  (conda-env-initialize-interactive-shells)
-  (conda-env-initialize-eshell))
+  (envrc-global-mode))
 
 (use-package! dap-mode
   :after lsp-mode
   :config
   (require 'dap-python)
-  (setq dap-python-executable "python3"))
+  (setq dap-python-executable "python"))
 
 (use-package! blacken
   :hook (python-mode . blacken-mode))
 
-(setq python-shell-interpreter "python3"
-      python-shell-interpreter-args "-i")
+;; No REPL; use `uv run` via compilation
 
-(defun my-python-send-buffer-to-repl ()
+(defun ads/python-compile-buffer-with-uv ()
+  "Save current buffer and run it with uv (if available) in a compile buffer."
   (interactive)
-  (let ((orig-win (selected-window)))
-    ;; Open the REPL in the right-hand window.
-    ;; This command will create the window split if needed.
-    (+eval/open-repl-other-window)
-    ;; Return focus to the original (script) window.
-    (select-window orig-win)
-    ;; Send the entire buffer to the REPL.
-    (+eval/buffer)))
+  (unless (buffer-file-name)
+    (user-error "Buffer is not visiting a file"))
+  (save-buffer)
+  (let* ((file (buffer-file-name))
+         (proj (or (and (fboundp 'projectile-project-root)
+                        (ignore-errors (projectile-project-root)))
+                   (when (fboundp 'project-current)
+                     (when-let ((proj (project-current)))
+                       (car (project-roots proj))))
+                   default-directory))
+         (default-directory (or proj default-directory))
+         (cmd (if (executable-find "uv")
+                  (format "uv run python %s" (shell-quote-argument file))
+                (format "python %s" (shell-quote-argument file)))))
+    (compile cmd)))
 
-;; Add the keybinding after python-mode is loaded
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "S-<return>") 'my-python-send-buffer-to-repl))
+  (define-key python-mode-map (kbd "S-<return>") #'ads/python-compile-buffer-with-uv))
 
 ;;; ========================================================================
 ;;; LATEX CONFIGURATION
