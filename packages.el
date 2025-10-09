@@ -96,4 +96,4 @@
 
 ;; Volvamos a testear copilot
 (package! copilot
-  :recipe (:host github :repo "copilot-emacs/"))
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))

@@ -118,7 +118,9 @@
 (after! yasnippet
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
-  (define-key yas-minor-mode-map (kbd "C-<tab>") #'yas-expand))
+  ;; Keep snippets on C-<tab> but avoid Copilot clash
+  (define-key yas-minor-mode-map (kbd "C-<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand))
 
 ;;; ========================================================================
 ;;; SPELL CHECKING
@@ -677,7 +679,8 @@
 (after! lsp-mode
   (setq lsp-headerline-breadcrumb-enable nil
         lsp-enable-snippet t
-        lsp-signature-auto-activate nil))
+        lsp-signature-auto-activate nil
+        lsp-completion-provider :none)) ;; keep completion in minibuffer only
 
 (after! lsp-ui
   (setq lsp-ui-doc-enable nil
@@ -724,7 +727,10 @@
     (compile cmd)))
 
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "S-<return>") #'ads/python-compile-buffer-with-uv))
+  (define-key python-mode-map (kbd "S-<return>") #'ads/python-compile-buffer-with-uv)
+  ;; Ensure TAB is reserved for indent/completion-in-minibuffer
+  (define-key python-mode-map (kbd "TAB") #'indent-for-tab-command)
+  (define-key python-mode-map (kbd "<tab>") #'indent-for-tab-command))
 
 ;;; ========================================================================
 ;;; LATEX CONFIGURATION
@@ -981,9 +987,9 @@ This uses `find-file-noselect` + `set-window-buffer` to avoid creating a new spl
   (consult-notes-org-roam-mode))
 
 (use-package! copilot
-  :hook (ess-mode . copilot-mode)
+  :hook (python-mode . copilot-mode)
+  :init
+  (setq copilot-idle-delay 0.4)
   :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+              ("C-<return>" . 'copilot-accept-completion)
+              ("M-<return>" . 'copilot-accept-completion-by-word)))
