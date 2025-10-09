@@ -50,6 +50,8 @@
 ;;; ========================================================================
 
 (setq tab-always-indent 'complete)
+;; Show completion UI in minibuffer (via consult), not popups
+(setq completion-in-region-function #'consult-completion-in-region)
 
 ;; Performance optimizations
 (setq gc-cons-threshold 100000000) ;; Increase garbage collection threshold
@@ -104,8 +106,10 @@
         latex-mode))
 
 (after! company
-  (setq company-idle-delay 0.0
-        company-minimum-prefix-length 1))
+  (setq company-idle-delay nil
+        company-minimum-prefix-length 2)
+  ;; Disable company in Python; use TAB + minibuffer instead
+  (add-hook 'python-mode-hook (lambda () (company-mode -1))))
 
 (use-package! company-box
   :hook (company-mode . company-box-mode))
@@ -666,7 +670,12 @@
 
 (after! lsp-mode
   (setq lsp-headerline-breadcrumb-enable nil
-        lsp-enable-snippet t))
+        lsp-enable-snippet t
+        lsp-signature-auto-activate nil))
+
+(after! lsp-ui
+  (setq lsp-ui-doc-enable nil
+        lsp-ui-sideline-enable nil))
 
 ;; Enable LSP for Python automatically
 (add-hook 'python-mode-hook #'lsp)
