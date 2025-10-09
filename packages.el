@@ -93,3 +93,7 @@
 ;;   :recipe (:host github :repo "cpoile/claudemacs"))
 
 (package! consult-notes)
+
+;; Volvamos a testear copilot
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/"))
