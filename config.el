@@ -717,17 +717,67 @@
   (setq lsp-headerline-breadcrumb-enable nil
         lsp-enable-snippet t
         lsp-signature-auto-activate nil
-        lsp-completion-provider :none)) ;; keep completion in minibuffer only
+        lsp-completion-provider :capf)) ;; use CAPF so Consult shows LSP completions in minibuffer
 
 (after! lsp-ui
   (setq lsp-ui-doc-enable nil
         lsp-ui-sideline-enable nil))
 
+;; Helper to prune non-existent LSP workspace folders
+(after! lsp-mode
+  (defun ads/lsp-prune-nonexistent-workspace-folders ()
+    "Remove all LSP workspace folders that no longer exist on disk."
+    (interactive)
+    (let* ((session (lsp-session))
+           (folders (lsp-session-folders session))
+           (removed 0))
+      (dolist (folder folders)
+        (unless (file-directory-p folder)
+          (lsp-workspace-folders-remove folder)
+          (setq removed (1+ removed))))
+      (message "Removed %d non-existent LSP workspace folders" removed))))
+
 ;; Enable LSP for Python automatically
 (add-hook 'python-mode-hook #'lsp)
 
+;; Disable Ruff LSP client; use Pyright LSP + Ruff CLI (Flycheck/format)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq-local lsp-disabled-clients
+                        (append (when (boundp 'lsp-disabled-clients) lsp-disabled-clients)
+                                '(ruff_lsp ruff-lsp ruff)))) )
+
 (after! flycheck
-  (setq flycheck-python-pyright-executable "pyright"))
+  (setq flycheck-python-pyright-executable "pyright")
+  ;; Use Ruff for linting if available, via a custom checker when package is absent
+  (when (executable-find "ruff")
+    (flycheck-define-checker python-ruff
+      "Ruff: An extremely fast Python linter."
+      :command ("ruff" "check" "--output-format" "json" source)
+      :error-parser flycheck-parse-ruff
+      :modes (python-mode)
+      :predicate (lambda () (and buffer-file-name (executable-find "ruff")))
+      :next-checkers ((warning . python-pyright)))
+
+    (defun flycheck-parse-ruff (output checker buffer)
+      "Parse Ruff JSON OUTPUT to Flycheck error list."
+      (let* ((json-object-type 'alist)
+             (json-array-type 'list)
+             (reports (ignore-errors (json-read-from-string output))))
+        (mapcar (lambda (diag)
+                  (let* ((loc (alist-get 'location diag))
+                         (row (alist-get 'row loc))
+                         (col (alist-get 'column loc))
+                         (code (alist-get 'code diag))
+                         (msg (alist-get 'message diag)))
+                    (flycheck-error-new-at
+                     row col 'warning
+                     (if code (format "%s: %s" code msg) msg)
+                     :checker checker :buffer buffer)))
+                reports)))
+
+    (add-to-list 'flycheck-checkers 'python-ruff)
+    (flycheck-add-next-checker 'python-pyright '(warning . python-ruff))))
 
 (use-package! envrc
   :config
