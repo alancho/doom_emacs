@@ -789,8 +789,13 @@
   (require 'dap-python)
   (setq dap-python-executable "python"))
 
-(use-package! blacken
-  :hook (python-mode . blacken-mode))
+;; Prefer Ruff for formatting and linting
+(setq ruff-format-on-save t)
+;; No Ruff LSP needed; using Pyright + Ruff CLI
+
+;; Switch from Black to Ruff formatter
+(use-package! ruff-format
+  :hook (python-mode . ruff-format-on-save-mode))
 
 ;; No REPL; use `uv run` via compilation
 
@@ -818,6 +823,42 @@
   ;; Ensure TAB is reserved for indent/completion-in-minibuffer
   (define-key python-mode-map (kbd "TAB") #'indent-for-tab-command)
   (define-key python-mode-map (kbd "<tab>") #'indent-for-tab-command))
+
+;; Project bootstrap: uv init + uv add + .envrc + direnv allow
+(require 'subr-x)
+(defun ads/python-uv-bootstrap (packages &optional dev)
+  "Bootstrap a new Python project in the current directory using uv and direnv.
+Packages is a space-separated string. With prefix arg DEV, install as dev deps."
+  (interactive (list (read-string "Packages to add (optional, space-separated): ")
+                     current-prefix-arg))
+  (unless (executable-find "uv")
+    (user-error "uv not found on PATH"))
+  (let ((default-directory (or (and (fboundp 'projectile-project-root)
+                                    (ignore-errors (projectile-project-root)))
+                               default-directory)))
+    (when (file-exists-p "pyproject.toml")
+      (unless (y-or-n-p "pyproject.toml exists; continue with uv init anyway? ")
+        (user-error "Aborted")))
+    (message "Running uv init...")
+    (unless (eq 0 (call-process "uv" nil "*uv*" t "init"))
+      (user-error "uv init failed; see *uv* buffer"))
+    (unless (string-blank-p packages)
+      (let* ((args (append (list "add") (when dev (list "--dev")) (split-string packages))))
+        (message "Running uv %s..." (mapconcat #'identity args " "))
+        (apply #'call-process "uv" nil "*uv*" t args)))
+    (with-temp-file ".envrc"
+      (insert "source .venv/bin/activate\n"))
+    (when (executable-find "direnv")
+      (message "Running direnv allow...")
+      (call-process "direnv" nil "*uv*" t "allow"))
+    (message "uv bootstrap complete%s"
+             (if (string-blank-p packages) "" " (packages installed)"))))
+
+;; Bind under Project prefix: SPC p U
+(map! :leader
+      (:prefix ("p" . "project")
+       :desc "UV bootstrap (init/add/.envrc/allow)" "U" #'ads/python-uv-bootstrap))
+
 
 ;;; ========================================================================
 ;;; LATEX CONFIGURATION
