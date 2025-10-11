@@ -655,7 +655,7 @@
 (use-package! gptel
   :config
   (setq gptel-default-mode 'org-mode
-        gptel-model "google/gemini-flash-1.5")
+        gptel-model "google/gemini-2.0-flash-001")
   ;; OpenRouter (default)
   (setq gptel-backend
         (gptel-make-openai "OpenRouter"
@@ -666,7 +666,8 @@
                  (or (getenv "OPENROUTER_API_KEY")
                      (auth-source-pick-first-password :host "openrouter.ai")
                      (user-error "Set OPENROUTER_API_KEY or auth-source for openrouter.ai")))
-          :models '("anthropic/claude-sonnet-4"
+          :models '("google/gemini-2.0-flash-001"
+                    "anthropic/claude-sonnet-4.5"
                     "openai/gpt-5"
                     "google/gemini-2.5-flash")))
   ;; OpenAI
