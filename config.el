@@ -654,20 +654,14 @@
 
 (use-package! gptel
   :config
-  (defun ads/read-api-key (file)
-    (with-temp-buffer
-      (insert-file-contents file)
-      (string-trim (buffer-string))))
-  (defun ads/read-openrouter-key ()
-    (ads/read-api-key "~/key-openrouter.txt"))
-  (setq gptel-model   'anthropic/claude-sonnet-4
+  (setq gptel-model 'anthropic/claude-sonnet-4
         gptel-default-mode 'org-mode
         gptel-backend
         (gptel-make-openai "OpenRouter"
           :host "openrouter.ai"
           :endpoint "/api/v1/chat/completions"
           :stream t
-          :key #'ads/read-openrouter-key
+          :key (lambda () (getenv "OPENROUTER_API_KEY"))
           :models '(anthropic/claude-sonnet-4
                     openai/gpt-5
                     google/gemini-2.5-flash))))
