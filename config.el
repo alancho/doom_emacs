@@ -695,18 +695,14 @@
                (auth-source-pick-first-password :host "generativelanguage.googleapis.com")
                (user-error "Set GEMINI_API_KEY or auth-source for generativelanguage.googleapis.com")))))
 
-;; Prefer a cheaper model for commit messages (gptel-commit)
-(with-eval-after-load 'gptel
-  (defun ads/gptel-commit-use-haiku (orig-fun &rest args)
-    (let ((claude (or (ignore-errors (gptel-get-backend "Claude")) gptel-backend)))
-      (let ((gptel-backend claude)
-            (gptel-model 'claude-3-5-haiku-20241022))
-        (apply orig-fun args))))
-  ;; Add advice once the commit helpers load (support both features)
-  (with-eval-after-load 'gptel-commit
-    (advice-add 'gptel-commit-magit-generate :around #'ads/gptel-commit-use-haiku))
-  (with-eval-after-load 'gptel-commit-magit
-    (advice-add 'gptel-commit-magit-generate :around #'ads/gptel-commit-use-haiku)))
+;; Prefer a cheaper model for commit messages (gptel-magit)
+(with-eval-after-load 'gptel-magit
+  (setq gptel-magit-backend (or (ignore-errors (gptel-get-backend "Claude")) gptel-backend)
+        gptel-magit-model 'claude-3-5-haiku-20241022))
+;; Also set for gptel-commit if present
+(with-eval-after-load 'gptel-commit
+  (setq gptel-commit-backend (or (ignore-errors (gptel-get-backend "Claude")) gptel-backend)
+        gptel-commit-model 'claude-3-5-haiku-20241022))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
