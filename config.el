@@ -696,18 +696,17 @@
                (user-error "Set GEMINI_API_KEY or auth-source for generativelanguage.googleapis.com")))))
 
 ;; Prefer a cheaper model for commit messages (gptel-commit)
-(after! gptel-commit
-  (defun ads/gptel-commit-use-cheap-model (orig-fun &rest args)
-    (let* ((claude (ignore-errors (gptel-get-backend "Claude")))
-           (openai (ignore-errors (gptel-get-backend "ChatGPT")))
-           (backend (or claude openai gptel-backend))
-           (model (cond ((and claude (eq backend claude)) 'claude-3-5-haiku-20241022)
-                        ((and openai (eq backend openai)) "gpt-4o-mini")
-                        (t gptel-model))))
-      (let ((gptel-backend backend)
-            (gptel-model model))
+(with-eval-after-load 'gptel
+  (defun ads/gptel-commit-use-haiku (orig-fun &rest args)
+    (let ((claude (or (ignore-errors (gptel-get-backend "Claude")) gptel-backend)))
+      (let ((gptel-backend claude)
+            (gptel-model 'claude-3-5-haiku-20241022))
         (apply orig-fun args))))
-  (advice-add 'gptel-commit-magit-generate :around #'ads/gptel-commit-use-cheap-model))
+  ;; Add advice once the commit helpers load (support both features)
+  (with-eval-after-load 'gptel-commit
+    (advice-add 'gptel-commit-magit-generate :around #'ads/gptel-commit-use-haiku))
+  (with-eval-after-load 'gptel-commit-magit
+    (advice-add 'gptel-commit-magit-generate :around #'ads/gptel-commit-use-haiku)))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
