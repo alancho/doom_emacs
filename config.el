@@ -696,13 +696,12 @@
                (user-error "Set GEMINI_API_KEY or auth-source for generativelanguage.googleapis.com")))))
 
 ;; Prefer a cheaper model for commit messages (gptel-magit)
-(with-eval-after-load 'gptel-magit
-  (setq gptel-magit-backend (or (ignore-errors (gptel-get-backend "OpenRouter")) gptel-backend)
-        gptel-magit-model "anthropic/claude-3.5-haiku"))
-;; Also set for gptel-commit if present
-(with-eval-after-load 'gptel-commit
-  (setq gptel-commit-backend (or (ignore-errors (gptel-get-backend "OpenRouter")) gptel-backend)
-        gptel-commit-model "anthropic/claude-3.5-haiku"))
+(with-eval-after-load 'gptel-commit-magit
+  (defun ads/gptel-magit-force-haiku (orig &rest args)
+    (let ((gptel-backend (or (ignore-errors (gptel-get-backend "OpenRouter")) gptel-backend))
+          (gptel-model "anthropic/claude-3.5-haiku"))
+      (apply orig args)))
+  (advice-add 'gptel-magit-commit-generate :around #'ads/gptel-magit-force-haiku))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
