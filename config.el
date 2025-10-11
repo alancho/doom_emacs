@@ -697,12 +697,12 @@
 
 ;; Prefer a cheaper model for commit messages (gptel-magit)
 (with-eval-after-load 'gptel-magit
-  (setq gptel-magit-backend (or (ignore-errors (gptel-get-backend "Claude")) gptel-backend)
-        gptel-magit-model 'claude-3-5-haiku-20241022))
+  (setq gptel-magit-backend (or (ignore-errors (gptel-get-backend "OpenRouter")) gptel-backend)
+        gptel-magit-model "anthropic/claude-3.5-haiku"))
 ;; Also set for gptel-commit if present
 (with-eval-after-load 'gptel-commit
-  (setq gptel-commit-backend (or (ignore-errors (gptel-get-backend "Claude")) gptel-backend)
-        gptel-commit-model 'claude-3-5-haiku-20241022))
+  (setq gptel-commit-backend (or (ignore-errors (gptel-get-backend "OpenRouter")) gptel-backend)
+        gptel-commit-model "anthropic/claude-3.5-haiku"))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
