@@ -654,17 +654,60 @@
 
 (use-package! gptel
   :config
-  (setq gptel-model 'anthropic/claude-sonnet-4
-        gptel-default-mode 'org-mode
-        gptel-backend
+  (setq gptel-default-mode 'org-mode
+        gptel-model "anthropic/claude-sonnet-4")
+  ;; OpenRouter (default)
+  (setq gptel-backend
         (gptel-make-openai "OpenRouter"
           :host "openrouter.ai"
           :endpoint "/api/v1/chat/completions"
           :stream t
-          :key (lambda () (getenv "OPENROUTER_API_KEY"))
-          :models '(anthropic/claude-sonnet-4
-                    openai/gpt-5
-                    google/gemini-2.5-flash))))
+          :key (lambda ()
+                 (or (getenv "OPENROUTER_API_KEY")
+                     (auth-source-pick-first-password :host "openrouter.ai")
+                     (user-error "Set OPENROUTER_API_KEY or auth-source for openrouter.ai")))
+          :models '("anthropic/claude-sonnet-4"
+                    "openai/gpt-5"
+                    "google/gemini-2.5-flash")))
+  ;; OpenAI
+  (gptel-make-openai "ChatGPT"
+    :host "api.openai.com"
+    :endpoint "/v1/chat/completions"
+    :stream t
+    :key (lambda ()
+           (or (getenv "OPENAI_API_KEY")
+               (auth-source-pick-first-password :host "api.openai.com")
+               (user-error "Set OPENAI_API_KEY or auth-source for api.openai.com")))
+    :models '("gpt-5" "gpt-4o" "gpt-4o-mini" "o4-mini"))
+  ;; Anthropic
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (lambda ()
+           (or (getenv "ANTHROPIC_API_KEY")
+               (auth-source-pick-first-password :host "api.anthropic.com")
+               (user-error "Set ANTHROPIC_API_KEY or auth-source for api.anthropic.com")))
+    :models '(claude-3-7-sonnet-20250219 claude-3-5-haiku-20241022 claude-3-opus-20240229))
+  ;; Gemini
+  (gptel-make-gemini "Gemini"
+    :stream t
+    :key (lambda ()
+           (or (getenv "GEMINI_API_KEY")
+               (auth-source-pick-first-password :host "generativelanguage.googleapis.com")
+               (user-error "Set GEMINI_API_KEY or auth-source for generativelanguage.googleapis.com")))))
+
+;; Prefer a cheaper model for commit messages (gptel-commit)
+(after! gptel-commit
+  (defun ads/gptel-commit-use-cheap-model (orig-fun &rest args)
+    (let* ((claude (ignore-errors (gptel-get-backend "Claude")))
+           (openai (ignore-errors (gptel-get-backend "ChatGPT")))
+           (backend (or claude openai gptel-backend))
+           (model (cond ((and claude (eq backend claude)) 'claude-3-5-haiku-20241022)
+                        ((and openai (eq backend openai)) "gpt-4o-mini")
+                        (t gptel-model))))
+      (let ((gptel-backend backend)
+            (gptel-model model))
+        (apply orig-fun args))))
+  (advice-add 'gptel-commit-magit-generate :around #'ads/gptel-commit-use-cheap-model))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
