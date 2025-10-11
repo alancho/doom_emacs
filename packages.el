@@ -78,7 +78,8 @@
 
 ;; Python
 (package! company-box)
-(package! blacken)
+(package! ruff-format)
+;; flycheck-ruff removed (using inline checker)
 (package! dap-mode)
 (package! envrc)
 
