@@ -655,7 +655,7 @@
 (use-package! gptel
   :config
   (setq gptel-default-mode 'org-mode
-        gptel-model "anthropic/claude-sonnet-4")
+        gptel-model "google/gemini-flash-1.5")
   ;; OpenRouter (default)
   (setq gptel-backend
         (gptel-make-openai "OpenRouter"
@@ -694,17 +694,6 @@
            (or (getenv "GEMINI_API_KEY")
                (auth-source-pick-first-password :host "generativelanguage.googleapis.com")
                (user-error "Set GEMINI_API_KEY or auth-source for generativelanguage.googleapis.com")))))
-
-;; ;; Prefer a cheaper model for commit messages (gptel-magit)
-;; (with-eval-after-load 'gptel-commit-magit
-;;   (defun ads/gptel-magit-force-haiku (orig &rest args)
-;;     (let ((gptel-backend (or (ignore-errors (gptel-get-backend "OpenRouter")) gptel-backend))
-;;           (gptel-model "anthropic/claude-3.5-haiku"))
-;;       (apply orig args)))
-;;   (advice-add 'gptel-magit-commit-generate :around #'ads/gptel-magit-force-haiku))
-
-(after! gptel-magit
-  (setq gptel-model "anthropic/claude-3.5-haiku"))
 
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
