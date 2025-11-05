@@ -655,7 +655,7 @@
 (use-package! gptel
   :config
   (setq gptel-default-mode 'org-mode
-        gptel-model "google/gemini-2.0-flash-001")
+        gptel-model 'google/gemini-2.0-flash-001)
   ;; OpenRouter (default)
   (setq gptel-backend
         (gptel-make-openai "OpenRouter"
@@ -1025,8 +1025,6 @@ Rscript %s%s
 echo \"Job finished at: $(date)\"
 "
                    job-name
-                   output-file
-                   error-file
                    time-limit
                    partition
                    qos
@@ -1102,9 +1100,10 @@ This uses `find-file-noselect` + `set-window-buffer` to avoid creating a new spl
   (consult-notes-org-roam-mode))
 
 (use-package! copilot
-  :hook (python-mode . copilot-mode)
+  :hook ((python-mode . copilot-mode)
+         (ess-mode . copilot-mode))
   :init
   (setq copilot-idle-delay 0.4)
   :bind (:map copilot-completion-map
-              ("C-<return>" . 'copilot-accept-completion)
-              ("M-<return>" . 'copilot-accept-completion-by-word)))
+              ("C-<tab>" . 'copilot-accept-completion)
+              ("C-S-<tab>" . 'copilot-accept-completion-by-word)))
