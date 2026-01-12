@@ -51,7 +51,7 @@
 
 (setq tab-always-indent 'complete)
 ;; Show completion UI in minibuffer (via consult), not popups
-(setq completion-in-region-function #'consult-completion-in-region)
+
 
 ;; Performance optimizations
 (setq gc-cons-threshold 100000000) ;; Increase garbage collection threshold
@@ -106,10 +106,8 @@
         latex-mode))
 
 (after! company
-  (setq company-idle-delay nil
-        company-minimum-prefix-length 2)
-  ;; Disable company in Python; use TAB + minibuffer instead
-  (add-hook 'python-mode-hook (lambda () (company-mode -1))))
+  (setq company-idle-delay 0.0
+        company-minimum-prefix-length 1))
 
 (use-package! company-box
   :hook (company-mode . company-box-mode))
@@ -364,32 +362,6 @@
 (after! org
   (set-popup-rule! "^\\*Org Src" :ignore t))
 
-;; (after! org
-;;   ;; Disable fancy priorities, which are enabled by +pretty
-;;   (setq org-superstar-prettify-priorities nil)
-;;   ;; Customize headline bullets
-;;   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "▸")))
-
-
-;; ;; Prefiero que la fuente de los headings en org no sea bold
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(org-level-1 ((t (:inherit outline-1 :extend t :weight normal))))
-;;  '(org-level-2 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-3 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-4 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-5 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-6 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-7 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-8 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-9 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-10 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-11 ((t (:inherit outline-2 :extend t :weight normal))))
-;;  '(org-level-12 ((t (:inherit outline-2 :extend t :weight normal)))))
-
 ;; Prefiero que la fuente de los headings en org no sea bold
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -435,26 +407,6 @@
          (filename (file-name-nondirectory file-path))
          (tag (file-name-sans-extension filename)))
     (replace-regexp-in-string "-" "_" tag)))
-
-;; ;; Org Capture Templates with improved keybindings
-;; (setq org-capture-templates
-;;       '(("t" "Todo - Personal" entry (file +org-capture-todo-file)
-;;          "* TODO %? %^G\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
-;;         ("n" "Note - Personal" entry
-;;          (file denote-journal-path-to-new-or-existing-entry)
-;;          "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend nil)
-;;         ("p" "Projectile todo" entry
-;;          (file my-org-project-todo-file) "- [ ] %? :%(my-org-project-tag):%^g\n:PROPERTIES:\n:CREATED: %U\n:WHERE: %a\n:END:\n%i"
-;;          :prepend t)
-;;         ))
-
-;; ;; Override default org-capture keybinding for faster access
-;; (map! :leader
-;;       (:prefix ("c" . "capture")
-;;        :desc "Personal todo" "t" (lambda () (interactive) (org-capture nil "t"))
-;;        :desc "Personal note" "n" (lambda () (interactive) (org-capture nil "n"))
-;;        :desc "Projectile todo" "p" (lambda () (interactive) (org-capture nil "p"))
-;;        :desc "Org capture menu" "c" #'org-capture))
 
 ;; Org Agenda Configuration
 (setq org-agenda-sorting-strategy
@@ -504,52 +456,6 @@
                 "/home/alancho/Dropbox/org/todo.org")
               (ads/add-projectile-todo-files-to-agenda)))
 
-;; (use-package! org-format
-;;   :hook (org-mode . org-format-on-save-mode)
-;;   :config
-;;   (defun org-format--headings (scope)
-;;     (let ((seen-first-heading-p))
-;;       (org-map-entries (lambda ()
-;;                          ;; Widen so we can see space preceding the current
-;;                          ;; headline.
-;;                          (org-with-wide-buffer
-;;                           (let* ((level (car (org-heading-components)))
-;;                                  (prev-line-is-headline
-;;                                   (save-excursion
-;;                                     (beginning-of-line)
-;;                                     (when (> (point) (point-min))
-;;                                       (forward-line -1)
-;;                                       (looking-at org-outline-regexp-bol))))
-;;                                  (headline-spacing
-;;                                   (cond
-;;                                    (prev-line-is-headline 0)
-;;                                    ((and (equal 1 level) (not seen-first-heading-p))
-;;                                     (setq seen-first-heading-p t)
-;;                                     org-format-blank-lines-before-first-heading)
-;;                                    ((equal 1 level)
-;;                                     org-format-blank-lines-before-level-1-headings)
-;;                                    (t
-;;                                     org-format-blank-lines-before-subheadings))))
-;;                             (org-format--ensure-empty-lines headline-spacing)))
-
-;;                          (unless (and (fboundp 'org-transclusion-within-transclusion-p)
-;;                                       (org-transclusion-within-transclusion-p))
-;;                            (forward-line 1)
-;;                            (org-format--delete-blank-lines)
-;;                            (org-format--ensure-empty-lines org-format-blank-lines-before-meta)
-;;                            (org-end-of-meta-data t)
-;;                            (let ((next-line-is-headline (save-excursion
-;;                                                           (forward-line 1)
-;;                                                           (looking-at org-outline-regexp-bol))))
-;;                              (unless next-line-is-headline
-;;                                (org-format--ensure-empty-lines org-format-blank-lines-before-content)))))
-;;                        t
-;;                        scope))))
-
-;; (setq org-format-blank-lines-before-subheadings 0
-;;       org-format-blank-lines-before-first-heading 1
-;;       org-format-blank-lines-before-level-1-headings 1)) ;; Or your desired number of lines
-
 (use-package! oxr)
 
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
@@ -580,73 +486,8 @@
        citar-library-paths '("~/Dropbox/Papers/")
        citar-notes-paths '("~/Dropbox/notes/"))
 
-;; (setq citar-open-entry-function #'citar-open-entry-in-zotero)
-
-;; (use-package! denote
-;;   :config
-;;   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
-;;   ;; (setq denote-directory (expand-file-name "~/Downloads/denote-sim/"))
-;;   ;; (setq denote-known-keywords '("moc" "mos" "mor")) ;; Vamos a probar, map of content, map of slides, map or reading
-;;   ;; (setq denote-infer-keywords t)
-;;   ;; (setq denote-sort-keywords t)
-;;   ;; (setq denote-prompts '(title keywords signature))
-;;   ;; (setq denote-excluded-directories-regexp nil)
-;;   ;; (setq denote-excluded-keywords-regexp nil)
-;;   (setq denote-date-prompt-use-org-read-date t)
-;;   (setq denote-dired-directories (list denote-directory))
-;;   ;; Add all Denote files tagged as "agenda" to org-agenda-files
-;;   (defun ads/denote-add-to-agenda-files (keyword)
-;;     "Append list of files containing 'keyword' to org-agenda-files"
-;;     (interactive)
-;;     (setq org-agenda-files (append org-agenda-files (directory-files denote-directory t keyword))))
-;;   (ads/denote-add-to-agenda-files "_agenda")
-;;   :hook
-;;   (dired-mode . denote-dired-mode-in-directories)
-;;   :bind
-;;   (
-;;    ("C-c d n" . denote-open-or-create)           ;; d(enote) n(ew)
-;;    ("C-c d j" . denote-journal-new-or-existing-entry) ;; d(enote) j(ournal)
-;;    ("C-c d l" . denote-link-or-create)           ;; d(enote) l(ink)
-;;    ("C-c d b" . denote-find-backlink)            ;; d(enote) b(acklink)
-;;    ;; ("C-c d I" . denote-link-insert-links-matching-regexp)
-;;    ;; ("C-c d f" . denote-find-link)
-;;    ;; ("C-c d D" . denote-org-dblock-insert-links)
-;;    ;; ("C-c d r" . denote-rename-file-using-front-matter)
-;;    ;; ("C-c d R" . denote-rename-file)
-;;    ;; ("C-c d k" . denote-keywords-add)
-;;    ;; ("C-c d K" . denote-keywords-remove)
-;;    ))
-
-;; (use-package! citar-denote
-;;   :after denote
-;;   :init
-;;   (citar-denote-mode)
-;;   :config
-;;   (setq citar-denote-title-format "author-year-title")
-;;   (setq citar-denote-subdir nil)
-;;   (setq citar-denote-title-format-authors 2)
-;;   :bind
-;;   (("C-c d c" . citar-denote-open-reference-entry)))
-
-;; (use-package! consult-notes
-;;   :after denote
-;;   :hook
-;;   (dired-mode . consult-notes-denote-mode)
-;;   :bind
-;;   (("C-c d d" . consult-notes)))
-
-;; (after! consult-notes
-;;   (consult-notes-denote-mode))
-
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
-
-;; (use-package! denote-journal
-;;   :hook (calendar-mode . denote-journal-calendar-mode)
-;;   :config
-
-;;   (setq denote-journal-title-format 'day-date-month-year))
-;; (use-package! consult-denote)
 
 ;;; ========================================================================
 ;;; AI/LLM CONFIGURATION
@@ -700,92 +541,6 @@
 ;;; PYTHON DEVELOPMENT
 ;;; ========================================================================
 
-(after! lsp-mode
-  (setq lsp-headerline-breadcrumb-enable nil
-        lsp-enable-snippet t
-        lsp-signature-auto-activate nil
-        lsp-completion-provider :capf)) ;; use CAPF so Consult shows LSP completions in minibuffer
-
-(after! lsp-ui
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-sideline-enable nil))
-
-;; Helper to prune non-existent LSP workspace folders
-(after! lsp-mode
-  (defun ads/lsp-prune-nonexistent-workspace-folders ()
-    "Remove all LSP workspace folders that no longer exist on disk."
-    (interactive)
-    (let* ((session (lsp-session))
-           (folders (lsp-session-folders session))
-           (removed 0))
-      (dolist (folder folders)
-        (unless (file-directory-p folder)
-          (lsp-workspace-folders-remove folder)
-          (setq removed (1+ removed))))
-      (message "Removed %d non-existent LSP workspace folders" removed))))
-
-;; Enable LSP for Python automatically
-(add-hook 'python-mode-hook #'lsp)
-
-;; Disable Ruff LSP client; use Pyright LSP + Ruff CLI (Flycheck/format)
-(add-hook 'python-mode-hook
-          (lambda ()
-            (setq-local lsp-disabled-clients
-                        (append (when (boundp 'lsp-disabled-clients) lsp-disabled-clients)
-                                '(ruff_lsp ruff-lsp ruff)))) )
-
-(after! flycheck
-  (setq flycheck-python-pyright-executable "pyright")
-  ;; Use Ruff for linting if available, via a custom checker when package is absent
-  (when (executable-find "ruff")
-    (flycheck-define-checker python-ruff
-      "Ruff: An extremely fast Python linter."
-      :command ("ruff" "check" "--output-format" "json" source)
-      :error-parser flycheck-parse-ruff
-      :modes (python-mode)
-      :predicate (lambda () (and buffer-file-name (executable-find "ruff")))
-      :next-checkers ((warning . python-pyright)))
-
-    (defun flycheck-parse-ruff (output checker buffer)
-      "Parse Ruff JSON OUTPUT to Flycheck error list."
-      (let* ((json-object-type 'alist)
-             (json-array-type 'list)
-             (reports (ignore-errors (json-read-from-string output))))
-        (mapcar (lambda (diag)
-                  (let* ((loc (alist-get 'location diag))
-                         (row (alist-get 'row loc))
-                         (col (alist-get 'column loc))
-                         (code (alist-get 'code diag))
-                         (msg (alist-get 'message diag)))
-                    (flycheck-error-new-at
-                     row col 'warning
-                     (if code (format "%s: %s" code msg) msg)
-                     :checker checker :buffer buffer)))
-                reports)))
-
-    (add-to-list 'flycheck-checkers 'python-ruff)
-    (flycheck-add-next-checker 'python-pyright '(warning . python-ruff))))
-
-(use-package! envrc
-  :config
-  (envrc-global-mode))
-
-(use-package! dap-mode
-  :after lsp-mode
-  :config
-  (require 'dap-python)
-  (setq dap-python-executable "python"))
-
-;; Prefer Ruff for formatting and linting
-(setq ruff-format-on-save t)
-;; No Ruff LSP needed; using Pyright + Ruff CLI
-
-;; Switch from Black to Ruff formatter
-(use-package! ruff-format
-  :hook (python-mode . ruff-format-on-save-mode))
-
-;; No REPL; use `uv run` via compilation
-
 (defun ads/python-compile-buffer-with-uv ()
   "Save current buffer and run it with uv (if available) in a compile buffer."
   (interactive)
@@ -810,42 +565,6 @@
   ;; Ensure TAB is reserved for indent/completion-in-minibuffer
   (define-key python-mode-map (kbd "TAB") #'indent-for-tab-command)
   (define-key python-mode-map (kbd "<tab>") #'indent-for-tab-command))
-
-;; Project bootstrap: uv init + uv add + .envrc + direnv allow
-(require 'subr-x)
-(defun ads/python-uv-bootstrap (packages &optional dev)
-  "Bootstrap a new Python project in the current directory using uv and direnv.
-Packages is a space-separated string. With prefix arg DEV, install as dev deps."
-  (interactive (list (read-string "Packages to add (optional, space-separated): ")
-                     current-prefix-arg))
-  (unless (executable-find "uv")
-    (user-error "uv not found on PATH"))
-  (let ((default-directory (or (and (fboundp 'projectile-project-root)
-                                    (ignore-errors (projectile-project-root)))
-                               default-directory)))
-    (when (file-exists-p "pyproject.toml")
-      (unless (y-or-n-p "pyproject.toml exists; continue with uv init anyway? ")
-        (user-error "Aborted")))
-    (message "Running uv init...")
-    (unless (eq 0 (call-process "uv" nil "*uv*" t "init"))
-      (user-error "uv init failed; see *uv* buffer"))
-    (unless (string-blank-p packages)
-      (let* ((args (append (list "add") (when dev (list "--dev")) (split-string packages))))
-        (message "Running uv %s..." (mapconcat #'identity args " "))
-        (apply #'call-process "uv" nil "*uv*" t args)))
-    (with-temp-file ".envrc"
-      (insert "source .venv/bin/activate\n"))
-    (when (executable-find "direnv")
-      (message "Running direnv allow...")
-      (call-process "direnv" nil "*uv*" t "allow"))
-    (message "uv bootstrap complete%s"
-             (if (string-blank-p packages) "" " (packages installed)"))))
-
-;; Bind under Project prefix: SPC p U
-(map! :leader
-      (:prefix ("p" . "project")
-       :desc "UV bootstrap (init/add/.envrc/allow)" "U" #'ads/python-uv-bootstrap))
-
 
 ;;; ========================================================================
 ;;; LATEX CONFIGURATION
@@ -919,10 +638,10 @@ Packages is a space-separated string. With prefix arg DEV, install as dev deps."
 
     ;; Select scenario
     (let ((scenario (completing-read "Select scenario: "
-                                    '(("master" . "Minimal resources, single job")
-                                      ("array" . "Array job with 1 CPU each")
-                                      ("compute" . "High-resource single job"))
-                                    nil t))
+                                     '(("master" . "Minimal resources, single job")
+                                       ("array" . "Array job with 1 CPU each")
+                                       ("compute" . "High-resource single job"))
+                                     nil t))
           (slurm-script-name nil)
           (slurm-script-path nil))
 
@@ -942,8 +661,8 @@ Packages is a space-separated string. With prefix arg DEV, install as dev deps."
                (error-file (concat base-name "_%j.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
-                                     time-limit partition qos nil "1" "1G" modules
-                                     r-script-name time-limit nil nil)))
+                                       time-limit partition qos nil "1" "1G" modules
+                                       r-script-name time-limit nil nil)))
 
        ;; ARRAY scenario: array jobs, array ID as only argument
        ((string= scenario "array")
@@ -957,8 +676,8 @@ Packages is a space-separated string. With prefix arg DEV, install as dev deps."
                (error-file (concat base-name "_%A_%a.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
-                                     time-limit partition qos array-range "1" "2G" modules
-                                     r-script-name nil array-range nil)))
+                                       time-limit partition qos array-range "1" "2G" modules
+                                       r-script-name nil array-range nil)))
 
        ;; COMPUTE scenario: high resources, custom arguments
        ((string= scenario "compute")
@@ -973,27 +692,27 @@ Packages is a space-separated string. With prefix arg DEV, install as dev deps."
                (error-file (concat base-name "_%j.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
-                                     time-limit partition qos nil cpus-per-task memory modules
-                                     r-script-name nil nil cpus-per-task))))
+                                       time-limit partition qos nil cpus-per-task memory modules
+                                       r-script-name nil nil cpus-per-task))))
 
       (message "Created %s Slurm script: %s" scenario slurm-script-name))))
 
 (defun create-slurm-script-content (script-path job-name output-file error-file
-                                   time-limit partition qos array-range cpus-per-task
-                                   memory modules r-script-name time-arg array-arg cpu-arg)
+                                                time-limit partition qos array-range cpus-per-task
+                                                memory modules r-script-name time-arg array-arg cpu-arg)
   "Helper function to create the actual Slurm script content."
   ;; Generate module load commands
   (let ((module-lines (if (or (not modules) (string-empty-p modules))
-                         "# No modules specified"
-                       (mapconcat (lambda (module)
-                                   (format "module load %s" module))
-                                 (split-string modules)
-                                 "\n")))
+                          "# No modules specified"
+                        (mapconcat (lambda (module)
+                                     (format "module load %s" module))
+                                   (split-string modules)
+                                   "\n")))
         ;; Build R script arguments
         (r-args (concat
-                (if time-arg time-arg "")
-                (if array-arg " $SLURM_ARRAY_TASK_ID" "")
-                (if cpu-arg " $SLURM_CPUS_PER_TASK" ""))))
+                 (if time-arg time-arg "")
+                 (if array-arg " $SLURM_ARRAY_TASK_ID" "")
+                 (if cpu-arg " $SLURM_CPUS_PER_TASK" ""))))
 
     ;; Create Slurm script content
     (let ((slurm-content
@@ -1052,58 +771,183 @@ echo \"Job finished at: $(date)\"
       '((:session . "none")
         (:prologue . "suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(knitr)); source('~/Dropbox/R/theme_alan.R')")))
 
-;; (use-package! claudemacs)
-
-;; config.el -- robust org-roam backlinks RET handler
-(after! org-roam
-  (require 'seq)
-
-  (defun my/org-roam--candidate-windows ()
-    "Return a list of usable windows in the selected frame excluding the *org-roam* window."
-    (let* ((roam-buf (get-buffer "*org-roam*"))
-           (roam-win (and roam-buf (get-buffer-window roam-buf t))))
-      (seq-filter
-       (lambda (w)
-         (and (not (eq w roam-win))
-              (not (window-minibuffer-p w))
-              (not (window-dedicated-p w))
-              (not (window-parameter w 'no-other-window))
-              (window-live-p w)))
-       (window-list (selected-frame)))))
-
-  (defun my/org-roam-visit-reuse-window ()
-    "Open the org-roam node at point by replacing the buffer in a non-roam window.
-This uses `find-file-noselect` + `set-window-buffer` to avoid creating a new split."
-    (interactive)
-    (let ((node (org-roam-node-at-point)))
-      (unless node (user-error "No org-roam node at point"))
-      (let* ((file (org-roam-node-file node))
-             (pt   (org-roam-node-point node))
-             (cands (my/org-roam--candidate-windows))
-             (target (car cands)))
-        (if (and file target)
-            (let ((buf (find-file-noselect file)))
-              ;; place the buffer into the target window and jump to point
-              (set-window-buffer target buf)
-              (select-window target)
-              (with-current-buffer buf (when (and pt (integerp pt)) (goto-char pt))))
-          ;; fallback: default visit (keeps upstream behaviour)
-          (org-roam-node-visit node)))))
-
-  ;; Ensure the keybinding is available in the roam buffer (covers most setups)
-  (with-eval-after-load 'org-roam
-    (define-key org-roam-mode-map (kbd "RET") #'my/org-roam-visit-reuse-window)
-    (define-key org-roam-mode-map (kbd "<return>") #'my/org-roam-visit-reuse-window)))
-
-(use-package! consult-notes
-  :config
-  (consult-notes-org-roam-mode))
-
 (use-package! copilot
   :hook ((python-mode . copilot-mode)
-         (ess-mode . copilot-mode))
+         ;; (ess-mode . copilot-mode)
+         )
   :init
   (setq copilot-idle-delay 0.4)
   :bind (:map copilot-completion-map
               ("C-<tab>" . 'copilot-accept-completion)
               ("C-S-<tab>" . 'copilot-accept-completion-by-word)))
+
+(defun my/create-project ()
+  "Create a new R or Python project with sensible defaults and live uv output."
+  (interactive)
+  (let* ((project-type (completing-read "Project type: " '("R" "Python") nil t))
+         (project-name (read-string "Project name: "))
+         (project-dir (read-directory-name "Create in directory: "))
+         (deps (if (string= project-type "Python")
+                   (read-string "Initial Python dependencies (comma or space separated, empty for none): ")
+                 ""))  ;; Skip prompt for R
+         (git-init (y-or-n-p "Initialize a Git repository? "))
+         (default-directory (expand-file-name project-dir))
+         (project-path (expand-file-name project-name project-dir))
+         (envrc-path (expand-file-name ".envrc" project-path))
+         (subdirs '("data" "functions" "outputs" "slides"))
+         (presentation-src "~/Dropbox/templates/org/beamer.org")
+         (presentation-dest (expand-file-name "slides/presentation.org" project-path))
+         (rscript-path (expand-file-name "010.R" project-path))
+         (gitignore-path (expand-file-name ".gitignore" project-path))
+         (deps-list (split-string deps "[ ,]+" t)))
+
+    ;; Create base directory
+    (unless (file-directory-p project-path)
+      (make-directory project-path t))
+
+    ;; Create common subdirectories
+    (dolist (sub subdirs)
+      (make-directory (expand-file-name sub project-path) t))
+
+    ;; Copy presentation template if it exists
+    (when (file-exists-p presentation-src)
+      (copy-file presentation-src presentation-dest t))
+
+    ;; Create .gitignore
+    (unless (file-exists-p gitignore-path)
+      (with-temp-file gitignore-path
+        (insert (mapconcat #'identity
+                           '("*"
+                             "!*/"
+                             "!.gitignore"
+                             "!*.R"
+                             "!*.r"
+                             "!*.Rmd"
+                             "!*.py"
+                             "!*.csv"
+                             "!*.tsv"
+                             "!*.txt"
+                             "!*.md"
+                             "!*.org"
+                             "!*.json"
+                             "!*.yml"
+                             "!*.yaml"
+                             "!*.toml"
+                             "!*.ini"
+                             "!*.cfg"
+                             "!*.conf"
+                             "!*.tex"
+                             "!*.bib"
+                             "!*.sh"
+                             "!*.bash"
+                             "!*.zsh"
+                             "!*.qmd")
+                           "\n"))))
+
+    ;; Branch by project type
+    (pcase project-type
+      ("R"
+       (message "🧬 Setting up R project...")
+       (unless (file-exists-p rscript-path)
+         (with-temp-file rscript-path
+           (insert "require(tidyverse)\n"))))
+
+      ("Python"
+       (message "🐍 Setting up Python project with uv...")
+       (let ((default-directory project-path))
+         ;; Initialize uv project
+         (unless (zerop (call-process "uv" nil "*uv-init*" t "init"))
+           (error "❌ Failed to run 'uv init' — check if uv is installed"))
+
+         ;; Create .envrc for direnv
+         (with-temp-file envrc-path
+           (if (file-exists-p "~/.config/direnv/lib/use_uv.sh")
+               (insert "use uv\n")
+             (insert "if [ -d .venv ]; then\n  source .venv/bin/activate\nelse\n  uv sync && source .venv/bin/activate\nfi\n")))
+
+         ;; Allow direnv
+         (call-process "direnv" nil "*direnv-allow*" t "allow")
+
+         ;; Install dependencies with live output
+         (when deps-list
+           (when (get-buffer "*uv-install*")
+             (kill-buffer "*uv-install*"))
+           (let ((uv-buffer (get-buffer-create "*uv-install*")))
+             (with-current-buffer uv-buffer
+               (erase-buffer)
+               (insert (format "📦 Installing Python dependencies in %s:\n\n" project-name)))
+             (display-buffer uv-buffer)
+             (dolist (pkg deps-list)
+               (with-current-buffer uv-buffer
+                 (insert (format "→ Running: uv add %s\n\n" pkg)))
+               (let ((exit-code (call-process "uv" nil uv-buffer t "add" pkg)))
+                 (if (zerop exit-code)
+                     (with-current-buffer uv-buffer
+                       (insert (format "\n✅ Successfully added %s\n\n" pkg)))
+                   (with-current-buffer uv-buffer
+                     (insert (format "\n⚠️ Failed to add %s (exit code %s)\n\n"
+                                     pkg exit-code))))))
+             (with-current-buffer uv-buffer
+               (goto-char (point-max)))
+             (message "✅ Dependency installation complete — see *uv-install* buffer for details."))))))
+
+    ;; Initialize Git if requested
+    (when git-init
+      (message "🔧 Initializing Git repository...")
+      (let ((default-directory project-path))
+        (call-process "git" nil "*git-init*" t "init")
+        (call-process "git" nil "*git-add*" t "add" ".")
+        (call-process "git" nil "*git-commit*" t "-m" "Initial commit")))
+
+    ;; Register with Projectile
+    (when (featurep 'projectile)
+      (projectile-add-known-project project-path))
+
+    ;; Open in Dired
+    (dired project-path)
+
+    (message "🎉 %s project '%s' ready at %s%s%s"
+             project-type
+             project-name
+             project-path
+             (if (and (string= project-type "Python") deps-list)
+                 (format " with deps: [%s]" (string-join deps-list ", "))
+               "")
+             (if git-init " (Git initialized)" ""))))
+
+(defun my/format-for-logseq (beg end)
+  "Convert Markdown headers and paragraphs to Logseq-style nested bullets.
+Processes the active region or the entire buffer if no region is active."
+  (interactive "r")
+  ;; If no region is active, use the whole buffer
+  (unless (use-region-p)
+    (setq beg (point-min)
+          end (point-max)))
+  (let ((input (buffer-substring-no-properties beg end)))
+    (with-temp-buffer
+      (insert input)
+      ;; 1. Convert headers (# Header) to bullets with headers (- # Header)
+      (goto-char (point-min))
+      (while (re-search-forward "^\\(#+ .+\\)$" nil t)
+        (replace-match "- \\1"))
+
+      ;; 2. Convert plain paragraphs to indented bullets
+      ;; This looks for lines that don't start with - or # or whitespace
+      (goto-char (point-min))
+      (while (re-search-forward "^\\([^-\s#\n].+\\)$" nil t)
+        (replace-match "  - \\1"))
+
+      ;; 3. Indent existing lists so they become children
+      (goto-char (point-min))
+      (while (re-search-forward "^\\([-*]\\|\s+[0-9]+\\.\\) " nil t)
+        (unless (save-excursion (backward-char 2) (looking-at-p "- "))
+          (replace-match "  - ")))
+
+      ;; 4. Clean up: Remove triple newlines that cause empty blocks in Logseq
+      (goto-char (point-min))
+      (while (re-search-forward "\n\n\n+" nil t)
+        (replace-match "\n\n"))
+
+      ;; Copy result to clipboard and notify user
+      (kill-new (buffer-string))
+      (message "Text formatted and copied to clipboard for Logseq!"))))
