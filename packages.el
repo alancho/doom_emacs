@@ -77,11 +77,11 @@
 (package! figlet :recipe (:host github :repo "jpkotta/figlet"))
 
 ;; Python
-(package! company-box)
-(package! ruff-format)
+;; (package! company-box)
+;; (package! ruff-format)
 ;; flycheck-ruff removed (using inline checker)
-(package! dap-mode)
-(package! envrc)
+;; (package! dap-mode)
+;; (package! envrc)
 
 ;; ;; Auto commit for denote
 ;; (package! git-auto-commit-mode :recipe (:host github :repo "ryuslash/git-auto-commit-mode"))
@@ -93,7 +93,7 @@
 ;; (package! claudemacs
 ;;   :recipe (:host github :repo "cpoile/claudemacs"))
 
-(package! consult-notes)
+;; (package! consult-notes)
 
 ;; Volvamos a testear copilot
 (package! copilot
