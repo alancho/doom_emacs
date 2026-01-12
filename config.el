@@ -97,6 +97,7 @@
 (setq company-global-modes
       '(not ess-r-mode
         inferior-ess-r-mode
+        python-mode
         emacs-lisp-mode
         eshell-mode
         markdown-mode
@@ -109,8 +110,8 @@
   (setq company-idle-delay 0.0
         company-minimum-prefix-length 1))
 
-(use-package! company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package! company-box
+;;   :hook (company-mode . company-box-mode))
 
 ;; Rebind yasnippet: disable TAB, use C-<tab> to expand
 (after! yasnippet
@@ -153,7 +154,7 @@
 ;;; KEYBINDINGS & ALIASES
 ;;; ========================================================================
 
-(global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
+;; (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
@@ -461,7 +462,7 @@
 ;; Para evitar que el tamaño de la fuente se vea reducida con superscripts o subscripts
 (setq font-latex-fontify-script nil)
 
-(global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
+;; (global-set-key (kbd "<f5>") #'polymode-toggle-chunk-narrowing)
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
