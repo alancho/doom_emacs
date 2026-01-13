@@ -834,15 +834,15 @@ echo \"Job finished at: $(date)\"
       '((:session . "none")
         (:prologue . "suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(knitr)); source('~/Dropbox/R/theme_alan.R')")))
 
-(use-package! copilot
-  :hook ((python-mode . copilot-mode)
-         ;; (ess-mode . copilot-mode)
-         )
-  :init
-  (setq copilot-idle-delay 0.4)
-  :bind (:map copilot-completion-map
-              ("C-<tab>" . 'copilot-accept-completion)
-              ("C-S-<tab>" . 'copilot-accept-completion-by-word)))
+;; (use-package! copilot
+;;   :hook (;;(python-mode . copilot-mode)
+;;          ;; (ess-mode . copilot-mode)
+;;          )
+;;   :init
+;;   (setq copilot-idle-delay 0.4)
+;;   :bind (:map copilot-completion-map
+;;               ("C-<tab>" . 'copilot-accept-completion)
+;;               ("C-S-<tab>" . 'copilot-accept-completion-by-word)))
 
 (defun my/create-project ()
   "Create a new R or Python project with sensible defaults and live uv output."

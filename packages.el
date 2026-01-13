@@ -95,6 +95,6 @@
 
 ;; (package! consult-notes)
 
-;; Volvamos a testear copilot
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+;; ;; Volvamos a testear copilot
+;; (package! copilot
+;;   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
