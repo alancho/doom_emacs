@@ -868,12 +868,12 @@ echo \"Job finished at: $(date)\"
 (defun my/create-project ()
   "Create a new R or Python project with sensible defaults and live uv output."
   (interactive)
-  (let* ((project-type (completing-read "Project type: " '("R" "Python") nil t))
+  (let* ((project-type (completing-read "Project type: " '("R" "Python" "R+Python") nil t))
          (project-name (read-string "Project name: "))
          (project-dir (read-directory-name "Create in directory: "))
-         (deps (if (string= project-type "Python")
-                    (read-string "Initial Python dependencies (comma or space separated): " "jupyter ")
-                  ""))  ;; Skip prompt for R
+         (deps (if (or (string= project-type "Python") (string= project-type "R+Python"))
+                     (read-string "Initial Python dependencies (comma or space separated): " "jupyter ")
+                   ""))  ;; Skip prompt for pure R projects
          (git-init (y-or-n-p "Initialize a Git repository? "))
          (default-directory (expand-file-name project-dir))
          (project-path (expand-file-name project-name project-dir))
@@ -883,11 +883,12 @@ echo \"Job finished at: $(date)\"
          (presentation-dest (expand-file-name "slides/presentation.org" project-path))
          (rscript-path (expand-file-name "010.R" project-path))
          (gitignore-path (expand-file-name ".gitignore" project-path))
-                   (deps-list (let ((split-deps (split-string deps "[ ,]+" t)))
-                      (if (and (string= project-type "Python") 
-                               (not (member "jupyter" split-deps)))
-                          (cons "jupyter" split-deps)
-                        split-deps))))
+                    (deps-list (let ((split-deps (split-string deps "[ ,]+" t)))
+                       (if (and (or (string= project-type "Python") (string= project-type "R+Python")) 
+                                (not (member "jupyter" split-deps)))
+                           (cons "jupyter" split-deps)
+                         split-deps)))
+          (python-file-path (expand-file-name "010.py" project-path)))
 
     ;; Create base directory
     (unless (file-directory-p project-path)
@@ -932,52 +933,65 @@ echo \"Job finished at: $(date)\"
                              "!*.qmd")
                            "\n"))))
 
-    ;; Branch by project type
-    (pcase project-type
-      ("R"
-       (message "🧬 Setting up R project...")
-       (unless (file-exists-p rscript-path)
-         (with-temp-file rscript-path
-           (insert "require(tidyverse)\n"))))
+     ;; Branch by project type
+     (pcase project-type
+       ("R"
+        (message "🧬 Setting up R project...")
+        (unless (file-exists-p rscript-path)
+          (with-temp-file rscript-path
+            (insert "require(tidyverse)\n"))))
 
-      ("Python"
-       (message "🐍 Setting up Python project with uv...")
-       (let ((default-directory project-path))
-         ;; Initialize uv project
-         (unless (zerop (call-process "uv" nil "*uv-init*" t "init"))
-           (error "❌ Failed to run 'uv init' — check if uv is installed"))
+       ((or "Python" "R+Python")
+        (when (string= project-type "R+Python")
+          (message "🧬 Setting up R components...")
+          (unless (file-exists-p rscript-path)
+            (with-temp-file rscript-path
+              (insert "require(tidyverse)\n"))))
 
-         ;; Create .envrc for direnv
-         (with-temp-file envrc-path
-           (if (file-exists-p "~/.config/direnv/lib/use_uv.sh")
-               (insert "use uv\n")
-             (insert "if [ -d .venv ]; then\n  source .venv/bin/activate\nelse\n  uv sync && source .venv/bin/activate\nfi\n")))
+        (message "🐍 Setting up Python%s with uv..." 
+                 (if (string= project-type "R+Python") " components" ""))
+        
+        ;; Create empty initial Python file
+        (unless (file-exists-p python-file-path)
+          (with-temp-file python-file-path
+            (insert "")))
 
-         ;; Allow direnv
-         (call-process "direnv" nil "*direnv-allow*" t "allow")
+        (let ((default-directory project-path))
+          ;; Initialize uv project
+          (unless (zerop (call-process "uv" nil "*uv-init*" t "init"))
+            (error "❌ Failed to run 'uv init' — check if uv is installed"))
 
-         ;; Install dependencies with live output
-         (when deps-list
-           (when (get-buffer "*uv-install*")
-             (kill-buffer "*uv-install*"))
-           (let ((uv-buffer (get-buffer-create "*uv-install*")))
-             (with-current-buffer uv-buffer
-               (erase-buffer)
-               (insert (format "📦 Installing Python dependencies in %s:\n\n" project-name)))
-             (display-buffer uv-buffer)
-             (dolist (pkg deps-list)
-               (with-current-buffer uv-buffer
-                 (insert (format "→ Running: uv add %s\n\n" pkg)))
-               (let ((exit-code (call-process "uv" nil uv-buffer t "add" pkg)))
-                 (if (zerop exit-code)
-                     (with-current-buffer uv-buffer
-                       (insert (format "\n✅ Successfully added %s\n\n" pkg)))
-                   (with-current-buffer uv-buffer
-                     (insert (format "\n⚠️ Failed to add %s (exit code %s)\n\n"
-                                     pkg exit-code))))))
-             (with-current-buffer uv-buffer
-               (goto-char (point-max)))
-             (message "✅ Dependency installation complete — see *uv-install* buffer for details."))))))
+          ;; Create .envrc for direnv
+          (with-temp-file envrc-path
+            (if (file-exists-p "~/.config/direnv/lib/use_uv.sh")
+                (insert "use uv\n")
+              (insert "if [ -d .venv ]; then\n  source .venv/bin/activate\nelse\n  uv sync && source .venv/bin/activate\nfi\n")))
+
+          ;; Allow direnv
+          (call-process "direnv" nil "*direnv-allow*" t "allow")
+
+          ;; Install dependencies with live output
+          (when deps-list
+            (when (get-buffer "*uv-install*")
+              (kill-buffer "*uv-install*"))
+            (let ((uv-buffer (get-buffer-create "*uv-install*")))
+              (with-current-buffer uv-buffer
+                (erase-buffer)
+                (insert (format "📦 Installing Python dependencies in %s:\n\n" project-name)))
+              (display-buffer uv-buffer)
+              (dolist (pkg deps-list)
+                (with-current-buffer uv-buffer
+                  (insert (format "→ Running: uv add --project . %s\n\n" pkg)))
+                (let ((exit-code (call-process "uv" nil uv-buffer t "add" "--project" "." pkg)))
+                  (if (zerop exit-code)
+                      (with-current-buffer uv-buffer
+                        (insert (format "\n✅ Successfully added %s\n\n" pkg)))
+                    (with-current-buffer uv-buffer
+                      (insert (format "\n⚠️ Failed to add %s (exit code %s)\n\n"
+                                      pkg exit-code))))))
+              (with-current-buffer uv-buffer
+                (goto-char (point-max)))
+              (message "✅ Dependency installation complete — see *uv-install* buffer for details."))))))
 
     ;; Initialize Git if requested
     (when git-init
@@ -998,9 +1012,9 @@ echo \"Job finished at: $(date)\"
              project-type
              project-name
              project-path
-             (if (and (string= project-type "Python") deps-list)
-                 (format " with deps: [%s]" (string-join deps-list ", "))
-               "")
+              (if (and (or (string= project-type "Python") (string= project-type "R+Python")) deps-list)
+                  (format " with deps: [%s]" (string-join deps-list ", "))
+                "")
              (if git-init " (Git initialized)" ""))))
 
 (defun my/format-for-logseq (beg end)
