@@ -620,14 +620,26 @@ Opens REPL on first call if not running, sends code on subsequent calls."
 
 (with-eval-after-load 'python
   ;; Use IPython as the Python shell interpreter
-  (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "-i --simple-prompt")
+  ;; (setq python-shell-interpreter "ipython"
+  ;;       python-shell-interpreter-args "-i --simple-prompt")
+  (setq python-shell-interpreter "jupyter"
+        python-shell-interpreter-args "console --simple-prompt"
+        ;; Disable the warning as it is often a false positive with Jupyter
+        python-shell-prompt-detect-failure-warning nil)
+  ;; Match the standard Jupyter/IPython "In [1]:" and "Out[1]:" prompts
+  (setq python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+        python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: ")
+  ;; Native completion can sometimes conflict with jupyter console
+  (setq python-shell-completion-native-enable nil)
   ;; (define-key python-mode-map (kbd "S-<return>") #'ads/python-compile-buffer-with-uv)
   (define-key python-mode-map (kbd "S-<return>") #'python-shell-send-paragraph)
   (define-key python-mode-map (kbd "C-c C-<up>") #'python-shell-send-to-current-line)
   ;; Ensure TAB is reserved for indent/completion-in-minibuffer
   (define-key python-mode-map (kbd "TAB") #'indent-for-tab-command)
   (define-key python-mode-map (kbd "<tab>") #'indent-for-tab-command))
+
+(after! python
+  (set-eglot-client! '(python-mode python-ts-mode) '("ty" "server")))
 
 ;;; ========================================================================
 ;;; LATEX CONFIGURATION
