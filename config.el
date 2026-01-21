@@ -872,8 +872,8 @@ echo \"Job finished at: $(date)\"
          (project-name (read-string "Project name: "))
          (project-dir (read-directory-name "Create in directory: "))
          (deps (if (string= project-type "Python")
-                   (read-string "Initial Python dependencies (comma or space separated, empty for none): ")
-                 ""))  ;; Skip prompt for R
+                    (read-string "Initial Python dependencies (comma or space separated): " "jupyter ")
+                  ""))  ;; Skip prompt for R
          (git-init (y-or-n-p "Initialize a Git repository? "))
          (default-directory (expand-file-name project-dir))
          (project-path (expand-file-name project-name project-dir))
@@ -883,7 +883,11 @@ echo \"Job finished at: $(date)\"
          (presentation-dest (expand-file-name "slides/presentation.org" project-path))
          (rscript-path (expand-file-name "010.R" project-path))
          (gitignore-path (expand-file-name ".gitignore" project-path))
-         (deps-list (split-string deps "[ ,]+" t)))
+                   (deps-list (let ((split-deps (split-string deps "[ ,]+" t)))
+                      (if (and (string= project-type "Python") 
+                               (not (member "jupyter" split-deps)))
+                          (cons "jupyter" split-deps)
+                        split-deps))))
 
     ;; Create base directory
     (unless (file-directory-p project-path)
