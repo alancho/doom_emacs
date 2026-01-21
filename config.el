@@ -562,35 +562,44 @@
     (compile cmd)))
 
 (defun python-shell-send-paragraph (&optional send-main msg)
-  "Send blocks between two white lines to inferior Python process.
+  "Send selected region to inferior Python process if region is active,
+otherwise send blocks between two white lines.
 See `python-shell-send-region' for SEND-MAIN and MSG.
 Opens REPL on first call if not running, sends code on subsequent calls."
   (interactive "P\ni")
   (let ((current-buffer (current-buffer)))
     (if (python-shell-get-process)
         ;; Process is running, send code
-        (let ((start
-               (save-excursion
-                 (if (re-search-backward "^[:blank:]*$" nil t)
-                     (let ((pos (point)))
-                       (python-nav-end-of-block)
-                       (if (< (point) pos) pos
-                         (progn (python-nav-beginning-of-block) (point))))
-                   (point-min))))
-              (end
-               (save-excursion
-                 (if (re-search-forward  "^[:blank:]*$" nil t)
-                     (progn (python-nav-end-of-block) (point))
-                   (point-max)))))
+        (let ((start nil)
+              (end nil))
+          ;; Check if region is active
+          (if (use-region-p)
+              ;; Region is active, use region bounds
+              (setq start (region-beginning)
+                    end (region-end))
+            ;; No region, use paragraph bounds
+            (setq start (save-excursion
+                           (if (re-search-backward "^[:blank:]*$" nil t)
+                               (let ((pos (point)))
+                                 (python-nav-end-of-block)
+                                 (if (< (point) pos) pos
+                                   (progn (python-nav-beginning-of-block) (point))))
+                             (point-min)))
+                  end (save-excursion
+                         (if (re-search-forward  "^[:blank:]*$" nil t)
+                             (progn (python-nav-end-of-block) (point))
+                           (point-max)))))
+          ;; Send the region
           (python-shell-send-region start end send-main (not msg) nil)
           ;; Move to next paragraph after sending, skipping blank lines and comments
-          (goto-char end)
-          (when (re-search-forward "^[:blank:]*$" nil t)
-            (forward-line 1)
-            (while (and (not (eobp))
-                        (or (looking-at "^[:blank:]*$")
-                            (looking-at "^[:blank:]*#")))
-              (forward-line 1))))
+          (when (not (use-region-p))  ;; Only move point if we're not using a region
+            (goto-char end)
+            (when (re-search-forward "^[:blank:]*$" nil t)
+              (forward-line 1)
+              (while (and (not (eobp))
+                          (or (looking-at "^[:blank:]*$")
+                              (looking-at "^[:blank:]*#")))
+                (forward-line 1)))))
       ;; Process not running, start it and return to script buffer
       (run-python nil nil t)
       (switch-to-buffer-other-window current-buffer))))
