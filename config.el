@@ -268,6 +268,26 @@
     (save-buffer)
     (message (concat "Temporary R file created and saved as " file-path))))
 
+(defun open-gnome-terminal-here ()
+  "Open a gnome-terminal in the current directory."
+  (interactive)
+  (let ((dir (expand-file-name default-directory)))
+    (start-process "gnome-terminal" nil "gnome-terminal" "--working-directory" dir)))
+
+(map! :leader
+      :desc "Open Gnome Terminal"
+      "o g" #'open-gnome-terminal-here)
+
+(defun open-nautilus-here ()
+  "Open a nautilus window in the current directory."
+  (interactive)
+  (let ((dir (expand-file-name default-directory)))
+    (start-process "nautilus" nil "nautilus" dir)))
+
+(map! :leader
+      :desc "Open Nautilus"
+      "o n" #'open-nautilus-here)
+
 ;;; ========================================================================
 ;;; R/ESS CONFIGURATION
 ;;; ========================================================================
