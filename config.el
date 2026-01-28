@@ -516,48 +516,58 @@
 
 (use-package! gptel
   :config
-  (setq gptel-default-mode 'org-mode
-        gptel-model 'google/gemini-2.0-flash-001)
-  ;; OpenRouter (default)
+  ;; Set both backend and model together for OpenRouter
   (setq gptel-backend
         (gptel-make-openai "OpenRouter"
           :host "openrouter.ai"
           :endpoint "/api/v1/chat/completions"
           :stream t
-          :key (lambda ()
-                 (or (getenv "OPENROUTER_API_KEY")
-                     (auth-source-pick-first-password :host "openrouter.ai")
-                     (user-error "Set OPENROUTER_API_KEY or auth-source for openrouter.ai")))
-          :models '("google/gemini-2.0-flash-001"
-                    "anthropic/claude-sonnet-4.5"
-                    "openai/gpt-5"
-                    "google/gemini-2.5-flash")))
-  ;; OpenAI
+          :key #'gptel-api-key-from-auth-source  ; Use default auth-source lookup
+          :models '(google/gemini-2.0-flash-001
+                    anthropic/claude-sonnet-4.5
+                    openai/gpt-5
+                    google/gemini-2.5-flash))
+        gptel-model 'google/gemini-2.0-flash-001
+        gptel-default-mode 'org-mode)
+  
+  ;; Register other backends (they'll be available in the menu)
   (gptel-make-openai "ChatGPT"
     :host "api.openai.com"
     :endpoint "/v1/chat/completions"
     :stream t
-    :key (lambda ()
-           (or (getenv "OPENAI_API_KEY")
-               (auth-source-pick-first-password :host "api.openai.com")
-               (user-error "Set OPENAI_API_KEY or auth-source for api.openai.com")))
-    :models '("gpt-5" "gpt-4o" "gpt-4o-mini" "o4-mini"))
-  ;; Anthropic
+    :key #'gptel-api-key-from-auth-source
+    :models '(gpt-5 gpt-4o gpt-4o-mini o4-mini))
+  
   (gptel-make-anthropic "Claude"
     :stream t
-    :key (lambda ()
-           (or (getenv "ANTHROPIC_API_KEY")
-               (auth-source-pick-first-password :host "api.anthropic.com")
-               (user-error "Set ANTHROPIC_API_KEY or auth-source for api.anthropic.com")))
-    :models '(claude-3-7-sonnet-20250219 claude-3-5-haiku-20241022 claude-3-opus-20240229))
-  ;; Gemini
+    :key #'gptel-api-key-from-auth-source
+    :models '(claude-3-7-sonnet-20250219 
+              claude-3-5-haiku-20241022 
+              claude-3-opus-20240229))
+  
   (gptel-make-gemini "Gemini"
     :stream t
-    :key (lambda ()
-           (or (getenv "GEMINI_API_KEY")
-               (auth-source-pick-first-password :host "generativelanguage.googleapis.com")
-               (user-error "Set GEMINI_API_KEY or auth-source for generativelanguage.googleapis.com")))))
-
+    :key #'gptel-api-key-from-auth-source)
+  
+  ;; Mode-specific directives
+  (setq gptel-directives
+        '((default . "You are a helpful assistant.")
+          (python-mode . "You are a Python programming assistant. Provide code without markdown formatting or code fences. Focus on clean, idiomatic Python code with brief explanations.")
+          (python-ts-mode . "You are a Python programming assistant. Provide code without markdown formatting or code fences. Focus on clean, idiomatic Python code with brief explanations.")
+          (ess-r-mode . "You are an R programming assistant. Provide code without markdown formatting or code fences. Focus on clean, idiomatic R code following tidyverse conventions where appropriate.")))
+  
+  ;; Custom helper functions
+  (defun my/gptel-explain-code ()
+    "Ask gptel to explain the selected code."
+    (interactive)
+    (let ((gptel-directives '((default . "Explain this code concisely without repeating it back to me."))))
+      (gptel-send)))
+  
+  (defun my/gptel-optimize-code ()
+    "Ask gptel to optimize the selected code."
+    (interactive)
+    (let ((gptel-directives '((default . "Optimize this code for performance and readability. Provide only the improved code without markdown formatting."))))
+      (gptel-send))))
 ;;; ========================================================================
 ;;; PYTHON DEVELOPMENT
 ;;; ========================================================================
