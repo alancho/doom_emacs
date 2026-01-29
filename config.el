@@ -523,11 +523,13 @@
           :endpoint "/api/v1/chat/completions"
           :stream t
           :key #'gptel-api-key-from-auth-source  ; Use default auth-source lookup
-          :models '(google/gemini-2.0-flash-001
+          :models '(google/gemini-3-flash-preview
+                    google/gemini-2.0-flash-001
                     anthropic/claude-sonnet-4.5
+                    anthropic/claude-sonnet-3.7
                     openai/gpt-5
                     google/gemini-2.5-flash))
-        gptel-model 'google/gemini-2.0-flash-001
+        gptel-model 'google/gemini-3-flash-preview
         gptel-default-mode 'org-mode)
   
   ;; Register other backends (they'll be available in the menu)
