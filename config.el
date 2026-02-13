@@ -52,6 +52,30 @@
 (setq tab-always-indent 'complete)
 ;; Show completion UI in minibuffer (via consult), not popups
 
+;; Persistent data & Recentf configuration
+;; We use setq! and stable paths to bypass Nix versioned .local directories
+(setq! recentf-save-file (expand-file-name "recentf" "~/.config/emacs/.local/cache/")
+       savehist-file (expand-file-name "savehist" "~/.config/emacs/.local/cache/")
+       saveplace-file (expand-file-name "saveplace" "~/.config/emacs/.local/cache/")
+       undo-fu-session-directory (expand-file-name "undo-fu-session/" "~/.config/emacs/.local/cache/")
+       undo-tree-history-directory (expand-file-name "undo-tree-hist/" "~/.config/emacs/.local/cache/"))
+
+(after! recentf
+  (setq recentf-max-saved-items 1000
+        recentf-auto-cleanup 'never) ; Prevent wiping files if they are temporarily away
+  (run-with-idle-timer 600 t #'recentf-save-list)
+  ;; Stop Doom from cleaning up on exit, which can erase files on unmounted drives/Dropbox
+  (remove-hook 'kill-emacs-hook #'recentf-cleanup)
+  (add-to-list 'recentf-exclude "TAGS$") ; Ignore TAGS files in recent list
+  (recentf-load-list))
+
+(after! projectile
+  (setq projectile-known-projects-file (expand-file-name "projectile/projects.eld" "~/.config/emacs/.local/cache/"))
+  (add-to-list 'projectile-globally-ignored-files "TAGS")) ; Ignore TAGS files in projectile
+
+;; Ensure smartparens and paren highlighting are active
+(smartparens-global-mode 1)
+(show-paren-mode 1)
 
 ;; Performance optimizations
 (setq gc-cons-threshold 100000000) ;; Increase garbage collection threshold
@@ -360,7 +384,7 @@
   :config
   (setq org-support-shift-select 'always
         org-return-follows-link t
-        org-hide-emphasis-markers t
+        org-hide-emphasis-markers nil
         org-level-color-stars-only nil
         org-replace-disputed-keys t
         org-image-actual-width '(500)
