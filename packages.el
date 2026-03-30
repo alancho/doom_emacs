@@ -50,6 +50,8 @@
 ;(unpin! t)
 
 (package! unfill)
+;; (package! denote)
+;; (package! citar-denote)
 
 ;; Sólo para que coloree las citas cuando escribo en Rmarkdown
 (package! pandoc-mode)
@@ -65,8 +67,8 @@
 ;; Creo que ya aprendí a formatear por mí mismo
 ;; (package! org-format :recipe (:host github :repo "chrisbarrett/nursery" :files ("lisp/*.el")))
 
-;; ;; Lo deshabilito para que denote-dired-mode funcione correctamente
-;; (package! diredfl :disable t)
+;; Lo deshabilito para que denote-dired-mode funcione correctamente
+(package! diredfl :disable t)
 
 ;; (package! poly-R :disable t)
 ;; (package! polymode :disable t)
@@ -93,7 +95,7 @@
 ;; (package! claudemacs
 ;;   :recipe (:host github :repo "cpoile/claudemacs"))
 
-;; (package! consult-notes)
+;; (package! consult-denote)
 
 ;; ;; Volvamos a testear copilot
 ;; (package! copilot

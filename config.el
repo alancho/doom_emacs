@@ -52,26 +52,35 @@
 (setq tab-always-indent 'complete)
 ;; Show completion UI in minibuffer (via consult), not popups
 
-;; Persistent data & Recentf configuration
-;; We use setq! and stable paths to bypass Nix versioned .local directories
-(setq! recentf-save-file (expand-file-name "recentf" "~/.config/emacs/.local/cache/")
-       savehist-file (expand-file-name "savehist" "~/.config/emacs/.local/cache/")
-       saveplace-file (expand-file-name "saveplace" "~/.config/emacs/.local/cache/")
-       undo-fu-session-directory (expand-file-name "undo-fu-session/" "~/.config/emacs/.local/cache/")
-       undo-tree-history-directory (expand-file-name "undo-tree-hist/" "~/.config/emacs/.local/cache/"))
+;; ;; Persistent data & Recentf configuration
+;; ;; We use setq! and stable paths to bypass Nix versioned .local directories
+;; (setq! recentf-save-file (expand-file-name "recentf" "~/.config/emacs/.local/cache/")
+;;        savehist-file (expand-file-name "savehist" "~/.config/emacs/.local/cache/")
+;;        saveplace-file (expand-file-name "saveplace" "~/.config/emacs/.local/cache/")
+;;        undo-fu-session-directory (expand-file-name "undo-fu-session/" "~/.config/emacs/.local/cache/")
+;;        undo-tree-history-directory (expand-file-name "undo-tree-hist/" "~/.config/emacs/.local/cache/"))
+
+;; (after! recentf
+;;   (setq recentf-max-saved-items 1000
+;;         recentf-auto-cleanup 'never) ; Prevent wiping files if they are temporarily away
+;;   (run-with-idle-timer 600 t #'recentf-save-list)
+;;   ;; Stop Doom from cleaning up on exit, which can erase files on unmounted drives/Dropbox
+;;   (remove-hook 'kill-emacs-hook #'recentf-cleanup)
+;;   (add-to-list 'recentf-exclude "TAGS$") ; Ignore TAGS files in recent list
+;;   (recentf-load-list))
 
 (after! recentf
-  (setq recentf-max-saved-items 1000
-        recentf-auto-cleanup 'never) ; Prevent wiping files if they are temporarily away
-  (run-with-idle-timer 600 t #'recentf-save-list)
-  ;; Stop Doom from cleaning up on exit, which can erase files on unmounted drives/Dropbox
-  (remove-hook 'kill-emacs-hook #'recentf-cleanup)
-  (add-to-list 'recentf-exclude "TAGS$") ; Ignore TAGS files in recent list
-  (recentf-load-list))
+  (add-to-list 'recentf-exclude "^/ssh:")
+  (add-to-list 'recentf-exclude "^/scp:"))
 
 (after! projectile
   (setq projectile-known-projects-file (expand-file-name "projectile/projects.eld" "~/.config/emacs/.local/cache/"))
+  (setq projectile-enable-caching nil)
   (add-to-list 'projectile-globally-ignored-files "TAGS")) ; Ignore TAGS files in projectile
+
+(after! projectile
+  (setq projectile-ignored-project-function
+        (lambda (path) (file-remote-p path))))
 
 ;; Ensure smartparens and paren highlighting are active
 (smartparens-global-mode 1)
@@ -105,7 +114,7 @@
 ;; Custom ripgrep for org notes
 (defun my-ripgrep-fixed-directory (&optional initial-input)
   (interactive)
-  (consult-ripgrep "~/Dropbox/org" initial-input))
+  (consult-ripgrep "~/Dropbox/denotes" initial-input))
 
 (map! :leader
       :desc "Ripgrep org notes"
@@ -380,6 +389,14 @@
 
 (setq org-directory "~/Dropbox/org")
 
+;; (setq org-capture-templates
+;;       '(("t" "Personal todo" entry
+;;          (file+headline (lambda () (denote-journal-extras-path-to-new-or-existing-entry)) "Tasks")
+;;          "* TODO %U %?\n%i\n%a" :prepend t)
+;;         ("n" "Personal note" entry
+;;          (file+headline (lambda () (denote-journal-extras-path-to-new-or-existing-entry)) "Notes")
+;;          "* %U %?\n%i\n%a" :prepend t)))
+
 (use-package! org
   :config
   (setq org-support-shift-select 'always
@@ -529,10 +546,64 @@
 (setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
        org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
        citar-library-paths '("~/Dropbox/Papers/")
-       citar-notes-paths '("~/Dropbox/notes/"))
+       citar-notes-paths '("~/Dropbox/denotes/"))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
+
+;; (use-package! denote
+;;   :config
+;;   (setq denote-directory (expand-file-name "~/Dropbox/denotes/"))
+;;   (setq denote-known-keywords '("moc" "mos" "mor"))
+;;   (setq denote-infer-keywords t)
+;;   (setq denote-sort-keywords t)
+;;   (setq denote-prompts '(title keywords signature))
+;;   (setq denote-excluded-directories-regexp nil)
+;;   (setq denote-excluded-keywords-regexp nil)
+;;   (setq denote-date-prompt-use-org-read-date t)
+;;   (setq denote-backlinks-show-context t)
+;;   (setq denote-journal-extras-title-format 'day-date-month-year)
+;;   (setq denote-journal-extras-directory nil)
+;;   (setq denote-dired-directories (list denote-directory))
+;;   :hook
+;;   (dired-mode . denote-dired-mode-in-directories)
+;;   :bind
+;;   (("C-c n d n" . denote-create-note)
+;;    ("C-c n d f" . denote-open-or-create)
+;;    ("C-c n d j" . denote-journal-extras-new-or-existing-entry)
+;;    ("C-c n d i" . denote-link-or-create)
+;;    ("C-c n d I" . denote-link-insert-links-matching-regexp)
+;;    ("C-c n d l" . denote-find-link)
+;;    ("C-c n d b" . denote-find-backlink)
+;;    ("C-c n d D" . denote-org-dblock-insert-links)
+;;    ("C-c n d r" . denote-rename-file-using-front-matter)
+;;    ("C-c n d R" . denote-rename-file)
+;;    ("C-c n d k" . denote-keywords-add)
+;;    ("C-c n d K" . denote-keywords-remove)))
+
+;; (use-package! citar-denote
+;;   :after denote
+;;   :init
+;;   (citar-denote-mode)
+;;   :config
+;;   (setq citar-denote-title-format "author-year-title")
+;;   (setq citar-denote-subdir nil)
+;;   (setq citar-denote-title-format-authors 2)
+;;   :bind
+;;   (("C-c d c" . citar-denote-open-reference-entry)))
+
+;; (after! consult-notes
+;;   (consult-notes-denote-mode))
+
+;; (use-package! consult-denote
+;;   :config
+;;   (consult-denote-mode 1))
+
+;; (defun open-my-denote-directory ()
+;;   (interactive)
+;;   (find-file "~/Dropbox/denotes"))
+
+;; (global-set-key (kbd "<f12>") 'open-my-denote-directory)
 
 ;;; ========================================================================
 ;;; AI/LLM CONFIGURATION
@@ -550,6 +621,8 @@
           :models '(google/gemini-3-flash-preview
                     google/gemini-2.0-flash-001
                     anthropic/claude-sonnet-4.5
+                    anthropic/claude-sonnet-4.6
+                    anthropic/claude-haiku-4.5
                     anthropic/claude-sonnet-3.7
                     openai/gpt-5
                     google/gemini-2.5-flash))
