@@ -9,7 +9,7 @@ title: ${1:title}
 author: Alan Severini
 institute: "Ecofisiología, INTA Pergamino"
 date: "\`r Sys.Date()\`"
-bibliography: /home/alancho/Dropbox/org/roam/literature/library.bib
+bibliography: /home/alancho/Dropbox/Papers/library.bib
 csl: /home/alancho/Dropbox/templates/csl/field-crops-research.csl
 output:
   bookdown::word_document2:
