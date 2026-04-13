@@ -868,7 +868,7 @@ Opens REPL on first call if not running, sends code on subsequent calls."
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "00:30:00"))
                (job-name (read-string "Job name: " (concat base-name "-master")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r nlopt gcc/12.3.0"))
+               (modules (read-string "Modules (space-separated): " "r/4.4.2-gfbf-2024a"))
                (qos (read-string "QOS: " "normal"))
                (output-file (concat base-name "_%j.out"))
                (error-file (concat base-name "_%j.err")))
@@ -883,7 +883,7 @@ Opens REPL on first call if not running, sends code on subsequent calls."
                (time-limit (read-string "Time limit per task (HH:MM:SS): " "01:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-array")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r nlopt gcc/12.3.0"))
+               (modules (read-string "Modules (space-separated): " "r/4.4.2-gfbf-2024a"))
                (qos (read-string "QOS: " "normal"))
                (output-file (concat base-name "_%A_%a.out"))
                (error-file (concat base-name "_%A_%a.err")))
@@ -897,7 +897,7 @@ Opens REPL on first call if not running, sends code on subsequent calls."
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "04:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-compute")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r/4.5.1"))
+               (modules (read-string "Modules (space-separated): " "r/4.4.2-gfbf-2024a"))
                (qos (read-string "QOS: " "normal"))
                (memory (read-string "Memory (e.g., 4G, 16G, 32G): " "16G"))
                (cpus-per-task (read-string "CPUs per task: " "4"))
@@ -952,7 +952,7 @@ echo \"CPUs per task: %s\"
 echo \"Memory: %s\"
 
 # Run R script with arguments
-srun-Rscript %s%s
+Rscript %s%s
 
 echo \"Job finished at: $(date)\"
 "
