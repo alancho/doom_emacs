@@ -897,7 +897,7 @@ Opens REPL on first call if not running, sends code on subsequent calls."
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "04:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-compute")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r nlopt gcc/12.3.0"))
+               (modules (read-string "Modules (space-separated): " "r/4.5.1"))
                (qos (read-string "QOS: " "normal"))
                (memory (read-string "Memory (e.g., 4G, 16G, 32G): " "16G"))
                (cpus-per-task (read-string "CPUs per task: " "4"))
@@ -952,7 +952,7 @@ echo \"CPUs per task: %s\"
 echo \"Memory: %s\"
 
 # Run R script with arguments
-Rscript %s%s
+srun-Rscript %s%s
 
 echo \"Job finished at: $(date)\"
 "
