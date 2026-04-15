@@ -837,30 +837,31 @@ Opens REPL on first call if not running, sends code on subsequent calls."
                            (replace-regexp-in-string "\\\\" "\\\\\\\\" file-name))))
       (ess-eval-linewise command))))
 
-(defun create-slurm-r-script ()
-  "Create a Slurm script for the current R file with predefined scenarios."
+(defun my/create-slurm-script ()
+  "Create a Slurm script for the current R or Python file with predefined scenarios."
   (interactive)
   (let* ((current-file (buffer-file-name))
          (current-dir (file-name-directory current-file))
-         (r-script-name (file-name-nondirectory current-file))
-         (base-name (file-name-sans-extension r-script-name)))
+         (script-name (file-name-nondirectory current-file))
+         (base-name (file-name-sans-extension script-name)))
 
-    ;; Check if current buffer is an R file
-    (unless (and current-file (string-match "\\.R$" current-file))
-      (error "Current buffer is not an R file"))
+    ;; Check if current buffer is an R or Python file
+    (unless (and current-file (string-match "\\.\\(R\\|r\\|py\\)$" current-file))
+      (error "Current buffer is not an R or Python file"))
 
-    ;; Select scenario
-    (let ((scenario (completing-read "Select scenario: "
-                                     '(("master" . "Minimal resources, single job")
-                                       ("array" . "Array job with 1 CPU each")
-                                       ("compute" . "High-resource single job"))
-                                     nil t))
-          (slurm-script-name nil)
-          (slurm-script-path nil))
-
-      ;; Set script name based on scenario
-      (setq slurm-script-name (concat scenario ".slurm"))
-      (setq slurm-script-path (concat current-dir slurm-script-name))
+    ;; Detect language and set runner + default modules accordingly
+    (let* ((language (if (string-match "\\.py$" current-file) "Python" "R"))
+           (default-runner (if (string= language "Python") "uv run python" "Rscript"))
+           (default-modules (if (string= language "Python")
+                                ""
+                              "r/4.4.2-gfbf-2024a nlopt/2.7.1-gcccore-13.3.0 "))
+           (scenario (completing-read "Select scenario: "
+                                      '(("master" . "Minimal resources, single job")
+                                        ("array" . "Array job with 1 CPU each")
+                                        ("compute" . "High-resource single job"))
+                                      nil t))
+           (slurm-script-name (concat scenario ".slurm"))
+           (slurm-script-path (concat current-dir slurm-script-name)))
 
       (cond
        ;; MASTER scenario: minimal resources, time as only argument
@@ -868,14 +869,14 @@ Opens REPL on first call if not running, sends code on subsequent calls."
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "00:30:00"))
                (job-name (read-string "Job name: " (concat base-name "-master")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r/4.4.2-gfbf-2024a"))
+               (modules (read-string "Modules (space-separated): " default-modules))
                (qos (read-string "QOS: " "normal"))
                (output-file (concat base-name "_%j.out"))
                (error-file (concat base-name "_%j.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
                                        time-limit partition qos nil "1" "1G" modules
-                                       r-script-name time-limit nil nil)))
+                                       script-name time-limit nil nil default-runner)))
 
        ;; ARRAY scenario: array jobs, array ID as only argument
        ((string= scenario "array")
@@ -883,21 +884,21 @@ Opens REPL on first call if not running, sends code on subsequent calls."
                (time-limit (read-string "Time limit per task (HH:MM:SS): " "01:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-array")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r/4.4.2-gfbf-2024a"))
+               (modules (read-string "Modules (space-separated): " default-modules))
                (qos (read-string "QOS: " "normal"))
                (output-file (concat base-name "_%A_%a.out"))
                (error-file (concat base-name "_%A_%a.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
                                        time-limit partition qos array-range "1" "2G" modules
-                                       r-script-name nil array-range nil)))
+                                       script-name nil array-range nil default-runner)))
 
        ;; COMPUTE scenario: high resources, custom arguments
        ((string= scenario "compute")
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "04:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-compute")))
                (partition (read-string "Partition: " "general"))
-               (modules (read-string "Modules (space-separated): " "r/4.4.2-gfbf-2024a"))
+               (modules (read-string "Modules (space-separated): " default-modules))
                (qos (read-string "QOS: " "normal"))
                (memory (read-string "Memory (e.g., 4G, 16G, 32G): " "16G"))
                (cpus-per-task (read-string "CPUs per task: " "4"))
@@ -906,13 +907,13 @@ Opens REPL on first call if not running, sends code on subsequent calls."
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
                                        time-limit partition qos nil cpus-per-task memory modules
-                                       r-script-name nil nil cpus-per-task))))
+                                       script-name nil nil cpus-per-task default-runner))))
 
       (message "Created %s Slurm script: %s" scenario slurm-script-name))))
 
 (defun create-slurm-script-content (script-path job-name output-file error-file
                                                 time-limit partition qos array-range cpus-per-task
-                                                memory modules r-script-name time-arg array-arg cpu-arg)
+                                                memory modules script-name time-arg array-arg cpu-arg runner)
   "Helper function to create the actual Slurm script content."
   ;; Generate module load commands
   (let ((module-lines (if (or (not modules) (string-empty-p modules))
@@ -921,11 +922,11 @@ Opens REPL on first call if not running, sends code on subsequent calls."
                                      (format "module load %s" module))
                                    (split-string modules)
                                    "\n")))
-        ;; Build R script arguments
-        (r-args (concat
-                 (if time-arg time-arg "")
-                 (if array-arg " $SLURM_ARRAY_TASK_ID" "")
-                 (if cpu-arg " $SLURM_CPUS_PER_TASK" ""))))
+        ;; Build script arguments
+        (script-args (concat
+                      (if time-arg time-arg "")
+                      (if array-arg " $SLURM_ARRAY_TASK_ID" "")
+                      (if cpu-arg " $SLURM_CPUS_PER_TASK" ""))))
 
     ;; Create Slurm script content
     (let ((slurm-content
@@ -951,8 +952,8 @@ echo \"QOS: %s\"
 echo \"CPUs per task: %s\"
 echo \"Memory: %s\"
 
-# Run R script with arguments
-Rscript %s%s
+# Run script
+%s %s%s
 
 echo \"Job finished at: $(date)\"
 "
@@ -969,8 +970,9 @@ echo \"Job finished at: $(date)\"
                    qos
                    cpus-per-task
                    memory
-                   r-script-name
-                   (if (string-empty-p r-args) "" (concat " " r-args)))))
+                   runner
+                   script-name
+                   (if (string-empty-p script-args) "" (concat " " script-args)))))
 
       ;; Write Slurm script to file
       (with-temp-file script-path
