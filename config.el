@@ -1003,9 +1003,10 @@ echo \"Job finished at: $(date)\"
          (project-name (read-string "Project name: "))
          (project-dir (read-directory-name "Create in directory: "))
          (deps (if (or (string= project-type "Python") (string= project-type "R+Python"))
-                     (read-string "Initial Python dependencies (comma or space separated): " "jupyter ")
-                   ""))  ;; Skip prompt for pure R projects
+                   (read-string "Initial Python dependencies (comma or space separated): " "jupyter ")
+                 ""))
          (git-init (y-or-n-p "Initialize a Git repository? "))
+         (hpc-setup (y-or-n-p "Generate HPC setup files (rsyncignore + setup-hpc.sh)? "))
          (default-directory (expand-file-name project-dir))
          (project-path (expand-file-name project-name project-dir))
          (envrc-path (expand-file-name ".envrc" project-path))
@@ -1014,12 +1015,14 @@ echo \"Job finished at: $(date)\"
          (presentation-dest (expand-file-name "slides/presentation.org" project-path))
          (rscript-path (expand-file-name "010.R" project-path))
          (gitignore-path (expand-file-name ".gitignore" project-path))
-                    (deps-list (let ((split-deps (split-string deps "[ ,]+" t)))
-                       (if (and (or (string= project-type "Python") (string= project-type "R+Python")) 
-                                (not (member "jupyter" split-deps)))
-                           (cons "jupyter" split-deps)
-                         split-deps)))
-          (python-file-path (expand-file-name "010.py" project-path)))
+         (rsyncignore-path (expand-file-name "rsyncignore" project-path))
+         (setup-hpc-path (expand-file-name "setup-hpc.sh" project-path))
+         (deps-list (let ((split-deps (split-string deps "[ ,]+" t)))
+                      (if (and (or (string= project-type "Python") (string= project-type "R+Python"))
+                               (not (member "jupyter" split-deps)))
+                          (cons "jupyter" split-deps)
+                        split-deps)))
+         (python-file-path (expand-file-name "010.py" project-path)))
 
     ;; Create base directory
     (unless (file-directory-p project-path)
@@ -1033,7 +1036,10 @@ echo \"Job finished at: $(date)\"
     (when (file-exists-p presentation-src)
       (copy-file presentation-src presentation-dest t))
 
-    ;; Create .gitignore
+    ;; Create .gitignore (whitelist: track only explicit types)
+    ;; !*.lock  → tracks renv.lock and uv.lock
+    ;; !*.slurm → tracks SLURM job scripts
+    ;; !rsyncignore → tracks the rsync exclude file
     (unless (file-exists-p gitignore-path)
       (with-temp-file gitignore-path
         (insert (mapconcat #'identity
@@ -1053,6 +1059,7 @@ echo \"Job finished at: $(date)\"
                              "!*.yml"
                              "!*.yaml"
                              "!*.toml"
+                             "!*.lock"
                              "!*.ini"
                              "!*.cfg"
                              "!*.conf"
@@ -1061,68 +1068,172 @@ echo \"Job finished at: $(date)\"
                              "!*.sh"
                              "!*.bash"
                              "!*.zsh"
-                             "!*.qmd")
+                             "!*.qmd"
+                             "!*.slurm"
+                             "!rsyncignore")
                            "\n"))))
 
-     ;; Branch by project type
-     (pcase project-type
-       ("R"
-        (message "🧬 Setting up R project...")
-        (unless (file-exists-p rscript-path)
-          (with-temp-file rscript-path
-            (insert "require(tidyverse)\n"))))
+    ;; Create rsyncignore — used by tobunya() to exclude OS-compiled artefacts
+    (when hpc-setup
+      (with-temp-file rsyncignore-path
+        (insert
+         "# rsyncignore — patterns excluded when pushing laptop -> HPC\n"
+         "# Used automatically by tobunya() when this file exists in the project root.\n"
+         "\n"
+         "# Git history\n"
+         ".git/\n"
+         "\n"
+         "# R compiled libraries — OS-specific, rebuilt on HPC via renv::restore()\n"
+         "# renv.lock and renv/activate.R are NOT excluded (needed for restore)\n"
+         "renv/library/\n"
+         "renv/staging/\n"
+         "renv/python/\n"
+         "\n"
+         "# Python virtual environment — rebuilt on HPC via uv sync\n"
+         ".venv/\n"
+         "\n"
+         "# Outputs — generated on HPC, pull back with frombunya-outputs\n"
+         "outputs/\n"
+         "\n"
+         "# SLURM log files (generated on HPC)\n"
+         "*.out\n"
+         "*.err\n"
+         "\n"
+         "# R session artefacts\n"
+         ".Rhistory\n"
+         ".RData\n"
+         "\n"
+         "# Python cache\n"
+         "__pycache__/\n"
+         "*.pyc\n"
+         "*.pyo\n")))
 
-       ((or "Python" "R+Python")
-        (when (string= project-type "R+Python")
-          (message "🧬 Setting up R components...")
-          (unless (file-exists-p rscript-path)
-            (with-temp-file rscript-path
-              (insert "require(tidyverse)\n"))))
+    ;; Create setup-hpc.sh — one-command environment restore on the HPC
+    (when hpc-setup
+      (with-temp-file setup-hpc-path
+        (insert
+         "#!/bin/bash\n"
+         (format "# setup-hpc.sh: Reproducible environment setup for %s on Bunya HPC.\n" project-name)
+         "# Run once after cloning or syncing the project:\n"
+         "#   bash setup-hpc.sh\n"
+         "\n"
+         "set -euo pipefail\n"
+         "\n"
+         "PROJECT_DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\n"
+         "echo \"Project root: $PROJECT_DIR\"\n"
+         "cd \"$PROJECT_DIR\"\n"
+         "\n"
+         (if (member project-type '("R" "R+Python"))
+             (concat
+              "# ── R modules ─────────────────────────────────────────────────────────────\n"
+              "# Adjust versions as needed — check available versions with: module spider <name>\n"
+              "R_MODULES=(\n"
+              "  r/4.4.2-gfbf-2024a\n"
+              "  # CMake/3.29.3-GCCcore-13.3.0  # needed by: nloptr, lme4\n"
+              "  # gsl/2.8-gcc-13.3.0            # needed by: gsl, energy, metrica\n"
+              "  # NLopt/2.7.1-GCCcore-13.3.0    # needed by: nloptr\n"
+              ")\n"
+              "module load \"${R_MODULES[@]}\"\n"
+              "echo \"Active modules:\"; module list 2>&1\n"
+              "\n"
+              "# ── R packages via renv ────────────────────────────────────────────────────\n"
+              "# renv::restore() rebuilds the exact package versions from renv.lock\n"
+              "echo \"Restoring R packages from renv.lock ...\"\n"
+              "Rscript - <<'REOF'\n"
+              "if (!requireNamespace(\"renv\", quietly = TRUE))\n"
+              "  install.packages(\"renv\", repos = \"https://cloud.r-project.org\")\n"
+              "renv::restore(prompt = FALSE)\n"
+              "REOF\n"
+              "\n")
+           "")
+         (if (member project-type '("Python" "R+Python"))
+             (concat
+              "# ── Python packages via uv ───────────────────────────────────────────────\n"
+              "export PATH=\"$HOME/.local/bin:$PATH\"\n"
+              "export UV_CACHE_DIR=\"${SCRATCH:-/scratch/user/$USER}/uv-cache\"\n"
+              "mkdir -p \"$UV_CACHE_DIR\"\n"
+              "\n"
+              "if ! command -v uv &>/dev/null; then\n"
+              "  echo \"uv not found — installing...\"\n"
+              "  curl -LsSf https://astral.sh/uv/install.sh | sh\n"
+              "  export PATH=\"$HOME/.local/bin:$PATH\"\n"
+              "fi\n"
+              "\n"
+              "uv sync\n"
+              "\n")
+           "")
+         "echo \"\"\n"
+         "echo \"Setup complete.\"\n"))
+      (set-file-modes setup-hpc-path #o755))
 
-        (message "🐍 Setting up Python%s with uv..." 
-                 (if (string= project-type "R+Python") " components" ""))
-        
-        ;; Create empty initial Python file
-        (unless (file-exists-p python-file-path)
-          (with-temp-file python-file-path
-            (insert "")))
+    ;; Branch by project type
+    (pcase project-type
+      ("R"
+       (message "🧬 Setting up R project...")
+       (unless (file-exists-p rscript-path)
+         (with-temp-file rscript-path
+           (insert "require(tidyverse)\n")))
+       ;; Initialise renv: creates renv/, .Rprofile and renv.lock skeleton
+       ;; bare=TRUE skips the initial package scan; run renv::snapshot() after installing packages
+       (let ((default-directory project-path)
+             (renv-buf (get-buffer-create "*renv-init*")))
+         (with-current-buffer renv-buf (erase-buffer))
+         (display-buffer renv-buf)
+         (call-process "Rscript" nil renv-buf t "-e" "renv::init(bare = TRUE)")
+         (message "renv initialised — run renv::snapshot() after installing packages.")))
 
-        (let ((default-directory project-path))
-          ;; Initialize uv project
-          (unless (zerop (call-process "uv" nil "*uv-init*" t "init"))
-            (error "❌ Failed to run 'uv init' — check if uv is installed"))
+      ((or "Python" "R+Python")
+       (when (string= project-type "R+Python")
+         (message "🧬 Setting up R components...")
+         (unless (file-exists-p rscript-path)
+           (with-temp-file rscript-path
+             (insert "require(tidyverse)\n")))
+         ;; Initialise renv for the R component
+         (let ((default-directory project-path)
+               (renv-buf (get-buffer-create "*renv-init*")))
+           (with-current-buffer renv-buf (erase-buffer))
+           (display-buffer renv-buf)
+           (call-process "Rscript" nil renv-buf t "-e" "renv::init(bare = TRUE)")
+           (message "renv initialised — run renv::snapshot() after installing packages.")))
 
-          ;; Create .envrc for direnv
-          (with-temp-file envrc-path
-            (if (file-exists-p "~/.config/direnv/lib/use_uv.sh")
-                (insert "use uv\n")
-              (insert "if [ -d .venv ]; then\n  source .venv/bin/activate\nelse\n  uv sync && source .venv/bin/activate\nfi\n")))
+       (message "🐍 Setting up Python%s with uv..."
+                (if (string= project-type "R+Python") " components" ""))
 
-          ;; Allow direnv
-          (call-process "direnv" nil "*direnv-allow*" t "allow")
+       (unless (file-exists-p python-file-path)
+         (with-temp-file python-file-path
+           (insert "")))
 
-          ;; Install dependencies with live output
-          (when deps-list
-            (when (get-buffer "*uv-install*")
-              (kill-buffer "*uv-install*"))
-            (let ((uv-buffer (get-buffer-create "*uv-install*")))
-              (with-current-buffer uv-buffer
-                (erase-buffer)
-                (insert (format "📦 Installing Python dependencies in %s:\n\n" project-name)))
-              (display-buffer uv-buffer)
-              (dolist (pkg deps-list)
-                (with-current-buffer uv-buffer
-                  (insert (format "→ Running: uv add --project . %s\n\n" pkg)))
-                (let ((exit-code (call-process "uv" nil uv-buffer t "add" "--project" "." pkg)))
-                  (if (zerop exit-code)
-                      (with-current-buffer uv-buffer
-                        (insert (format "\n✅ Successfully added %s\n\n" pkg)))
-                    (with-current-buffer uv-buffer
-                      (insert (format "\n⚠️ Failed to add %s (exit code %s)\n\n"
-                                      pkg exit-code))))))
-              (with-current-buffer uv-buffer
-                (goto-char (point-max)))
-              (message "✅ Dependency installation complete — see *uv-install* buffer for details."))))))
+       (let ((default-directory project-path))
+         (unless (zerop (call-process "uv" nil "*uv-init*" t "init"))
+           (error "❌ Failed to run 'uv init' — check if uv is installed"))
+
+         (with-temp-file envrc-path
+           (if (file-exists-p "~/.config/direnv/lib/use_uv.sh")
+               (insert "use uv\n")
+             (insert "if [ -d .venv ]; then\n  source .venv/bin/activate\nelse\n  uv sync && source .venv/bin/activate\nfi\n")))
+
+         (call-process "direnv" nil "*direnv-allow*" t "allow")
+
+         (when deps-list
+           (when (get-buffer "*uv-install*")
+             (kill-buffer "*uv-install*"))
+           (let ((uv-buffer (get-buffer-create "*uv-install*")))
+             (with-current-buffer uv-buffer
+               (erase-buffer)
+               (insert (format "📦 Installing Python dependencies in %s:\n\n" project-name)))
+             (display-buffer uv-buffer)
+             (dolist (pkg deps-list)
+               (with-current-buffer uv-buffer
+                 (insert (format "→ Running: uv add --project . %s\n\n" pkg)))
+               (let ((exit-code (call-process "uv" nil uv-buffer t "add" "--project" "." pkg)))
+                 (if (zerop exit-code)
+                     (with-current-buffer uv-buffer
+                       (insert (format "\n✅ Successfully added %s\n\n" pkg)))
+                   (with-current-buffer uv-buffer
+                     (insert (format "\n⚠️ Failed to add %s (exit code %s)\n\n" pkg exit-code))))))
+             (with-current-buffer uv-buffer
+               (goto-char (point-max)))
+             (message "✅ Dependency installation complete — see *uv-install* buffer for details."))))))
 
     ;; Initialize Git if requested
     (when git-init
@@ -1139,14 +1250,15 @@ echo \"Job finished at: $(date)\"
     ;; Open in Dired
     (dired project-path)
 
-    (message "🎉 %s project '%s' ready at %s%s%s"
+    (message "🎉 %s project '%s' ready at %s%s%s%s"
              project-type
              project-name
              project-path
-              (if (and (or (string= project-type "Python") (string= project-type "R+Python")) deps-list)
-                  (format " with deps: [%s]" (string-join deps-list ", "))
-                "")
-             (if git-init " (Git initialized)" ""))))
+             (if (and (or (string= project-type "Python") (string= project-type "R+Python")) deps-list)
+                 (format " with deps: [%s]" (string-join deps-list ", "))
+               "")
+             (if git-init " (Git initialized)" "")
+             (if hpc-setup " (HPC files generated)" ""))))
 
 (defun my/format-for-logseq (beg end)
   "Convert Markdown headers and paragraphs to Logseq-style nested bullets.
