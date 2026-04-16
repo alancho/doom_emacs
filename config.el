@@ -756,6 +756,12 @@ Opens REPL on first call if not running, sends code on subsequent calls."
       (run-python nil nil t)
       (switch-to-buffer-other-window current-buffer))))
 
+(add-hook 'inferior-python-mode-hook
+          (lambda ()
+            (setq-local comint-scroll-to-bottom-on-input t
+                        comint-scroll-to-bottom-on-output t
+                        comint-move-point-for-output t)))
+
 (with-eval-after-load 'python
   ;; Use IPython as the Python shell interpreter
   ;; (setq python-shell-interpreter "ipython"
@@ -852,9 +858,19 @@ Opens REPL on first call if not running, sends code on subsequent calls."
     ;; Detect language and set runner + default modules accordingly
     (let* ((language (if (string-match "\\.py$" current-file) "Python" "R"))
            (default-runner (if (string= language "Python") "uv run python" "Rscript"))
-           (default-modules (if (string= language "Python")
-                                ""
-                              "r/4.4.2-gfbf-2024a nlopt/2.7.1-gcccore-13.3.0 "))
+           (gpu (y-or-n-p "Requires GPU? "))
+           (gpu-gres (when gpu
+                       (completing-read "GPU resource (gres): "
+                                        '("gpu:nvidia_a100_80gb_pcie_2g.20gb:1"  ; A100 MIG 20GB — best value (×12)
+                                          "gpu:l40:1"                             ; L40 48GB — good balance (×40)
+                                          "gpu:a100:1"                            ; A100 80GB — fast (×50)
+                                          "gpu:h100:1"                            ; H100 80GB — fastest, most expensive (×100)
+                                          "gpu:nvidia_a100_80gb_pcie_3g.40gb:1"  ; A100 MIG 40GB (×24)
+                                          "gpu:nvidia_a100_80gb_pcie_1g.10gb:1") ; A100 MIG 10GB — cheapest (×6)
+                                        nil nil nil nil "gpu:nvidia_a100_80gb_pcie_2g.20gb:1")))
+           (default-modules (concat
+                             (if (string= language "Python") "" "r/4.4.2-gfbf-2024a nlopt/2.7.1-gcccore-13.3.0 ")
+                             (if gpu "cuda/12.6.0 cudnn/9.5.0.50-cuda-12.6.0" "")))
            (scenario (completing-read "Select scenario: "
                                       '(("master" . "Minimal resources, single job")
                                         ("array" . "Array job with 1 CPU each")
@@ -868,38 +884,40 @@ Opens REPL on first call if not running, sends code on subsequent calls."
        ((string= scenario "master")
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "00:30:00"))
                (job-name (read-string "Job name: " (concat base-name "-master")))
-               (partition (read-string "Partition: " "general"))
+               (partition (read-string "Partition: " (if gpu "gpu_cuda" "general")))
                (modules (read-string "Modules (space-separated): " default-modules))
-               (qos (read-string "QOS: " "normal"))
+               (qos (read-string "QOS: " (if gpu "gpu" "normal")))
                (output-file (concat base-name "_%j.out"))
                (error-file (concat base-name "_%j.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
                                        time-limit partition qos nil "1" "1G" modules
-                                       script-name time-limit nil nil default-runner)))
+                                       script-name time-limit nil nil default-runner
+                                       gpu-gres)))
 
        ;; ARRAY scenario: array jobs, array ID as only argument
        ((string= scenario "array")
         (let* ((array-range (read-string "Array range: " "1-1000"))
                (time-limit (read-string "Time limit per task (HH:MM:SS): " "01:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-array")))
-               (partition (read-string "Partition: " "general"))
+               (partition (read-string "Partition: " (if gpu "gpu_cuda" "general")))
                (modules (read-string "Modules (space-separated): " default-modules))
-               (qos (read-string "QOS: " "normal"))
+               (qos (read-string "QOS: " (if gpu "gpu" "normal")))
                (output-file (concat base-name "_%A_%a.out"))
                (error-file (concat base-name "_%A_%a.err")))
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
                                        time-limit partition qos array-range "1" "2G" modules
-                                       script-name nil array-range nil default-runner)))
+                                       script-name nil array-range nil default-runner
+                                       gpu-gres)))
 
        ;; COMPUTE scenario: high resources, custom arguments
        ((string= scenario "compute")
         (let* ((time-limit (read-string "Time limit (HH:MM:SS): " "04:00:00"))
                (job-name (read-string "Job name: " (concat base-name "-compute")))
-               (partition (read-string "Partition: " "general"))
+               (partition (read-string "Partition: " (if gpu "gpu_cuda" "general")))
                (modules (read-string "Modules (space-separated): " default-modules))
-               (qos (read-string "QOS: " "normal"))
+               (qos (read-string "QOS: " (if gpu "gpu" "normal")))
                (memory (read-string "Memory (e.g., 4G, 16G, 32G): " "16G"))
                (cpus-per-task (read-string "CPUs per task: " "4"))
                (output-file (concat base-name "_%j.out"))
@@ -907,13 +925,15 @@ Opens REPL on first call if not running, sends code on subsequent calls."
 
           (create-slurm-script-content slurm-script-path job-name output-file error-file
                                        time-limit partition qos nil cpus-per-task memory modules
-                                       script-name nil nil cpus-per-task default-runner))))
+                                       script-name nil nil cpus-per-task default-runner
+                                       gpu-gres))))
 
       (message "Created %s Slurm script: %s" scenario slurm-script-name))))
 
 (defun create-slurm-script-content (script-path job-name output-file error-file
                                                 time-limit partition qos array-range cpus-per-task
-                                                memory modules script-name time-arg array-arg cpu-arg runner)
+                                                memory modules script-name time-arg array-arg cpu-arg runner
+                                                &optional gres)
   "Helper function to create the actual Slurm script content."
   ;; Generate module load commands
   (let ((module-lines (if (or (not modules) (string-empty-p modules))
@@ -937,7 +957,7 @@ Opens REPL on first call if not running, sends code on subsequent calls."
 #SBATCH --qos=%s%s
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=%s
-#SBATCH --mem=%s
+#SBATCH --mem=%s%s
 #SBATCH --account=a_qaafi_ccs
 
 # Load modules
@@ -964,6 +984,7 @@ echo \"Job finished at: $(date)\"
                    (if array-range (format "\n#SBATCH --array=%s" array-range) "")
                    cpus-per-task
                    memory
+                   (if gres (format "\n#SBATCH --gres=%s" gres) "")
                    module-lines
                    (if array-range "\necho \"Array task ID: $SLURM_ARRAY_TASK_ID\"" "")
                    time-limit
