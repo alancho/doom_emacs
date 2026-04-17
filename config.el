@@ -870,7 +870,7 @@ Opens REPL on first call if not running, sends code on subsequent calls."
                                         nil nil nil nil "gpu:nvidia_a100_80gb_pcie_2g.20gb:1")))
            (default-modules (concat
                              (if (string= language "Python") "" "r/4.4.2-gfbf-2024a nlopt/2.7.1-gcccore-13.3.0 ")
-                             (if gpu "cuda/12.6.0 cudnn/9.5.0.50-cuda-12.6.0" "")))
+                             (if gpu "cuda/12.6.0" "")))
            (scenario (completing-read "Select scenario: "
                                       '(("master" . "Minimal resources, single job")
                                         ("array" . "Array job with 1 CPU each")
@@ -946,7 +946,10 @@ Opens REPL on first call if not running, sends code on subsequent calls."
         (script-args (concat
                       (if time-arg time-arg "")
                       (if array-arg " $SLURM_ARRAY_TASK_ID" "")
-                      (if cpu-arg " $SLURM_CPUS_PER_TASK" ""))))
+                      ;; $SLURM_CPUS_PER_TASK only makes sense for R scripts
+                      (if (and cpu-arg (not (string-match-p "python" runner))) " $SLURM_CPUS_PER_TASK" "")
+                      ;; Pass --device cuda automatically for GPU Python jobs
+                      (if (and gres (string-match-p "python" runner)) " --device cuda" ""))))
 
     ;; Create Slurm script content
     (let ((slurm-content
