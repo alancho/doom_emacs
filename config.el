@@ -588,17 +588,6 @@
 (global-set-key (kbd "<f7>") #'unfill-toggle)
 (global-set-key (kbd "<f8>") #'org-edit-special)
 
-;; Aliases
-(set-eshell-alias! "us" "sudo apt-get update && sudo apt-get upgrade && sudo apt-get clean"
-                   "up" "uv sync"
-                   "ll" "ls -lha"
-                   "bunya" "ssh uqasever@bunya.rcc.uq.edu.au"
-                   "tobunya" "rsync -avz --exclude '.git' --exclude '.*' $1 uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$2"
-                   "frombunya" "rsync -avz --include '$3' uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$1 $2"
-                   "ur" "r update-r-packages.R"
-                   "un" "unison sandisco"
-                   "ud" "doom sync && doom upgrade"
-                   "ds" "dropbox status")
 ;;; ========================================================================
 ;;; NOTES & BIBLIOGRAPHY
 ;;; ========================================================================
