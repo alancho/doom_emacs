@@ -1157,12 +1157,6 @@ echo \"Job finished at: $(date)\"
          "# Git history\n"
          ".git/\n"
          "\n"
-         "# R compiled libraries — OS-specific, rebuilt on HPC via renv::restore()\n"
-         "# renv.lock and renv/activate.R are NOT excluded (needed for restore)\n"
-         "renv/library/\n"
-         "renv/staging/\n"
-         "renv/python/\n"
-         "\n"
          "# Python virtual environment — rebuilt on HPC via uv sync\n"
          ".venv/\n"
          "\n"
@@ -1209,15 +1203,6 @@ echo \"Job finished at: $(date)\"
               ")\n"
               "module load \"${R_MODULES[@]}\"\n"
               "echo \"Active modules:\"; module list 2>&1\n"
-              "\n"
-              "# ── R packages via renv ────────────────────────────────────────────────────\n"
-              "# renv::restore() rebuilds the exact package versions from renv.lock\n"
-              "echo \"Restoring R packages from renv.lock ...\"\n"
-              "Rscript - <<'REOF'\n"
-              "if (!requireNamespace(\"renv\", quietly = TRUE))\n"
-              "  install.packages(\"renv\", repos = \"https://cloud.r-project.org\")\n"
-              "renv::restore(prompt = FALSE)\n"
-              "REOF\n"
               "\n")
            "")
          (if (member project-type '("Python" "R+Python"))
@@ -1247,29 +1232,14 @@ echo \"Job finished at: $(date)\"
        (message "🧬 Setting up R project...")
        (unless (file-exists-p rscript-path)
          (with-temp-file rscript-path
-           (insert "require(tidyverse)\n")))
-       ;; Initialise renv: creates renv/, .Rprofile and renv.lock skeleton
-       ;; bare=TRUE skips the initial package scan; run renv::snapshot() after installing packages
-       (let ((default-directory project-path)
-             (renv-buf (get-buffer-create "*renv-init*")))
-         (with-current-buffer renv-buf (erase-buffer))
-         (display-buffer renv-buf)
-         (call-process "Rscript" nil renv-buf t "-e" "renv::init(bare = TRUE)")
-         (message "renv initialised — run renv::snapshot() after installing packages.")))
+           (insert "require(tidyverse)\n"))))
 
       ((or "Python" "R+Python")
        (when (string= project-type "R+Python")
          (message "🧬 Setting up R components...")
          (unless (file-exists-p rscript-path)
            (with-temp-file rscript-path
-             (insert "require(tidyverse)\n")))
-         ;; Initialise renv for the R component
-         (let ((default-directory project-path)
-               (renv-buf (get-buffer-create "*renv-init*")))
-           (with-current-buffer renv-buf (erase-buffer))
-           (display-buffer renv-buf)
-           (call-process "Rscript" nil renv-buf t "-e" "renv::init(bare = TRUE)")
-           (message "renv initialised — run renv::snapshot() after installing packages.")))
+             (insert "require(tidyverse)\n"))))
 
        (message "🐍 Setting up Python%s with uv..."
                 (if (string= project-type "R+Python") " components" ""))
