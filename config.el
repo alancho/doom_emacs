@@ -196,12 +196,73 @@
                    "up" "uv sync"
                    "ll" "ls -lha"
                    "bunya" "ssh uqasever@bunya.rcc.uq.edu.au"
-                   "tobunya" "rsync -avz --exclude '.git' --exclude '.*' $1 uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$2"
-                   "frombunya" "rsync -avz --include '$3' uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$1 $2"
+                   "tobunya" "rsync -avz --exclude='.git/' --exclude='.*' --exclude='.venv/' --exclude='outputs/' $1/ uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$(basename $1)/"
+                   "frombunya" "rsync -avz --exclude='.git/' --exclude='.venv/' --exclude='.env/' --exclude='node_modules/' uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$(basename $PWD)/$1 $2"
+                   "frombunya-outputs" "rsync -avz uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$(basename $PWD)/outputs/ ./outputs/"
                    "ur" "r update-r-packages.R"
                    "un" "unison sandisco"
                    "ud" "doom sync && doom upgrade"
                    "ds" "dropbox status")
+
+;;; ========================================================================
+;;; HPC / BUNYA
+;;; ========================================================================
+
+(defun my/bunya--project-root ()
+  "Return current project root as absolute path without trailing slash."
+  (directory-file-name
+   (expand-file-name
+    (or (and (fboundp 'projectile-project-root)
+             (ignore-errors (projectile-project-root)))
+        default-directory))))
+
+(defun my/tobunya ()
+  "Push current project to Bunya HPC via rsync."
+  (interactive)
+  (let* ((root (my/bunya--project-root))
+         (remote-name (file-name-nondirectory root))
+         (rsyncignore (expand-file-name "rsyncignore" root))
+         (cmd (if (file-exists-p rsyncignore)
+                  (format "rsync -avz --exclude-from=%s %s/ uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/"
+                          (shell-quote-argument rsyncignore)
+                          (shell-quote-argument root)
+                          remote-name)
+                (format "rsync -avz --exclude='.git/' --exclude='.*' --exclude='.venv/' --exclude='outputs/' %s/ uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/"
+                        (shell-quote-argument root)
+                        remote-name))))
+    (compile cmd)))
+
+(defun my/frombunya-outputs ()
+  "Pull outputs/ from Bunya HPC into current project."
+  (interactive)
+  (let* ((root (my/bunya--project-root))
+         (remote-name (file-name-nondirectory root))
+         (cmd (format "rsync -avz uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/outputs/ %s/outputs/"
+                      remote-name
+                      (shell-quote-argument root))))
+    (compile cmd)))
+
+(defun my/frombunya (subdir local-dest)
+  "Pull SUBDIR from Bunya HPC for current project into LOCAL-DEST."
+  (interactive
+   (list (read-string "Remote subdir: " "outputs")
+         (read-string "Local destination: " ".")))
+  (let* ((root (my/bunya--project-root))
+         (remote-name (file-name-nondirectory root))
+         (local-path (if (file-name-absolute-p local-dest)
+                         local-dest
+                       (expand-file-name local-dest root)))
+         (cmd (format "rsync -avz --exclude='.git/' --exclude='.venv/' uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/%s %s"
+                      remote-name
+                      (shell-quote-argument subdir)
+                      (shell-quote-argument local-path))))
+    (compile cmd)))
+
+(map! :leader
+      (:prefix ("o b" . "bunya")
+       :desc "Push project to Bunya"   "p" #'my/tobunya
+       :desc "Pull outputs from Bunya" "o" #'my/frombunya-outputs
+       :desc "Pull subdir from Bunya"  "f" #'my/frombunya))
 
 ;;; ========================================================================
 ;;; WRITING & EDITING MODES
