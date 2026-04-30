@@ -216,6 +216,43 @@
              (ignore-errors (projectile-project-root)))
         default-directory))))
 
+(defvar my/bunya--askpass-path nil)
+
+(defun my/bunya--create-askpass ()
+  "Write a temporary SSH askpass script that prompts via Emacs minibuffer."
+  (let ((path (make-temp-file "emacs-ssh-askpass" nil ".sh")))
+    (with-temp-file path
+      (insert "#!/bin/bash\n"
+              "result=$(emacsclient --eval \"(read-passwd \\\"$*\\\")\" 2>/dev/null)\n"
+              "result=${result#\\\"}\n"
+              "result=${result%\\\"}\n"
+              "printf '%s' \"$result\"\n"))
+    (set-file-modes path #o700)
+    path))
+
+(defun my/bunya-connect ()
+  "Establish ControlMaster SSH connection to Bunya, prompting in minibuffer."
+  (interactive)
+  (unless my/bunya--askpass-path
+    (setq my/bunya--askpass-path (my/bunya--create-askpass)))
+  (let ((process-environment
+         (append (list (concat "SSH_ASKPASS=" my/bunya--askpass-path)
+                       "SSH_ASKPASS_REQUIRE=force")
+                 process-environment)))
+    (message "Connecting to Bunya… answer prompts in minibuffer")
+    (make-process
+     :name "bunya-master"
+     :buffer " *bunya-master*"
+     :command '("ssh" "-fN" "bunya")
+     :noquery t
+     :sentinel
+     (lambda (_proc event)
+       (cond
+        ((string-prefix-p "finished" event)
+         (message "Bunya: ControlMaster active (1 hour)"))
+        ((string-prefix-p "exited abnormally" event)
+         (message "Bunya: connection failed — run my/bunya-connect to retry")))))))
+
 (defun my/tobunya ()
   "Push current project to Bunya HPC via rsync."
   (interactive)
@@ -223,11 +260,11 @@
          (remote-name (file-name-nondirectory root))
          (rsyncignore (expand-file-name "rsyncignore" root))
          (cmd (if (file-exists-p rsyncignore)
-                  (format "rsync -avz --exclude-from=%s %s/ uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/"
+                  (format "rsync -avz --exclude-from=%s %s/ bunya:/home/uqasever/%s/"
                           (shell-quote-argument rsyncignore)
                           (shell-quote-argument root)
                           remote-name)
-                (format "rsync -avz --exclude='.git/' --exclude='.*' --exclude='.venv/' --exclude='outputs/' %s/ uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/"
+                (format "rsync -avz --exclude='.git/' --exclude='.*' --exclude='.venv/' --exclude='outputs/' %s/ bunya:/home/uqasever/%s/"
                         (shell-quote-argument root)
                         remote-name))))
     (compile cmd)))
@@ -237,7 +274,7 @@
   (interactive)
   (let* ((root (my/bunya--project-root))
          (remote-name (file-name-nondirectory root))
-         (cmd (format "rsync -avz uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/outputs/ %s/outputs/"
+         (cmd (format "rsync -avz bunya:/home/uqasever/%s/outputs/ %s/outputs/"
                       remote-name
                       (shell-quote-argument root))))
     (compile cmd)))
@@ -252,14 +289,15 @@
          (local-path (if (file-name-absolute-p local-dest)
                          local-dest
                        (expand-file-name local-dest root)))
-         (cmd (format "rsync -avz --exclude='.git/' --exclude='.venv/' uqasever@bunya.rcc.uq.edu.au:/home/uqasever/%s/%s %s"
+         (cmd (format "rsync -avz --exclude='.git/' --exclude='.venv/' bunya:/home/uqasever/%s/%s %s"
                       remote-name
                       (shell-quote-argument subdir)
                       (shell-quote-argument local-path))))
     (compile cmd)))
 
 (map! :leader
-      (:prefix ("o b" . "bunya")
+      (:prefix ("o B" . "bunya")
+       :desc "Connect to Bunya"        "c" #'my/bunya-connect
        :desc "Push project to Bunya"   "p" #'my/tobunya
        :desc "Pull outputs from Bunya" "o" #'my/frombunya-outputs
        :desc "Pull subdir from Bunya"  "f" #'my/frombunya))
