@@ -216,17 +216,23 @@
              (ignore-errors (projectile-project-root)))
         default-directory))))
 
-(defvar my/bunya--askpass-path nil)
+(defvar my/bunya--askpass-path nil
+  "Path to the SSH askpass script; reset to nil to force regeneration.")
 
 (defun my/bunya--create-askpass ()
-  "Write a temporary SSH askpass script that prompts via Emacs minibuffer."
+  "Write a temporary SSH askpass script, using zenity if available."
   (let ((path (make-temp-file "emacs-ssh-askpass" nil ".sh")))
     (with-temp-file path
-      (insert "#!/bin/bash\n"
-              "result=$(emacsclient --eval \"(read-passwd \\\"$*\\\")\" 2>/dev/null)\n"
-              "result=${result#\\\"}\n"
-              "result=${result%\\\"}\n"
-              "printf '%s' \"$result\"\n"))
+      (cond
+       ((executable-find "zenity")
+        (insert "#!/bin/bash\n"
+                "zenity --password --title='Bunya HPC' --text=\"${*:-Password:}\" 2>/dev/null\n"))
+       (t
+        (insert "#!/bin/bash\n"
+                "result=$(timeout 60 emacsclient --eval \"(read-passwd \\\"$*\\\")\" 2>/dev/null)\n"
+                "result=${result#\\\"}\n"
+                "result=${result%\\\"}\n"
+                "printf '%s' \"$result\"\n"))))
     (set-file-modes path #o700)
     path))
 
@@ -631,9 +637,9 @@
 ;;; ========================================================================
 
 ;; biblio
-(setq! citar-bibliography '("~/Dropbox/Papers/library.bib")
-       org-cite-global-bibliography '("~/Dropbox/Papers/library.bib")
-       citar-library-paths '("~/Dropbox/Papers/")
+(setq! citar-bibliography '("~/Papers/library.bib")
+       org-cite-global-bibliography '("~/Papers/library.bib")
+       citar-library-paths '("~/Papers/")
        citar-notes-paths '("~/Dropbox/denotes/"))
 
 (map! :map doom-leader-notes-map
