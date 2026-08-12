@@ -98,6 +98,8 @@
 (add-to-list 'auto-mode-alist '("\\.apsimx\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.slurm\\'" . bash-mode))
 (add-to-list 'exec-path "/home/alancho/.cabal/bin")
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
+(setenv "PATH" (concat (expand-file-name "~/.local/bin") ":" (getenv "PATH")))
 
 ;;; ========================================================================
 ;;; NAVIGATION & SEARCH
