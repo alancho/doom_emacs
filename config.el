@@ -1385,3 +1385,7 @@ Processes the active region or the entire buffer if no region is active."
       ;; Copy result to clipboard and notify user
       (kill-new (buffer-string))
       (message "Text formatted and copied to clipboard for Logseq!"))))
+
+(after! git-commit
+  (setq git-commit-summary-max-length 70))
+
