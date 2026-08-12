@@ -439,15 +439,15 @@
   (setq ess-indent-with-fancy-comments nil)
   :config
   (defun then_R_operator ()
-    "R - %>% operator or 'then' pipe operator"
+    "R - |> native pipe operator"
     (interactive)
     (just-one-space 1)
-    (insert "%>%")
+    (insert "|>")
     (reindent-then-newline-and-indent))
   (defun then_R_operator_inline ()
     (interactive)
     (just-one-space 1)
-    (insert "%>%")
+    (insert "|>")
     (just-one-space 1))
   (defun then_ggplot_plus ()
     (interactive)
@@ -472,6 +472,10 @@
         ess-default-style 'RStudio
         fill-column 72
         comment-auto-fill-only-comments t)
+  (font-lock-add-keywords 'ess-r-mode
+    '(("|>" (0 'ess-%op%-face t))))
+  (font-lock-add-keywords 'inferior-ess-r-mode
+    '(("|>" (0 'ess-%op%-face t))))
   :bind (:map ess-mode-map
          ("C-S-<return>" . 'then_R_operator_inline)
          ("C-<return>" . 'then_R_operator)
