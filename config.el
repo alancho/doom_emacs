@@ -275,27 +275,53 @@
                         remote-name))))
     (compile cmd)))
 
-(defun my/frombunya-outputs ()
-  "Pull outputs/ from Bunya HPC into current project."
-  (interactive)
+(defun my/frombunya-outputs (patterns)
+  "Pull outputs/ from Bunya HPC into current project.
+PATTERNS is a space-separated list of glob patterns to include
+(e.g. \"*.csv *.rds\"). Empty = pull everything."
+  (interactive
+   (list (read-string "Include patterns (space-sep globs, empty=all): " "")))
   (let* ((root (my/bunya--project-root))
          (remote-name (file-name-nondirectory root))
-         (cmd (format "rsync -avz bunya:/home/uqasever/%s/outputs/ %s/outputs/"
+         (filters (if (string-empty-p patterns)
+                      ""
+                    (concat "--include='*/' "
+                            (mapconcat (lambda (p)
+                                         (format "--include=%s"
+                                                 (shell-quote-argument p)))
+                                       (split-string patterns)
+                                       " ")
+                            " --exclude='*' ")))
+         (cmd (format "rsync -avz %sbunya:/home/uqasever/%s/outputs/ %s/outputs/"
+                      filters
                       remote-name
                       (shell-quote-argument root))))
     (compile cmd)))
 
-(defun my/frombunya (subdir local-dest)
-  "Pull SUBDIR from Bunya HPC for current project into LOCAL-DEST."
+(defun my/frombunya (subdir local-dest patterns)
+  "Pull SUBDIR from Bunya HPC for current project into LOCAL-DEST.
+PATTERNS is a space-separated list of glob patterns to include
+(e.g. \"*.csv *.rds results_2026*\"). Empty = pull everything."
   (interactive
    (list (read-string "Remote subdir: " "outputs")
-         (read-string "Local destination: " ".")))
+         (read-string "Local destination: " ".")
+         (read-string "Include patterns (space-sep globs, empty=all): " "")))
   (let* ((root (my/bunya--project-root))
          (remote-name (file-name-nondirectory root))
          (local-path (if (file-name-absolute-p local-dest)
                          local-dest
                        (expand-file-name local-dest root)))
-         (cmd (format "rsync -avz --exclude='.git/' --exclude='.venv/' bunya:/home/uqasever/%s/%s %s"
+         (filters (if (string-empty-p patterns)
+                      ""
+                    (concat "--include='*/' "
+                            (mapconcat (lambda (p)
+                                         (format "--include=%s"
+                                                 (shell-quote-argument p)))
+                                       (split-string patterns)
+                                       " ")
+                            " --exclude='*' ")))
+         (cmd (format "rsync -avz %s--exclude='.git/' --exclude='.venv/' bunya:/home/uqasever/%s/%s/ %s/"
+                      filters
                       remote-name
                       (shell-quote-argument subdir)
                       (shell-quote-argument local-path))))
