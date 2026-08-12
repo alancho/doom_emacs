@@ -222,16 +222,22 @@
   "Path to the SSH askpass script; reset to nil to force regeneration.")
 
 (defun my/bunya--create-askpass ()
-  "Write a temporary SSH askpass script, using zenity if available."
+  "Write a temporary SSH askpass script, using zenity if available.
+Bunya now uses Okta push MFA: the SSH banner shows a numeric push
+code, and login proceeds once that same number is approved in the
+Okta Verify app on your phone — no passcode needs to be typed back,
+just a confirmation once you've approved. The script therefore shows
+the prompt text (including the push code) and accepts an empty
+answer (equivalent to pressing Enter) via the OK button."
   (let ((path (make-temp-file "emacs-ssh-askpass" nil ".sh")))
     (with-temp-file path
       (cond
        ((executable-find "zenity")
         (insert "#!/bin/bash\n"
-                "zenity --password --title='Bunya HPC' --text=\"${*:-Password:}\" 2>/dev/null\n"))
+                "zenity --entry --title='Bunya HPC — Okta MFA' --text=\"${*:-Approve the Okta push on your device, then click OK}\" --entry-text='' --timeout=300 2>/dev/null\n"))
        (t
         (insert "#!/bin/bash\n"
-                "result=$(timeout 60 emacsclient --eval \"(read-passwd \\\"$*\\\")\" 2>/dev/null)\n"
+                "result=$(timeout 300 emacsclient --eval \"(read-string \\\"$*\\\")\" 2>/dev/null)\n"
                 "result=${result#\\\"}\n"
                 "result=${result%\\\"}\n"
                 "printf '%s' \"$result\"\n"))))
@@ -247,7 +253,7 @@
          (append (list (concat "SSH_ASKPASS=" my/bunya--askpass-path)
                        "SSH_ASKPASS_REQUIRE=force")
                  process-environment)))
-    (message "Connecting to Bunya… answer prompts in minibuffer")
+    (message "Connecting to Bunya… approve the Okta push on your device, then confirm the dialog")
     (make-process
      :name "bunya-master"
      :buffer " *bunya-master*"
