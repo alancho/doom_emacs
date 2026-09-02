@@ -567,6 +567,60 @@ PATTERNS is a space-separated list of glob patterns to include
 (after! org
   (set-popup-rule! "^\\*Org Src" :ignore t))
 
+;; Self-contained HTML export: embed local images as base64 data: URIs so a
+;; manuscript stays intact when emailed as a single .html attachment. This is a
+;; separate dispatcher entry (C-c C-e h e / h E); the normal "h h" export is
+;; untouched.
+(with-eval-after-load 'ox-html
+  (defvar my/org-html-embed-images nil
+    "When non-nil, `org-html--format-image' inlines local images as base64 data URIs.")
+
+  (defun my/org-html--embed-image-a (orig source attributes info)
+    "Rewrite SOURCE to a base64 data: URI when `my/org-html-embed-images' is on.
+Remote (http/https) and already-inlined (data:) sources are left untouched."
+    (if (and my/org-html-embed-images
+             (not (string-match-p "\\`\\(?:https?\\|data\\):" source)))
+        (let* ((clean (if (string-prefix-p "file://" source) (substring source 7) source))
+               (path  (expand-file-name
+                       (url-unhex-string clean)
+                       (when-let ((in (plist-get info :input-file)))
+                         (file-name-directory in)))))
+          (if (file-readable-p path)
+              (let* ((ext  (downcase (or (file-name-extension path) "")))
+                     (mime (pcase ext
+                             ("svg" "image/svg+xml")
+                             ((or "jpg" "jpeg") "image/jpeg")
+                             ("" "application/octet-stream")
+                             (_ (concat "image/" ext))))
+                     (b64  (base64-encode-string
+                            (with-temp-buffer
+                              (set-buffer-multibyte nil)
+                              (insert-file-contents-literally path)
+                              (buffer-string))
+                            t)))
+                (funcall orig (format "data:%s;base64,%s" mime b64) attributes info))
+            (funcall orig source attributes info)))
+      (funcall orig source attributes info)))
+
+  (advice-add 'org-html--format-image :around #'my/org-html--embed-image-a)
+
+  (defun my/org-html-export-to-self-contained (&optional async subtree visible body-only ext-plist)
+    "Export current buffer to a single HTML file with images embedded as data URIs."
+    (interactive)
+    (let ((my/org-html-embed-images t)
+          (file (org-export-output-file-name ".html" subtree)))
+      (org-export-to-file 'html-selfcontained file
+        async subtree visible body-only ext-plist)))
+
+  (org-export-define-derived-backend 'html-selfcontained 'html
+    :menu-entry
+    '(?h "Export to HTML"
+         ((?e "As self-contained HTML file" my/org-html-export-to-self-contained)
+          (?E "As self-contained HTML file and open"
+              (lambda (a s v b)
+                (if a (my/org-html-export-to-self-contained t s v b)
+                  (org-open-file (my/org-html-export-to-self-contained nil s v b)))))))))
+
 ;; Prefiero que la fuente de los headings en org no sea bold
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
