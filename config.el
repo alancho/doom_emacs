@@ -732,10 +732,38 @@ Remote (http/https) and already-inlined (data:) sources are left untouched."
 (setq! citar-bibliography '("~/Papers/library.bib")
        org-cite-global-bibliography '("~/Papers/library.bib")
        citar-library-paths '("~/Papers/")
-       citar-notes-paths '("~/Dropbox/denotes/"))
+       citar-notes-paths '("~/Dropbox/org/roam/slides/"))
 
 (map! :map doom-leader-notes-map
       "b" #'citar-insert-citation)
+
+(use-package! org-transclusion
+  :after org
+  :init
+  (map! :map global-map "<f12>" #'org-transclusion-add
+        :leader
+        :prefix "n"
+        :desc "Org Transclusion Mode" "t" #'org-transclusion-mode
+        :desc "Add all transclusions"  "T" #'org-transclusion-add-all)
+  :config
+  ;; The default faces ship with no color at all (transparent), so
+  ;; transclusions are invisible without this -- and the fringe-bitmap
+  ;; indicator they rely on instead doesn't exist in terminal Emacs.
+  (custom-set-faces!
+    '(org-transclusion-source :background "#2b2b1a" :extend t)
+    '(org-transclusion :background "#132530" :extend t)))
+
+;; Run direnv fully asynchronously. With the default (blocking) behaviour,
+;; `envrc-global-mode' -- enabled on `doom-first-file-hook' -- calls
+;; `sleep-for' while a slow .envrc evaluates (e.g. a Python venv in
+;; ~/ecmwf-pampas-weather-forecasting). During that sleep other startup
+;; code (session restore, org-roam db sync) can kill buffers that
+;; envrc-global-mode is still iterating over, giving
+;;   "Error in a Doom startup hook: ... envrc-global-mode, (error "Selecting deleted buffer")"
+;; Going async skips the sleep entirely; the direnv module already restarts
+;; LSP/eglot servers once direnv finishes.
+(after! envrc
+  (setq envrc-async t))
 
 ;; (use-package! denote
 ;;   :config
