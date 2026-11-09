@@ -198,7 +198,7 @@
                    "up" "uv sync"
                    "ll" "ls -lha"
                    "bunya" "ssh uqasever@bunya.rcc.uq.edu.au"
-                   "tobunya" "rsync -avz --exclude='.git/' --exclude='.*' --exclude='.venv/' --exclude='outputs/' $1/ uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$(basename $1)/"
+                   "tobunya" "my/tobunya $1"  ; guarded: never pushes / or ~ (see my/bunya--checked-root)
                    "frombunya" "rsync -avz --exclude='.git/' --exclude='.venv/' --exclude='.env/' --exclude='node_modules/' uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$(basename $PWD)/$1 $2"
                    "frombunya-outputs" "rsync -avz uqasever@bunya.rcc.uq.edu.au:/home/uqasever/$(basename $PWD)/outputs/ ./outputs/"
                    "ur" "r update-r-packages.R"
@@ -217,6 +217,20 @@
     (or (and (fboundp 'projectile-project-root)
              (ignore-errors (projectile-project-root)))
         default-directory))))
+
+(defun my/bunya--checked-root (&optional dir)
+  "Absolute DIR (default: project root) for Bunya syncs; error unless it is a project below $HOME.
+Guards against pushing / or ~ itself: an empty remote name makes rsync target
+/home/uqasever/ directly (this copied the laptop's root filesystem into the Bunya home once)."
+  (let ((root (if (and dir (not (string-empty-p dir)))
+                  (directory-file-name (expand-file-name dir))
+                (my/bunya--project-root)))
+        (home (directory-file-name (expand-file-name "~"))))
+    (unless (and (file-directory-p root)
+                 (not (string-empty-p (file-name-nondirectory root)))
+                 (string-prefix-p (concat home "/") root))
+      (user-error "Bunya: refusing to sync %s (not a project directory below %s)" root home))
+    root))
 
 (defvar my/bunya--askpass-path nil
   "Path to the SSH askpass script; reset to nil to force regeneration.")
@@ -267,10 +281,10 @@ answer (equivalent to pressing Enter) via the OK button."
         ((string-prefix-p "exited abnormally" event)
          (message "Bunya: connection failed — run my/bunya-connect to retry")))))))
 
-(defun my/tobunya ()
-  "Push current project to Bunya HPC via rsync."
+(defun my/tobunya (&optional dir)
+  "Push DIR (default: current project) to Bunya HPC via rsync, after confirmation."
   (interactive)
-  (let* ((root (my/bunya--project-root))
+  (let* ((root (my/bunya--checked-root dir))
          (remote-name (file-name-nondirectory root))
          (rsyncignore (expand-file-name "rsyncignore" root))
          (cmd (if (file-exists-p rsyncignore)
@@ -281,7 +295,8 @@ answer (equivalent to pressing Enter) via the OK button."
                 (format "rsync -avz --exclude='.git/' --exclude='.*' --exclude='.venv/' --exclude='outputs/' %s/ bunya:/home/uqasever/%s/"
                         (shell-quote-argument root)
                         remote-name))))
-    (compile cmd)))
+    (when (y-or-n-p (format "Push %s/ to bunya:/home/uqasever/%s/? " root remote-name))
+      (compile cmd))))
 
 (defun my/frombunya-outputs (patterns)
   "Pull outputs/ from Bunya HPC into current project.
@@ -289,7 +304,7 @@ PATTERNS is a space-separated list of glob patterns to include
 (e.g. \"*.csv *.rds\"). Empty = pull everything."
   (interactive
    (list (read-string "Include patterns (space-sep globs, empty=all): " "")))
-  (let* ((root (my/bunya--project-root))
+  (let* ((root (my/bunya--checked-root))
          (remote-name (file-name-nondirectory root))
          (filters (if (string-empty-p patterns)
                       ""
@@ -311,10 +326,10 @@ PATTERNS is a space-separated list of glob patterns to include
 PATTERNS is a space-separated list of glob patterns to include
 (e.g. \"*.csv *.rds results_2026*\"). Empty = pull everything."
   (interactive
-   (list (read-string "Remote subdir: " "outputs")
-         (read-string "Local destination: " ".")
+   (list (read-string "Remote subdir: " "logs")
+         (read-string "Local destination: " "logs")
          (read-string "Include patterns (space-sep globs, empty=all): " "")))
-  (let* ((root (my/bunya--project-root))
+  (let* ((root (my/bunya--checked-root))
          (remote-name (file-name-nondirectory root))
          (local-path (if (file-name-absolute-p local-dest)
                          local-dest
