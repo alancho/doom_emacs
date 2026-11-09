@@ -768,6 +768,147 @@ Remote (http/https) and already-inlined (data:) sources are left untouched."
     '(org-transclusion-source :background "#2b2b1a" :extend t)
     '(org-transclusion :background "#132530" :extend t)))
 
+;; org-roam-ui -- interactive browser graph of the zettelkasten (notes and
+;; atomic slides).  Launch it with `SPC n r u'; it does not start on its own.
+;; Needs a graphical browser and a running org-roam DB (SPC n r s to sync).
+(use-package! websocket
+  :after org-roam)
+
+(use-package! org-roam-ui
+  :after org-roam
+  ;; No `after-init' hook on purpose: start the server only when asked.
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t)
+  ;; Bare-key :prefix ("n"/"r" without a (KEY . DESC) cons): re-supplying the
+  ;; cons here would rebuild the "r" prefix keymap from scratch and wipe out
+  ;; Doom's existing org-roam bindings (f/s/g/i/n/R/...) under it -- this
+  ;; extends the existing keymap instead.
+  (map! :leader
+        (:prefix "n"
+         (:prefix "r"
+          :desc "Roam UI graph (browser)" "u" #'org-roam-ui-mode))))
+
+;;; ========================================================================
+;;; ATOMIC SLIDES -- BEAMER ZETTELKASTEN
+;;; ========================================================================
+;;
+;; A zettelkasten of *atomic slides*: each note in ~/Dropbox/org/roam/slides/
+;; is one org-roam node holding a single top-level heading = one Beamer frame
+;; (title + a little text + a figure, sometimes with overlays).  A "deck" is a
+;; thin file of `#+transclude:' lines (usually in slides/decks/) that pulls a
+;; sequence of those frames together; it can live anywhere on the laptop.
+;;
+;; Figures live in one shared bank, referenced as [[figbank:foo.pdf]] (org) or
+;; \includegraphics{\figbank foo.pdf} (raw LaTeX in overlay blocks).  Both
+;; resolve to an absolute path, so a note renders identically wherever it is
+;; transcluded.  Regenerate the example figures with
+;;   python3 ~/Dropbox/org/roam/slides/figures/_make_figures.py
+;;
+;; Themes are `#+setupfile:' fragments in slides/themes/ -- metropolis.org and
+;; bw.org (black & white).  Switch a deck's look by editing its setupfile line.
+;;
+;; Workflow for a deck:  SPC n d e   (adds transclusions, exports Beamer PDF)
+;; or by hand:           SPC n T  then  SPC m e l p
+
+(defvar my/slides-directory (expand-file-name "roam/slides/" org-directory)
+  "Home of the atomic-slide zettelkasten.")
+(defvar my/slides-figure-bank (expand-file-name "roam/slides/figures/" org-directory)
+  "Shared figure bank for atomic slides (png + pdf).")
+
+(after! org
+  ;; [[figbank:foo.pdf]] -> absolute path in the figure bank.
+  (add-to-list 'org-link-abbrev-alist
+               (cons "figbank" (concat my/slides-figure-bank "%s")))
+  ;; Needed so the `#+bind:' lines in the theme setupfiles take effect.
+  (setq org-export-allow-bind-keywords t))
+
+(after! org-roam
+  ;; Keep theme setupfiles and the figure bank out of the roam DB
+  ;; (without dropping org-roam's own default exclusions).
+  (add-to-list 'org-roam-file-exclude-regexp "/slides/\\(?:themes\\|figures\\)/")
+  ;; SPC n r n -> "s" offers a ready-made atomic-slide capture.
+  (add-to-list 'org-roam-capture-templates
+               `("s" "atomic slide" plain
+                 "%?\n\n[[figbank:CHANGEME.pdf]]\n"
+                 :target (file+head+olp
+                          "slides/%<%Y%m%d%H%M%S>-${slug}.org"
+                          ,(concat "#+title: ${title}\n"
+                                   "#+filetags: :slide:\n"
+                                   "#+setupfile: ./themes/metropolis.org\n"
+                                   "#+options: title:nil\n")
+                          ("${title}"))
+                 :unnarrowed t)
+               :append))
+
+(defun my/slides--node-p (node)
+  "Non-nil when org-roam NODE is tagged :slide:."
+  (member "slide" (org-roam-node-tags node)))
+
+(defun my/slides-find ()
+  "Find (or create) an atomic slide note."
+  (interactive)
+  (org-roam-node-find nil nil #'my/slides--node-p))
+
+(defun my/slides-new ()
+  "Capture a new atomic slide via the \"s\" org-roam template."
+  (interactive)
+  (org-roam-capture nil "s"))
+
+(defun my/slides-insert-transclusion (node)
+  "Insert a `#+transclude:' line for atomic slide NODE on its own line.
+Transcludes it immediately when `org-transclusion-mode' is on."
+  (interactive
+   (list (org-roam-node-read nil #'my/slides--node-p nil t "Transclude slide: ")))
+  (unless (bolp) (end-of-line) (newline))
+  (delete-horizontal-space)
+  (insert (format "#+transclude: [[id:%s][%s]] :level 1"
+                  (org-roam-node-id node)
+                  (org-roam-node-title node)))
+  (when (bound-and-true-p org-transclusion-mode)
+    (org-transclusion-add)))
+
+(defun my/slides-new-deck (title)
+  "Create a new transclusion deck in slides/decks/ and open it."
+  (interactive "sDeck title: ")
+  (let* ((slug (string-trim
+                (replace-regexp-in-string "[^a-z0-9]+" "_" (downcase title))
+                "_" "_"))
+         (file (expand-file-name
+                (format "decks/%s-%s.org"
+                        (format-time-string "%Y%m%d%H%M%S") slug)
+                my/slides-directory)))
+    (make-directory (file-name-directory file) t)
+    (find-file file)
+    (insert (format (concat "#+title: %s\n#+author: %s\n#+date: \\today\n"
+                            "#+setupfile: ../themes/metropolis.org\n\n"
+                            "# SPC n d i  to add a slide     SPC n d e  to export\n\n")
+                    title (or user-full-name "")))
+    (org-transclusion-mode 1)
+    (save-buffer)))
+
+(defun my/slides-export-deck ()
+  "Materialise every transclusion in the current deck, then export a Beamer PDF."
+  (interactive)
+  (require 'org-transclusion)
+  (unless (bound-and-true-p org-transclusion-mode) (org-transclusion-mode 1))
+  (org-transclusion-add-all)
+  (unwind-protect
+      (org-open-file (org-beamer-export-to-pdf))
+    (org-transclusion-remove-all)))
+
+(map! :leader
+      (:prefix ("n" . "notes")
+       (:prefix ("d" . "slides/decks")
+        :desc "New atomic slide"       "c" #'my/slides-new
+        :desc "New deck"               "d" #'my/slides-new-deck
+        :desc "Export deck to PDF"     "e" #'my/slides-export-deck
+        :desc "Find slide note"        "f" #'my/slides-find
+        :desc "Open figure bank"       "F" (cmd! (dired my/slides-figure-bank))
+        :desc "Insert transclusion"    "i" #'my/slides-insert-transclusion)))
+
 ;; Run direnv fully asynchronously. With the default (blocking) behaviour,
 ;; `envrc-global-mode' -- enabled on `doom-first-file-hook' -- calls
 ;; `sleep-for' while a slow .envrc evaluates (e.g. a Python venv in
@@ -1025,6 +1166,8 @@ Opens REPL on first call if not running, sends code on subsequent calls."
 
 ;; Para que esto funcione: #+BIND: org-beamer-frame-default-options "allowframebreaks"
 (setq org-export-allow-bind-keywords t)
+
+(require 'ox-koma-letter)
 
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes

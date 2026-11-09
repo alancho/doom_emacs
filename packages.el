@@ -61,6 +61,10 @@
 
 (package! org-transclusion)
 
+;; Interactive graph of the org-roam / atomic-slides zettelkasten (browser).
+(package! websocket)
+(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
+
 ;; (package! gptel)
 
 ;; Creo que ya aprendí a formatear por mí mismo
